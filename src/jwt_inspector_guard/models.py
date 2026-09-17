@@ -293,3 +293,26 @@ class SampleToken:
     def to_dict(self) -> Dict[str, Any]:
         """Serialize sample token record to dictionary."""
         return asdict(self)
+
+
+@dataclass
+class JWTExploitPayload:
+    """A mutated or synthesized exploit payload for testing token parser vulnerabilities."""
+
+    attack_type: str
+    title: str
+    description: str
+    mutated_token: str
+    cve_id: Optional[str] = None
+    expected_vulnerability: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "attack_type": self.attack_type,
+            "title": self.title,
+            "description": self.description,
+            "mutated_token": self.mutated_token,
+            "cve_id": self.cve_id,
+            "expected_vulnerability": self.expected_vulnerability,
+        }
+

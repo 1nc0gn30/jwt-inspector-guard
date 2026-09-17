@@ -26,6 +26,8 @@ from .mcp_server import (
     audit_jwt_security as _audit_jwt_security_fn,
     validate_claims as _validate_claims_fn,
 )
+from .models import JWTExploitPayload
+from .security_linter import generate_exploit_tokens
 
 __version__ = "0.1.0"
 __author__ = "jwt-inspector-guard contributors"
@@ -259,6 +261,7 @@ __all__ = [
     "DecodedJWT",
     "ValidationResult",
     "SecurityAuditReport",
+    "JWTExploitPayload",
     "JWTAlgorithm",
     "TokenType",
     "SecuritySeverity",
@@ -267,6 +270,7 @@ __all__ = [
     "sign_hmac",
     "validate_claims",
     "audit_jwt_security",
+    "generate_exploit_tokens",
     "base64url_encode",
     "base64url_decode",
     "get_sample_token",

