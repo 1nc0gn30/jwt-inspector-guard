@@ -256,6 +256,33 @@ def _api_tamper(body: Dict[str, Any]) -> Dict[str, Any]:
     return {"tampered_token": tampered, "attack_type": attack_type}
 
 
+def _api_jwks(body: Dict[str, Any]) -> Dict[str, Any]:
+    from jwt_inspector_guard.jwks_manager import JWKSRotationSimulator
+    sim = JWKSRotationSimulator()
+    if body.get("rotate", False):
+        sim.rotate_active_key()
+    external_jwks = body.get("jwks")
+    report = sim.audit_jwks_health(external_jwks=external_jwks)
+    res = report.to_dict()
+    token = body.get("token")
+    if token:
+        res["resolved_token_key"] = sim.resolve_key_for_token(token)
+    return res
+
+
+def _api_timing(body: Dict[str, Any]) -> Dict[str, Any]:
+    from jwt_inspector_guard.timing_defense import (
+        benchmark_signature_comparison,
+        safe_constant_time_compare,
+        vulnerable_early_exit_compare,
+    )
+    test_vuln = bool(body.get("test_vulnerable", False))
+    trials = int(body.get("trials", 50))
+    cmp_fn = vulnerable_early_exit_compare if test_vuln else safe_constant_time_compare
+    report = benchmark_signature_comparison(compare_func=cmp_fn, trials=trials)
+    return report.to_dict()
+
+
 _API_ROUTES = {
     "/api/decode": _api_decode,
     "/api/verify": _api_verify,
@@ -267,6 +294,8 @@ _API_ROUTES = {
     "/api/mint": _api_mint,
     "/api/entropy": _api_entropy,
     "/api/tamper": _api_tamper,
+    "/api/jwks": _api_jwks,
+    "/api/timing": _api_timing,
 }
 
 

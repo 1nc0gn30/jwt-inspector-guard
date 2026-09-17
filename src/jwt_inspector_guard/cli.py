@@ -550,6 +550,93 @@ def cmd_mcp(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_jwks(args: argparse.Namespace) -> int:
+    """Handle 'jwks' subcommand: audit key set and simulate rotation."""
+    from .jwks_manager import JWKSRotationSimulator
+    sim = JWKSRotationSimulator()
+
+    if getattr(args, "rotate", False):
+        new_key, old_key = sim.rotate_active_key()
+
+    external_jwks = None
+    if getattr(args, "file", None):
+        try:
+            with open(args.file, "r", encoding="utf-8") as f:
+                external_jwks = json.load(f)
+        except Exception as e:
+            print(f"Failed to read JWKS file: {e}", file=sys.stderr)
+            return 1
+
+    report = sim.audit_jwks_health(external_jwks=external_jwks)
+    res = report.to_dict()
+
+    resolve_token = getattr(args, "resolve", None)
+    if resolve_token:
+        res["resolved_token_key"] = sim.resolve_key_for_token(resolve_token)
+
+    if getattr(args, "json", False):
+        print(json.dumps(res, indent=2))
+        return 0
+
+    print_banner(getattr(args, "quiet", False))
+    print()
+    print(f"{c_str('JWKS (RFC 7517) KEYSTORE & ROTATION REPORT:', BOLD + CYAN)}")
+    print(f"  Total Keys:        {report.total_keys}")
+    print(f"  Active Key ID:     {c_str(str(report.active_key_id), GREEN if report.active_key_id else RED)}")
+    print(f"  Retiring Keys:     {', '.join(report.retiring_keys) if report.retiring_keys else 'None'}")
+    print(f"  Revoked Keys:      {', '.join(report.revoked_keys) if report.revoked_keys else 'None'}")
+    print(f"  Health Status:     {c_str('HEALTHY', GREEN) if report.is_healthy else c_str('ISSUES DETECTED', RED)}")
+    if report.audit_findings:
+        print()
+        print(f"  {c_str('Audit Findings:', BOLD)}")
+        for finding in report.audit_findings:
+            print(f"    • {finding}")
+    if resolve_token and "resolved_token_key" in res:
+        rk = res["resolved_token_key"]
+        print()
+        print(f"  {c_str('Token Key Resolution:', BOLD)}")
+        print(f"    Resolved:        {rk.get('resolved')}")
+        print(f"    Status:          {rk.get('status_description')}")
+        if rk.get("warning"):
+            print(f"    Warning:         {c_str(rk['warning'], YELLOW)}")
+    print()
+    return 0
+
+
+def cmd_timing(args: argparse.Namespace) -> int:
+    """Handle 'timing' subcommand: empirical timing side-channel audit."""
+    from .timing_defense import (
+        benchmark_signature_comparison,
+        safe_constant_time_compare,
+        vulnerable_early_exit_compare,
+    )
+    test_vuln = getattr(args, "test_vulnerable", False)
+    trials = int(getattr(args, "trials", 50))
+    cmp_fn = vulnerable_early_exit_compare if test_vuln else safe_constant_time_compare
+    report = benchmark_signature_comparison(compare_func=cmp_fn, trials=trials)
+
+    if getattr(args, "json", False):
+        print(json.dumps(report.to_dict(), indent=2))
+        return 0
+
+    print_banner(getattr(args, "quiet", False))
+    print()
+    print(f"{c_str('SIGNATURE TIMING SIDE-CHANNEL DEFENSE AUDIT:', BOLD + CYAN)}")
+    print(f"  Constant-Time:     {c_str('VERIFIED SAFE', GREEN) if report.constant_time_verified else c_str('VULNERABLE', RED)}")
+    print(f"  Timing Leakage:    {c_str('DETECTED', RED) if report.timing_leakage_detected else c_str('NONE', GREEN)}")
+    print(f"  Risk Score:        {report.vulnerability_score}/100.0")
+    print(f"  Sample Count:      {report.sample_count} executions")
+    print(f"  Early Mismatch:    {report.average_early_ns:.1f} ns")
+    print(f"  Late Mismatch:     {report.average_full_ns:.1f} ns")
+    print(f"  Delta Ratio:       {report.timing_delta_ratio:.3f}x")
+    print()
+    print(f"  {c_str('Recommendations:', BOLD)}")
+    for rec in report.recommendations:
+        print(f"    • {rec}")
+    print()
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Material 3 JWT Studio Web UI & REST Server
 # ---------------------------------------------------------------------------
@@ -1388,6 +1475,21 @@ def build_parser() -> argparse.ArgumentParser:
     # 10. test
     p_test = subparsers.add_parser("test", parents=[parent_parser], help="Run internal self-verification test runner")
     p_test.set_defaults(func=cmd_test)
+
+    # 11. jwks
+    p_jwks = subparsers.add_parser("jwks", parents=[parent_parser], help="Audit JWKS key set and simulate key rotation")
+    p_jwks.add_argument("--rotate", action="store_true", help="Simulate rotating the active signing key")
+    p_jwks.add_argument("-f", "--file", type=str, help="Path to external JWKS JSON file to audit")
+    p_jwks.add_argument("--resolve", type=str, help="Token string to resolve against key set by kid")
+    p_jwks.add_argument("--json", action="store_true", help="Output JSON audit report")
+    p_jwks.set_defaults(func=cmd_jwks)
+
+    # 12. timing
+    p_timing = subparsers.add_parser("timing", parents=[parent_parser], help="Empirical signature verification timing side-channel audit")
+    p_timing.add_argument("--test-vulnerable", action="store_true", help="Test vulnerable early-exit string comparison")
+    p_timing.add_argument("--trials", type=int, default=50, help="Number of benchmark trials per prefix length (default: 50)")
+    p_timing.add_argument("--json", action="store_true", help="Output JSON benchmark report")
+    p_timing.set_defaults(func=cmd_timing)
 
     return root_parser
 

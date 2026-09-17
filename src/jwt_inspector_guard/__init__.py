@@ -26,8 +26,23 @@ from .mcp_server import (
     audit_jwt_security as _audit_jwt_security_fn,
     validate_claims as _validate_claims_fn,
 )
-from .models import JWTExploitPayload
+from .jwks_manager import (
+    JWKSRotationSimulator,
+    compute_jwk_thumbprint,
+    generate_synthetic_jwk,
+)
+from .models import (
+    JWTExploitPayload,
+    JWKRecord,
+    JWKSRotationReport,
+    TimingDefenseReport,
+)
 from .security_linter import generate_exploit_tokens
+from .timing_defense import (
+    benchmark_signature_comparison,
+    safe_constant_time_compare,
+    vulnerable_early_exit_compare,
+)
 
 __version__ = "0.1.0"
 __author__ = "jwt-inspector-guard contributors"
@@ -262,6 +277,15 @@ __all__ = [
     "ValidationResult",
     "SecurityAuditReport",
     "JWTExploitPayload",
+    "JWKRecord",
+    "JWKSRotationReport",
+    "TimingDefenseReport",
+    "JWKSRotationSimulator",
+    "compute_jwk_thumbprint",
+    "generate_synthetic_jwk",
+    "benchmark_signature_comparison",
+    "safe_constant_time_compare",
+    "vulnerable_early_exit_compare",
     "JWTAlgorithm",
     "TokenType",
     "SecuritySeverity",

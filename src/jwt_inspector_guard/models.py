@@ -316,3 +316,96 @@ class JWTExploitPayload:
             "expected_vulnerability": self.expected_vulnerability,
         }
 
+
+@dataclass
+class JWKRecord:
+    """Represents an individual JSON Web Key (RFC 7517) in a key set."""
+    kty: str
+    kid: str
+    use: str = "sig"
+    alg: Optional[str] = None
+    status: str = "active"  # "active", "retiring", "revoked", "expired"
+    n: Optional[str] = None
+    e: Optional[str] = None
+    crv: Optional[str] = None
+    x: Optional[str] = None
+    y: Optional[str] = None
+    k: Optional[str] = None
+    created_at: float = 0.0
+    expires_at: Optional[float] = None
+    revocation_reason: Optional[str] = None
+
+    def to_dict(self, public_only: bool = True) -> Dict[str, Any]:
+        """Convert JWK to standard RFC 7517 JSON dictionary."""
+        d: Dict[str, Any] = {
+            "kty": self.kty,
+            "kid": self.kid,
+            "use": self.use,
+        }
+        if self.alg:
+            d["alg"] = self.alg
+        if self.kty == "RSA":
+            if self.n:
+                d["n"] = self.n
+            if self.e:
+                d["e"] = self.e
+        elif self.kty in ("EC", "OKP"):
+            if self.crv:
+                d["crv"] = self.crv
+            if self.x:
+                d["x"] = self.x
+            if self.y:
+                d["y"] = self.y
+        elif self.kty == "oct" and not public_only:
+            if self.k:
+                d["k"] = self.k
+        return d
+
+
+@dataclass
+class JWKSRotationReport:
+    """Audit report and simulation state of a JSON Web Key Set (JWKS)."""
+    total_keys: int
+    active_key_id: Optional[str]
+    retiring_keys: List[str]
+    revoked_keys: List[str]
+    jwks_json: Dict[str, Any]
+    audit_findings: List[str]
+    is_healthy: bool
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "total_keys": self.total_keys,
+            "active_key_id": self.active_key_id,
+            "retiring_keys": list(self.retiring_keys),
+            "revoked_keys": list(self.revoked_keys),
+            "jwks_json": self.jwks_json,
+            "audit_findings": list(self.audit_findings),
+            "is_healthy": self.is_healthy,
+        }
+
+
+@dataclass
+class TimingDefenseReport:
+    """Empirical audit report measuring signature verification timing side-channel safety."""
+    constant_time_verified: bool
+    timing_leakage_detected: bool
+    vulnerability_score: float
+    sample_count: int
+    average_early_ns: float
+    average_full_ns: float
+    timing_delta_ratio: float
+    recommendations: List[str]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "constant_time_verified": self.constant_time_verified,
+            "timing_leakage_detected": self.timing_leakage_detected,
+            "vulnerability_score": round(self.vulnerability_score, 2),
+            "sample_count": self.sample_count,
+            "average_early_ns": round(self.average_early_ns, 2),
+            "average_full_ns": round(self.average_full_ns, 2),
+            "timing_delta_ratio": round(self.timing_delta_ratio, 3),
+            "recommendations": list(self.recommendations),
+        }
+

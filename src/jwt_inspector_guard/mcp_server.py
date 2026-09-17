@@ -930,6 +930,47 @@ TOOLS_REGISTRY: List[Dict[str, Any]] = [
             "type": "object",
             "properties": {}
         }
+    },
+    {
+        "name": "jwt_audit_jwks",
+        "description": "Audit a JSON Web Key Set (JWKS RFC 7517), detect private key leaks or duplicate kids, and simulate graceful key rollover rotation.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "jwks": {
+                    "type": "object",
+                    "description": "Optional external JWKS object with 'keys' array to audit. If omitted, audits simulator keystore."
+                },
+                "token_to_resolve": {
+                    "type": "string",
+                    "description": "Optional compact JWT to resolve against published JWKS keys by kid."
+                },
+                "rotate": {
+                    "type": "boolean",
+                    "description": "Whether to simulate rotating the active signing key. Default: false.",
+                    "default": False
+                }
+            }
+        }
+    },
+    {
+        "name": "jwt_timing_defense_audit",
+        "description": "Empirically audit signature verification against timing side-channel attacks and verify constant-time comparison defense.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "test_vulnerable": {
+                    "type": "boolean",
+                    "description": "Whether to run against vulnerable early-exit string comparison. Default: false (tests safe constant-time compare).",
+                    "default": False
+                },
+                "trials": {
+                    "type": "integer",
+                    "description": "Number of timing benchmark trials per prefix length. Default: 50.",
+                    "default": 50
+                }
+            }
+        }
     }
 ]
 
@@ -1152,6 +1193,40 @@ def execute_tool_call(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
             diag = get_diagnostics()
             return {
                 "content": [{"type": "text", "text": json.dumps(diag, indent=2)}],
+                "isError": False
+            }
+
+        elif name == "jwt_audit_jwks":
+            from .jwks_manager import JWKSRotationSimulator
+            sim = JWKSRotationSimulator()
+            if arguments.get("rotate", False):
+                sim.rotate_active_key()
+
+            external_jwks = arguments.get("jwks")
+            audit_report = sim.audit_jwks_health(external_jwks=external_jwks)
+            result = audit_report.to_dict()
+
+            token = arguments.get("token_to_resolve")
+            if token:
+                result["resolved_token_key"] = sim.resolve_key_for_token(token)
+
+            return {
+                "content": [{"type": "text", "text": json.dumps(result, indent=2)}],
+                "isError": False
+            }
+
+        elif name == "jwt_timing_defense_audit":
+            from .timing_defense import (
+                benchmark_signature_comparison,
+                safe_constant_time_compare,
+                vulnerable_early_exit_compare,
+            )
+            test_vuln = arguments.get("test_vulnerable", False)
+            trials = int(arguments.get("trials", 50))
+            cmp_fn = vulnerable_early_exit_compare if test_vuln else safe_constant_time_compare
+            report = benchmark_signature_comparison(compare_func=cmp_fn, trials=trials)
+            return {
+                "content": [{"type": "text", "text": json.dumps(report.to_dict(), indent=2)}],
                 "isError": False
             }
 
