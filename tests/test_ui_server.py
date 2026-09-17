@@ -37,7 +37,7 @@ def test_ui_server_lifecycle_and_endpoints():
             assert resp.status == 200
             assert "text/html" in resp.headers.get("Content-Type", "")
             body = resp.read().decode("utf-8")
-            assert "Google JWT Inspector Guard" in body
+            assert "JWT Inspector Guard" in body
 
         # 2. POST /api/mint
         mint_payload = json.dumps({

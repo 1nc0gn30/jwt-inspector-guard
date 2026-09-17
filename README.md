@@ -1,6 +1,6 @@
 # JWT Inspector Guard 🛡️🔐
 
-> **Multi-OS Model Context Protocol (MCP) Server, CLI & Google Material 3 Security Studio for JSON Web Tokens (JWT / JWS / JWE).**
+> **Multi-OS Model Context Protocol (MCP) Server, CLI & Interactive Security Studio (design influenced by Material 3 tokens) for JSON Web Tokens (JWT / JWS / JWE).**
 > **Zero External Dependencies** — 100% Python Standard Library (3.9–3.13).
 
 [![CI](https://github.com/1nc0gn30/jwt-inspector-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/1nc0gn30/jwt-inspector-guard/actions/workflows/ci.yml)
@@ -35,7 +35,7 @@
   - **Header Injection Vectors**: Audits `jku`, `x5u`, `jwk`, and path-traversal in `kid`.
 - **FastMCP Protocol 2.0 Server**:
   - Built-in stdio JSON-RPC server exposing tools, resources, and prompts to Claude Desktop, Cursor, Cline, and Antigravity.
-- **Google Material 3 Security Studio UI**:
+- **JWT Inspector Guard Studio UI** (Design influenced by Material 3 tokens):
   - Interactive dual-panel web interface with live decoding, vulnerability flags, signature checker, and dark/light modes.
 - **Multi-OS CLI**:
   - Clean terminal tool with ANSI styling, `--no-color`, `-v`/`--version`, `-q`/`--quiet`, and JSON output.
@@ -76,7 +76,7 @@ jwt-guard crack "eyJhbGciOiJIUzI1Ni..."
 # 5. List built-in attack vectors & test tokens
 jwt-guard samples
 
-# 6. Launch the Google Material 3 Security Studio Web UI
+# 6. Launch the JWT Inspector Guard Studio Web UI (Material 3 influenced)
 jwt-guard serve --port 8780
 ```
 

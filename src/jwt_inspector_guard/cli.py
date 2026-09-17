@@ -7,7 +7,7 @@ Provides CLI subcommands:
   audit        - Run comprehensive security audit and output risk scorecard
   crack        - Dictionary attack weak HMAC secret keys
   samples      - List and inspect built-in sample JWTs and CVE vectors
-  serve        - Launch Google Material 3 JWT Studio Web UI & REST API
+  serve        - Launch JWT Studio Web UI & REST API (Material 3 influenced)
   mcp          - Run Model Context Protocol (MCP) server over stdio
   diagnostics  - Display multi-OS platform and crypto diagnostics
   test         - Run internal self-verification test runner
