@@ -47,17 +47,7 @@ def clean_raw_token(raw_token: str) -> str:
 
 
 def parse_jwt(raw_token: str) -> DecodedJWT:
-    """Parse a compact JWT, JWS, or JWE string into a structured DecodedJWT object.
-
-    Handles 3-part JWS/JWT tokens and 5-part JWE encrypted tokens, validating
-    segment structure and JSON syntax.
-
-    Args:
-        raw_token: Raw token string (with or without 'Bearer ' prefix).
-
-    Returns:
-        DecodedJWT: Fully decoded token structure with validation status and diagnostics.
-    """
+    """Parse a compact JWT, JWS, or JWE string into a structured DecodedJWT object."""
     cleaned = clean_raw_token(raw_token)
     if not cleaned:
         return DecodedJWT(
@@ -234,3 +224,7 @@ def is_jwt_format(token: str) -> bool:
             return False
 
     return True
+
+
+# Compatibility alias
+parse_token = parse_jwt

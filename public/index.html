@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google JWT Inspector Guard | Security Auditor & Decoder</title>
+  <title>Google JWT Inspector Guard | Security Studio & Cryptographic Linter</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500;700&family=Roboto+Mono:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -19,23 +19,36 @@
       --md-on-surface-variant: #5f6368;
       --md-outline: #dadce0;
       --md-success: #1e8e3e;
+      --md-success-container: #ceead6;
       --md-error: #d93025;
       --md-error-container: #fad2cf;
       --md-warning: #f29900;
+      --md-warning-container: #feefc3;
       --radius-sm: 8px;
-      --radius-md: 12px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
       --shadow-sm: 0 1px 2px rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
       --font-google: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'Roboto Mono', monospace;
+      --color-header: #d93025;
+      --color-payload: #8e24aa;
+      --color-signature: #1a73e8;
     }
     [data-theme="dark"] {
       --md-primary: #8ab4f8;
       --md-on-primary: #174ea6;
-      --md-surface: #202124;
-      --md-surface-card: #292a2d;
+      --md-primary-container: #1a73e8;
+      --md-on-primary-container: #d2e3fc;
+      --md-surface: #121212;
+      --md-surface-card: #1e1e1e;
       --md-on-surface: #e8eaed;
       --md-on-surface-variant: #9aa0a6;
-      --md-outline: #5f6368;
+      --md-outline: #3c4043;
+      --color-header: #f28b82;
+      --color-payload: #c58af9;
+      --color-signature: #8ab4f8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -49,201 +62,640 @@
     header {
       background: var(--md-surface-card);
       border-bottom: 1px solid var(--md-outline);
-      padding: 0.8rem 1.5rem;
+      padding: 0.8rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 100;
     }
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.9rem;
     }
-    .logo {
-      width: 32px;
-      height: 32px;
+    .logo-badge {
+      width: 36px;
+      height: 36px;
       border-radius: var(--radius-sm);
       background: linear-gradient(135deg, #1a73e8, #ea4335);
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .title-group h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+    .title-group p {
+      font-size: 0.75rem;
+      color: var(--md-on-surface-variant);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .btn-pill {
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--md-outline);
+      background: var(--md-surface-card);
+      color: var(--md-on-surface);
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-pill:hover {
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      border-color: var(--md-primary);
     }
     .main-container {
-      max-width: 1200px;
+      max-width: 1440px;
       width: 100%;
-      margin: 1.5rem auto;
-      padding: 0 1rem;
+      margin: 1.2rem auto;
+      padding: 0 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1.2rem;
+      flex: 1;
+    }
+    .hero-banner {
+      background: var(--md-surface-card);
+      border: 1px solid var(--md-outline);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .hero-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .chip {
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: var(--md-surface);
+      border: 1px solid var(--md-outline);
+    }
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1.2rem;
+    }
+    @media (max-width: 960px) {
+      .layout-grid { grid-template-columns: 1fr; }
     }
     .card {
       background: var(--md-surface-card);
       border: 1px solid var(--md-outline);
       border-radius: var(--radius-md);
-      padding: 1.25rem;
+      padding: 1.2rem;
       box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .tabs-bar {
+      display: flex;
+      gap: 0.3rem;
+      background: var(--md-surface);
+      padding: 0.25rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--md-outline);
+    }
+    .tab-btn {
+      padding: 0.35rem 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--md-on-surface-variant);
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: var(--md-surface-card);
+      color: var(--md-primary);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+    .token-input-box {
+      position: relative;
     }
     textarea {
       width: 100%;
-      height: 100px;
-      padding: 0.8rem;
+      height: 120px;
+      padding: 0.9rem;
       font-family: var(--font-mono);
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       border: 1px solid var(--md-outline);
       border-radius: var(--radius-sm);
       background: var(--md-surface);
       color: var(--md-on-surface);
-      margin-top: 0.8rem;
       resize: vertical;
+      line-height: 1.4;
     }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-top: 0.8rem;
+    textarea:focus {
+      outline: 2px solid var(--md-primary);
+      border-color: transparent;
     }
-    @media (max-width: 768px) {
-      .grid-2 { grid-template-columns: 1fr; }
-    }
-    pre {
+    .color-token-display {
       font-family: var(--font-mono);
+      font-size: 0.84rem;
+      padding: 0.75rem;
+      background: var(--md-surface);
+      border: 1px solid var(--md-outline);
+      border-radius: var(--radius-sm);
+      word-break: break-all;
+      line-height: 1.4;
+      min-height: 48px;
+    }
+    .token-part-header { color: var(--color-header); font-weight: 600; }
+    .token-part-payload { color: var(--color-payload); font-weight: 600; }
+    .token-part-signature { color: var(--color-signature); font-weight: 600; }
+    .token-part-dot { color: var(--md-on-surface-variant); }
+    .code-viewer {
       background: #1e1e1e;
       color: #e0e0e0;
-      padding: 1rem;
+      padding: 0.9rem;
       border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.4;
       overflow-x: auto;
-      font-size: 0.9rem;
+      max-height: 240px;
     }
-    .pre-header { color: #f28b82; }
-    .pre-payload { color: #8ab4f8; }
-    .findings-card {
-      margin-top: 0.8rem;
-    }
-    .finding-pill {
-      display: inline-block;
-      padding: 0.3rem 0.8rem;
-      border-radius: 9999px;
+    .code-header { color: #f28b82; }
+    .code-payload { color: #c58af9; }
+    .code-sig { color: #8ab4f8; }
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: var(--radius-full);
+      font-weight: 700;
       font-size: 0.85rem;
-      font-weight: 500;
-      margin-right: 0.5rem;
-      margin-bottom: 0.5rem;
     }
-    .pill-danger { background: #fad2cf; color: #d93025; }
-    .pill-warning { background: #feefc3; color: #b06000; }
-    .pill-success { background: #ceead6; color: #1e8e3e; }
-    button {
-      padding: 0.8rem 1.5rem;
+    .score-green { background: var(--md-success-container); color: var(--md-success); }
+    .score-red { background: var(--md-error-container); color: var(--md-error); }
+    .score-yellow { background: var(--md-warning-container); color: var(--md-warning); }
+    .findings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    .finding-item {
+      padding: 0.6rem 0.8rem;
+      border-radius: var(--radius-sm);
+      border-left: 4px solid;
+      background: var(--md-surface);
+      font-size: 0.82rem;
+    }
+    .finding-critical { border-color: var(--md-error); }
+    .finding-warning { border-color: var(--md-warning); }
+    .finding-info { border-color: var(--md-primary); }
+    .finding-title { font-weight: 600; margin-bottom: 0.2rem; }
+    .timeline-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+    .time-cell {
+      background: var(--md-surface);
+      border: 1px solid var(--md-outline);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem;
+      text-align: center;
+    }
+    .time-label { font-size: 0.72rem; color: var(--md-on-surface-variant); font-weight: 600; text-transform: uppercase; }
+    .time-val { font-size: 0.82rem; font-weight: 600; margin-top: 0.2rem; }
+    .action-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .btn-action {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
       background: var(--md-primary);
       color: var(--md-on-primary);
-      border: none;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-weight: 500;
-      font-family: var(--font-google);
-      margin-top: 0.8rem;
+      transition: opacity 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
     }
-    .theme-toggle {
-      background: transparent;
+    .btn-action:hover { opacity: 0.9; }
+    .btn-secondary {
+      background: var(--md-surface);
       color: var(--md-on-surface);
       border: 1px solid var(--md-outline);
-      padding: 0.4rem 0.8rem;
-      margin-top: 0;
+    }
+    .btn-danger { background: var(--md-error); color: white; }
+    .secret-input {
+      padding: 0.5rem 0.8rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--md-outline);
+      background: var(--md-surface);
+      color: var(--md-on-surface);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      flex: 1;
     }
   </style>
 </head>
 <body>
   <header>
     <div class="brand">
-      <div class="logo">🛡️</div>
-      <div>
-        <h2>Google JWT Inspector Guard</h2>
+      <div class="logo-badge">🛡️</div>
+      <div class="title-group">
+        <h1>Google JWT Inspector Guard</h1>
+        <p>Zero-Dependency Pure Python Security Studio & Cryptographic Linter</p>
       </div>
     </div>
-    <button class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+    <div class="header-actions">
+      <select id="sampleSelect" class="btn-pill" onchange="loadSample(this.value)">
+        <option value="">⚡ Load Sample Token...</option>
+      </select>
+      <button class="btn-pill" onclick="toggleTheme()">🌓 Theme</button>
+    </div>
   </header>
 
-  <div class="main-container">
-    <div class="card">
-      <h3>Encoded JWT Token</h3>
-      <textarea id="tokenInput" placeholder="Paste your JWT token here (header.payload.signature)...">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIERvZSIsImFkbWluIjp0cnVlLCJpYXQiOjE1MTYyMzkwMjIsImV4cCI6MjA1MDQ4MDAwMH0.signature</textarea>
-      <button onclick="inspectToken()">Inspect & Audit</button>
-    </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <h4>Header (Decoded)</h4>
-        <pre id="headerOutput" class="pre-header">{\n  "alg": "HS256",\n  "typ": "JWT"\n}</pre>
+  <main class="main-container">
+    <div class="hero-banner">
+      <div>
+        <h2 style="font-size:1.05rem; font-weight:700;">RFC 7519 Security Suite & Vulnerability Radar</h2>
+        <p style="font-size:0.8rem; color:var(--md-on-surface-variant); margin-top:0.2rem;">
+          Detects CVE-2015-9235 (alg:none), algorithm confusion attacks, weak HMAC keys, and credential leaks.
+        </p>
       </div>
-      <div class="card">
-        <h4>Payload Claims (Decoded)</h4>
-        <pre id="payloadOutput" class="pre-payload">{\n  "sub": "1234567890",\n  "name": "Alice Doe",\n  "admin": true,\n  "iat": 1516239022,\n  "exp": 2050480000\n}</pre>
+      <div class="hero-tags">
+        <span class="chip">Python 3.9–3.13</span>
+        <span class="chip">Zero Dependencies</span>
+        <span class="chip">FastMCP Protocol</span>
+        <span class="chip">HS256 / 384 / 512</span>
       </div>
     </div>
 
-    <div class="card findings-card">
-      <h3>Security Audit & Findings</h3>
-      <div id="findingsContainer">
-        <span class="finding-pill pill-success">✓ Algorithm: HS256 (Protected against alg:none)</span>
-        <span class="finding-pill pill-success">✓ Expiration (exp) present</span>
-        <span class="finding-pill pill-warning">⚠ Signature unverified (provide secret to verify)</span>
+    <div class="layout-grid">
+      <!-- Left Column: Input & Decoded Payload -->
+      <div style="display:flex; flex-direction:column; gap:1.2rem;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🔑 Encoded Token Input</span>
+            <div class="action-row">
+              <button class="btn-pill" onclick="clearToken()">Clear</button>
+              <button class="btn-action" onclick="runInspect()">Inspect</button>
+            </div>
+          </div>
+          <textarea id="tokenInput" placeholder="Paste your JWT token (header.payload.signature) here..." oninput="onTokenChange()"></textarea>
+          <div>
+            <div style="font-size:0.75rem; color:var(--md-on-surface-variant); margin-bottom:0.3rem; font-weight:600;">TOKEN COLOR ANATOMY</div>
+            <div class="color-token-display" id="colorDisplay">Paste a token above to inspect components...</div>
+          </div>
+          <div class="timeline-strip" id="timelineStrip">
+            <div class="time-cell">
+              <div class="time-label">Issued (iat)</div>
+              <div class="time-val" id="timeIat">-</div>
+            </div>
+            <div class="time-cell">
+              <div class="time-label">Not Before (nbf)</div>
+              <div class="time-val" id="timeNbf">-</div>
+            </div>
+            <div class="time-cell">
+              <div class="time-label">Expires (exp)</div>
+              <div class="time-val" id="timeExp">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📜 Decoded JOSE Header</span>
+            <span class="chip" id="algBadge">ALG: -</span>
+          </div>
+          <pre class="code-viewer code-header" id="headerJson">{}</pre>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📦 Decoded Claims Payload</span>
+            <span class="chip" id="entropyBadge">Entropy: -</span>
+          </div>
+          <pre class="code-viewer code-payload" id="payloadJson">{}</pre>
+        </div>
+      </div>
+
+      <!-- Right Column: Security Findings, Verification & Exploit Lab -->
+      <div style="display:flex; flex-direction:column; gap:1.2rem;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🛡️ Security Audit & CVE Radar</span>
+            <span class="score-badge score-green" id="scoreBadge">100 / 100</span>
+          </div>
+          <div class="findings-list" id="findingsList">
+            <div style="font-size:0.85rem; color:var(--md-on-surface-variant); text-align:center; padding:1.5rem;">
+              Click <strong>Inspect</strong> to run the automated security linter.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">✍️ HMAC Signature Verification</span>
+            <span class="chip" id="sigStatusBadge">UNVERIFIED</span>
+          </div>
+          <div style="display:flex; gap:0.6rem;">
+            <input type="text" id="verifySecret" class="secret-input" placeholder="Enter signing secret key (e.g. your-secret)...">
+            <button class="btn-action" onclick="runVerify()">Verify</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🔓 Secret Dictionary Cracker</span>
+            <span class="chip" id="crackStatusBadge">READY</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--md-on-surface-variant);">
+            Tests token signature against high-entropy dictionary of common defaults, weak passwords, and CVE test keys.
+          </p>
+          <div class="action-row">
+            <button class="btn-action btn-danger" onclick="runCrack()">⚡ Crack Secret</button>
+            <span id="crackResult" style="font-size:0.85rem; font-weight:600; align-self:center;"></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🧪 1-Click Tamper & Exploit Lab</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--md-on-surface-variant);">
+            Simulate known attack vectors against your token to test downstream verification logic:
+          </p>
+          <div class="action-row">
+            <button class="btn-action btn-secondary" onclick="runTamper('none')">💥 CVE-2015-9235 (alg:none)</button>
+            <button class="btn-action btn-secondary" onclick="runTamper('admin_escalate')">👑 Admin Escalation</button>
+            <button class="btn-action btn-secondary" onclick="runTamper('strip_signature')">✂️ Strip Signature</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 
   <script>
     function toggleTheme() {
       const html = document.documentElement;
-      html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      const cur = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
     }
 
-    function base64UrlDecode(str) {
-      str = str.replace(/-/g, '+').replace(/_/g, '/');
-      while (str.length % 4) str += '=';
+    async function loadCatalog() {
       try {
-        return JSON.parse(decodeURIComponent(escape(window.atob(str))));
+        const res = await fetch('/api/catalog');
+        const data = await res.json();
+        const sel = document.getElementById('sampleSelect');
+        if (data.tokens) {
+          data.tokens.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t.token;
+            opt.textContent = `[${t.category}] ${t.name}`;
+            sel.appendChild(opt);
+          });
+        }
       } catch (e) {
-        return { error: 'Invalid Base64Url JSON payload' };
+        console.error('Failed to load catalog', e);
       }
     }
 
-    function inspectToken() {
-      const raw = document.getElementById('tokenInput').value.trim();
-      const parts = raw.split('.');
-      if (parts.length >= 2) {
-        const header = base64UrlDecode(parts[0]);
-        const payload = base64UrlDecode(parts[1]);
-        document.getElementById('headerOutput').textContent = JSON.stringify(header, null, 2);
-        document.getElementById('payloadOutput').textContent = JSON.stringify(payload, null, 2);
+    function loadSample(token) {
+      if (!token) return;
+      document.getElementById('tokenInput').value = token;
+      onTokenChange();
+      runInspect();
+    }
 
-        const findings = [];
-        if (header.alg && header.alg.toLowerCase() === 'none') {
-          findings.push('<span class="finding-pill pill-danger">CRITICAL: Vulnerable to CVE-2015-9235 (alg: none signature bypass)</span>');
-        } else {
-          findings.push(`<span class="finding-pill pill-success">✓ Algorithm: ${header.alg || 'none'}</span>`);
+    function clearToken() {
+      document.getElementById('tokenInput').value = '';
+      onTokenChange();
+    }
+
+    function onTokenChange() {
+      const token = document.getElementById('tokenInput').value.trim();
+      const disp = document.getElementById('colorDisplay');
+      if (!token) {
+        disp.textContent = 'Paste a token above to inspect components...';
+        return;
+      }
+      const parts = token.split('.');
+      disp.innerHTML = '';
+      if (parts[0]) {
+        const span0 = document.createElement('span');
+        span0.className = 'token-part-header';
+        span0.textContent = parts[0];
+        disp.appendChild(span0);
+      }
+      if (parts.length > 1) {
+        const dot1 = document.createElement('span');
+        dot1.className = 'token-part-dot';
+        dot1.textContent = '.';
+        disp.appendChild(dot1);
+
+        const span1 = document.createElement('span');
+        span1.className = 'token-part-payload';
+        span1.textContent = parts[1];
+        disp.appendChild(span1);
+      }
+      if (parts.length > 2) {
+        const dot2 = document.createElement('span');
+        dot2.className = 'token-part-dot';
+        dot2.textContent = '.';
+        disp.appendChild(dot2);
+
+        const span2 = document.createElement('span');
+        span2.className = 'token-part-signature';
+        span2.textContent = parts[2];
+        disp.appendChild(span2);
+      }
+    }
+
+    async function runInspect() {
+      const token = document.getElementById('tokenInput').value.trim();
+      if (!token) return;
+
+      try {
+        const res = await fetch('/api/inspect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        const data = await res.json();
+        
+        // Update Header & Payload
+        if (data.parsed) {
+          document.getElementById('headerJson').textContent = JSON.stringify(data.parsed.header, null, 2);
+          document.getElementById('payloadJson').textContent = JSON.stringify(data.parsed.payload, null, 2);
+          document.getElementById('algBadge').textContent = 'ALG: ' + (data.parsed.algorithm || 'UNKNOWN');
+          
+          // Timeline
+          const p = data.parsed.payload || {};
+          document.getElementById('timeIat').textContent = p.iat ? new Date(p.iat * 1000).toLocaleTimeString() : 'None';
+          document.getElementById('timeNbf').textContent = p.nbf ? new Date(p.nbf * 1000).toLocaleTimeString() : 'None';
+          document.getElementById('timeExp').textContent = p.exp ? new Date(p.exp * 1000).toLocaleTimeString() : 'None';
         }
 
-        if (payload.exp) {
-          const now = Date.now() / 1000;
-          if (payload.exp < now) {
-            findings.push('<span class="finding-pill pill-danger">Expired Token: exp is in the past</span>');
+        // Update Audit Scorecard
+        if (data.audit) {
+          const badge = document.getElementById('scoreBadge');
+          const score = data.audit.score || 0;
+          badge.textContent = `${score} / 100`;
+          badge.className = 'score-badge ' + (score >= 85 ? 'score-green' : (score >= 50 ? 'score-yellow' : 'score-red'));
+
+          const list = document.getElementById('findingsList');
+          list.innerHTML = '';
+          const findings = data.audit.findings || [];
+          if (findings.length === 0) {
+            list.innerHTML = '<div class="finding-item finding-info"><div class="finding-title">✅ Clean Token</div>No security vulnerabilities or PII leaks detected.</div>';
           } else {
-            findings.push('<span class="finding-pill pill-success">✓ Valid Expiration (exp)</span>');
+            findings.forEach(f => {
+              const item = document.createElement('div');
+              const sevClass = f.severity === 'CRITICAL' || f.severity === 'HIGH' ? 'finding-critical' : (f.severity === 'MEDIUM' ? 'finding-warning' : 'finding-info');
+              item.className = 'finding-item ' + sevClass;
+              item.innerHTML = `<div class="finding-title">[${f.severity}] ${f.title}</div><div>${f.description}</div>`;
+              list.appendChild(item);
+            });
           }
-        } else {
-          findings.push('<span class="finding-pill pill-warning">⚠ Warning: Missing exp claim</span>');
         }
 
-        document.getElementById('findingsContainer').innerHTML = findings.join('');
+        // Fetch Entropy
+        const entRes = await fetch('/api/entropy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        const entData = await entRes.json();
+        if (entData.total_entropy) {
+          document.getElementById('entropyBadge').textContent = `Entropy: ${entData.total_entropy} b/c`;
+        }
+      } catch (e) {
+        console.error('Inspect error', e);
       }
     }
 
-    window.addEventListener('load', inspectToken);
+    async function runVerify() {
+      const token = document.getElementById('tokenInput').value.trim();
+      const secret = document.getElementById('verifySecret').value;
+      if (!token) return;
+
+      const badge = document.getElementById('sigStatusBadge');
+      badge.textContent = 'VERIFYING...';
+      try {
+        const res = await fetch('/api/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, secret })
+        });
+        const data = await res.json();
+        if (data.verified) {
+          badge.textContent = '✅ SIGNATURE VALID';
+          badge.style.color = 'var(--md-success)';
+        } else {
+          badge.textContent = '❌ INVALID SIGNATURE';
+          badge.style.color = 'var(--md-error)';
+        }
+      } catch (e) {
+        badge.textContent = 'ERROR';
+      }
+    }
+
+    async function runCrack() {
+      const token = document.getElementById('tokenInput').value.trim();
+      if (!token) return;
+      const resLabel = document.getElementById('crackResult');
+      resLabel.textContent = 'Testing dictionary...';
+      try {
+        const res = await fetch('/api/crack', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        const data = await res.json();
+        if (data.found) {
+          resLabel.innerHTML = `🎉 Discovered Secret: <code>${data.secret}</code>`;
+          resLabel.style.color = 'var(--md-error)';
+          document.getElementById('verifySecret').value = data.secret;
+        } else {
+          resLabel.textContent = `Shielded. Tested ${data.tested_count} common keys without match.`;
+          resLabel.style.color = 'var(--md-success)';
+        }
+      } catch (e) {
+        resLabel.textContent = 'Error during crack attempt.';
+      }
+    }
+
+    async function runTamper(type) {
+      const token = document.getElementById('tokenInput').value.trim();
+      if (!token) return;
+      try {
+        const res = await fetch('/api/tamper', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, type })
+        });
+        const data = await res.json();
+        if (data.tampered_token) {
+          document.getElementById('tokenInput').value = data.tampered_token;
+          onTokenChange();
+          runInspect();
+        }
+      } catch (e) {
+        console.error('Tamper error', e);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadCatalog();
+      // Load default sample token if input is empty
+      const defaultToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIEhhY2tlciIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNTE2MjM5MDIyLCJyb2xlIjoiZ3Vlc3QifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+      document.getElementById('tokenInput').value = defaultToken;
+      onTokenChange();
+      runInspect();
+    });
   </script>
 </body>
 </html>
