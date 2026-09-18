@@ -474,6 +474,40 @@
             <button class="btn-action btn-secondary" onclick="runTamper('strip_signature')">✂️ Strip Signature</button>
           </div>
         </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🔐 RFC 9449 DPoP Proof & Token Binding Studio</span>
+            <span class="chip" id="dpopStatusBadge">RFC 9449 READY</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--md-on-surface-variant);">
+            Generate and verify Demonstrating Proof-of-Possession (DPoP) application-layer tokens bound to HTTP request methods, URIs, and cryptographic thumbprints (<code>cnf.jkt</code>).
+          </p>
+          <div style="display:grid; grid-template-columns: 90px 1fr; gap:0.5rem;">
+            <select id="dpopMethod" class="btn-pill" style="height:36px; padding:0 0.5rem;">
+              <option value="GET">GET</option>
+              <option value="POST" selected>POST</option>
+              <option value="PUT">PUT</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+            <input type="text" id="dpopUrl" class="secret-input" style="height:36px;" value="https://api.example.com/v1/payments">
+          </div>
+          <div style="display:flex; gap:0.5rem; margin-top:0.3rem;">
+            <input type="text" id="dpopToken" class="secret-input" style="height:36px;" placeholder="Optional access token to bind via 'ath' hash...">
+          </div>
+          <div class="action-row" style="margin-top:0.4rem;">
+            <button class="btn-action" onclick="runDPoPCreate()">⚡ Mint DPoP Proof</button>
+            <button class="btn-action btn-secondary" onclick="runDPoPVerify()">🔍 Verify DPoP Binding</button>
+          </div>
+          <div id="dpopResultContainer" style="display:none; margin-top:0.5rem; background:var(--md-surface); border:1px solid var(--md-outline); border-radius:var(--radius-sm); padding:0.75rem; font-size:0.8rem;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+              <span style="font-weight:600; color:var(--md-primary);">DPoP Proof Output:</span>
+              <span id="dpopThumbprint" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--md-on-surface-variant);"></span>
+            </div>
+            <textarea id="dpopProofOutput" style="height:65px; font-size:0.78rem; margin-bottom:0.4rem;" readonly></textarea>
+            <div id="dpopVerifyDetails" style="font-family:var(--font-mono); font-size:0.75rem; line-height:1.4;"></div>
+          </div>
+        </div>
       </div>
   </main>
   <footer style="text-align:center; padding: 2rem 0; color: var(--md-on-surface-variant); font-size:0.85rem;"><strong>JWT Inspector Guard</strong> — Production Token Security & Cryptographic Linter. Design influenced by Material 3 design tokens.</footer>
@@ -685,6 +719,76 @@
         }
       } catch (e) {
         console.error('Tamper error', e);
+      }
+    async function runDPoPCreate() {
+      const method = document.getElementById('dpopMethod').value;
+      const url = document.getElementById('dpopUrl').value.trim();
+      const token = document.getElementById('dpopToken').value.trim();
+      try {
+        const res = await fetch('/api/dpop/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ method, url, token })
+        });
+        const data = await res.json();
+        if (data.proof_jwt) {
+          document.getElementById('dpopResultContainer').style.display = 'block';
+          document.getElementById('dpopProofOutput').value = data.proof_jwt;
+          document.getElementById('dpopThumbprint').textContent = `jkt: ${data.thumbprint.slice(0, 16)}...`;
+          document.getElementById('dpopVerifyDetails').innerHTML = `
+            <div><strong>Normalized HTU:</strong> ${data.htu}</div>
+            <div><strong>Method:</strong> ${data.htm} | <strong>jti:</strong> ${data.jti.slice(0, 18)}...</div>
+            ${data.ath ? `<div><strong>Access Token Hash (ath):</strong> ${data.ath.slice(0, 24)}...</div>` : ''}
+          `;
+          document.getElementById('dpopStatusBadge').textContent = 'PROOF GENERATED';
+          document.getElementById('dpopStatusBadge').style.borderColor = 'var(--md-primary)';
+          document.getElementById('dpopStatusBadge').style.color = 'var(--md-primary)';
+        }
+      } catch (e) {
+        console.error('DPoP create error', e);
+      }
+    }
+
+    async function runDPoPVerify() {
+      const method = document.getElementById('dpopMethod').value;
+      const url = document.getElementById('dpopUrl').value.trim();
+      const token = document.getElementById('dpopToken').value.trim();
+      const proof = document.getElementById('dpopProofOutput').value.trim();
+      if (!proof) {
+        alert('Please mint or enter a DPoP proof first.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/dpop/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ proof_token: proof, method, url, token })
+        });
+        const data = await res.json();
+        document.getElementById('dpopResultContainer').style.display = 'block';
+        const badge = document.getElementById('dpopStatusBadge');
+        if (data.is_valid) {
+          badge.textContent = `VALID (${data.compliance_score}/100)`;
+          badge.style.color = 'var(--md-success)';
+          badge.style.borderColor = 'var(--md-success)';
+        } else {
+          badge.textContent = `REJECTED (${data.compliance_score}/100)`;
+          badge.style.color = 'var(--md-error)';
+          badge.style.borderColor = 'var(--md-error)';
+        }
+        let issueHtml = '';
+        if (data.issues && data.issues.length > 0) {
+          issueHtml = '<div style="margin-top:0.3rem; color:var(--md-error);">' + data.issues.map(i => `• [${i.severity}] ${i.code}: ${i.message}`).join('<br>') + '</div>';
+        } else {
+          issueHtml = '<div style="margin-top:0.3rem; color:var(--md-success);">✔ Strict RFC 9449 compliance verified. Anti-replay check clean.</div>';
+        }
+        document.getElementById('dpopVerifyDetails').innerHTML = `
+          <div><strong>Replay Detected:</strong> ${data.replay_detected ? '<span style=\"color:var(--md-error); font-weight:700;\">YES (CRITICAL)</span>' : 'No (Fresh)'}</div>
+          <div><strong>Binding Matched:</strong> ${data.token_binding_matched ? 'Yes' : 'No / Unbound'}</div>
+          ${issueHtml}
+        `;
+      } catch (e) {
+        console.error('DPoP verify error', e);
       }
     }
 

@@ -8,8 +8,20 @@ version = "0.1.0"
 description = "Pure Python JWT decoder, signature verifier, claims validator & security auditor — zero external dependencies"
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "1nc0gn30" }]
-keywords = ["jwt", "security", "token", "decoder", "validator", "hmac", "mcp"]
+keywords = [
+    "jwt",
+    "security",
+    "token",
+    "decoder",
+    "validator",
+    "hmac",
+    "mcp",
+    "dpop",
+    "rfc9449",
+    "proof-of-possession",
+    "token-binding",
+    "anti-replay"
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

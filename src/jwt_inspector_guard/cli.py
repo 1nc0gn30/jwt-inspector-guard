@@ -637,6 +637,88 @@ def cmd_timing(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_dpop_create(args: argparse.Namespace) -> int:
+    """Handle 'dpop-create' subcommand: generate RFC 9449 DPoP proof."""
+    from .dpop_guard import create_dpop_proof
+    http_method = getattr(args, "method", "GET").upper().strip()
+    http_url = getattr(args, "url", "https://api.example.com")
+    access_token = getattr(args, "token", None)
+    nonce = getattr(args, "nonce", None)
+    alg = getattr(args, "alg", "ES256")
+
+    proof_jwt, meta = create_dpop_proof(
+        http_method=http_method,
+        http_url=http_url,
+        access_token=access_token,
+        nonce=nonce,
+        alg=alg,
+    )
+
+    if getattr(args, "json", False):
+        print(json.dumps(meta, indent=2))
+        return 0
+
+    print_banner(getattr(args, "quiet", False))
+    print()
+    print(f"{c_str('RFC 9449 DPoP PROOF GENERATED:', BOLD + CYAN)}")
+    print(f"  HTTP Method:       {meta['htm']}")
+    print(f"  Target URI:        {meta['htu']}")
+    print(f"  JWK Thumbprint:    {c_str(meta['thumbprint'], GREEN)}")
+    if meta.get("ath"):
+        print(f"  Access Token Hash: {meta['ath']}")
+    print(f"  Proof Nonce (jti): {meta['jti']}")
+    print()
+    print(f"  {c_str('Proof Token (DPoP Header value):', BOLD)}")
+    print(f"  {proof_jwt}")
+    print()
+    return 0
+
+
+def cmd_dpop_verify(args: argparse.Namespace) -> int:
+    """Handle 'dpop-verify' subcommand: verify RFC 9449 DPoP proof."""
+    from .dpop_guard import verify_dpop_proof
+    proof_token = getattr(args, "proof", "").strip()
+    http_method = getattr(args, "method", "GET").upper().strip()
+    http_url = getattr(args, "url", "https://api.example.com")
+    access_token = getattr(args, "token", None)
+    expected_nonce = getattr(args, "nonce", None)
+    bound_jkt = getattr(args, "jkt", None)
+    max_age = int(getattr(args, "max_age", 300))
+
+    result = verify_dpop_proof(
+        proof_token=proof_token,
+        http_method=http_method,
+        http_url=http_url,
+        access_token=access_token,
+        expected_nonce=expected_nonce,
+        bound_jkt=bound_jkt,
+        max_age_seconds=max_age,
+    )
+
+    if getattr(args, "json", False):
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.is_valid else 1
+
+    print_banner(getattr(args, "quiet", False))
+    print()
+    print(f"{c_str('RFC 9449 DPoP PROOF VERIFICATION:', BOLD + CYAN)}")
+    status_str = c_str('VALID', GREEN) if result.is_valid else c_str('INVALID / REJECTED', RED)
+    print(f"  Status:            {status_str}")
+    print(f"  Compliance Score:  {result.compliance_score}/100.0")
+    print(f"  Public Key (jkt):  {result.public_key_thumbprint}")
+    print(f"  Binding Matched:   {'Yes' if result.token_binding_matched else c_str('MISMATCH / UNBOUND', YELLOW)}")
+    print(f"  Replay Detected:   {c_str('YES (ALERT)', RED) if result.replay_detected else 'No (Fresh)'}")
+    print(f"  Normalized HTU:    {result.normalized_htu}")
+
+    if result.issues:
+        print()
+        print(f"  {c_str('Detected Issues:', BOLD)}")
+        for iss in result.issues:
+            print(f"    • [{c_str(iss.severity, RED if iss.severity == 'CRITICAL' else YELLOW)}] {iss.code}: {iss.message}")
+    print()
+    return 0 if result.is_valid else 1
+
+
 # ---------------------------------------------------------------------------
 # Material 3 JWT Studio Web UI & REST Server
 # ---------------------------------------------------------------------------
@@ -1490,6 +1572,28 @@ def build_parser() -> argparse.ArgumentParser:
     p_timing.add_argument("--trials", type=int, default=50, help="Number of benchmark trials per prefix length (default: 50)")
     p_timing.add_argument("--json", action="store_true", help="Output JSON benchmark report")
     p_timing.set_defaults(func=cmd_timing)
+
+    # 13. dpop-create
+    p_dpop_c = subparsers.add_parser("dpop-create", parents=[parent_parser], help="Generate RFC 9449 DPoP proof-of-possession JWT")
+    p_dpop_c.add_argument("-m", "--method", default="GET", help="HTTP request method (GET, POST, etc.)")
+    p_dpop_c.add_argument("-u", "--url", default="https://api.example.com", help="Target HTTP request URI")
+    p_dpop_c.add_argument("-t", "--token", help="Access token to bind via SHA-256 'ath' hash claim")
+    p_dpop_c.add_argument("-n", "--nonce", help="Server challenge nonce from DPoP-Nonce header")
+    p_dpop_c.add_argument("--alg", default="ES256", help="Signature algorithm (default: ES256)")
+    p_dpop_c.add_argument("--json", action="store_true", help="Output JSON DPoP proof metadata")
+    p_dpop_c.set_defaults(func=cmd_dpop_create)
+
+    # 14. dpop-verify
+    p_dpop_v = subparsers.add_parser("dpop-verify", parents=[parent_parser], help="Verify RFC 9449 DPoP proof and token binding")
+    p_dpop_v.add_argument("proof", help="Raw DPoP proof token string to verify")
+    p_dpop_v.add_argument("-m", "--method", default="GET", help="HTTP request method (GET, POST, etc.)")
+    p_dpop_v.add_argument("-u", "--url", default="https://api.example.com", help="Target HTTP request URI")
+    p_dpop_v.add_argument("-t", "--token", help="Presented access token to verify against 'ath' hash")
+    p_dpop_v.add_argument("-n", "--nonce", help="Active server challenge nonce")
+    p_dpop_v.add_argument("--jkt", help="Expected JWK thumbprint from access token 'cnf.jkt'")
+    p_dpop_v.add_argument("--max-age", type=int, default=300, help="Maximum proof age in seconds (default: 300)")
+    p_dpop_v.add_argument("--json", action="store_true", help="Output JSON verification report")
+    p_dpop_v.set_defaults(func=cmd_dpop_verify)
 
     return root_parser
 

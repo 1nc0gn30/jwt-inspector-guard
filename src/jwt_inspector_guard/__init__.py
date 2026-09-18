@@ -43,6 +43,18 @@ from .timing_defense import (
     safe_constant_time_compare,
     vulnerable_early_exit_compare,
 )
+from .dpop_guard import (
+    DPoPAuditIssue,
+    DPoPIssueSeverity,
+    DPoPReplayStore,
+    DPoPVerificationResult,
+    GLOBAL_DPOP_REPLAY_STORE,
+    bind_token_with_dpop,
+    compute_access_token_hash,
+    create_dpop_proof,
+    normalize_dpop_htu,
+    verify_dpop_proof,
+)
 
 __version__ = "0.1.0"
 __author__ = "jwt-inspector-guard contributors"
@@ -302,4 +314,14 @@ __all__ = [
     "handle_jsonrpc_request",
     "process_request",
     "run_stdio_server",
+    "DPoPAuditIssue",
+    "DPoPIssueSeverity",
+    "DPoPReplayStore",
+    "DPoPVerificationResult",
+    "GLOBAL_DPOP_REPLAY_STORE",
+    "bind_token_with_dpop",
+    "compute_access_token_hash",
+    "create_dpop_proof",
+    "normalize_dpop_htu",
+    "verify_dpop_proof",
 ]

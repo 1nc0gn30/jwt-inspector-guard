@@ -283,6 +283,44 @@ def _api_timing(body: Dict[str, Any]) -> Dict[str, Any]:
     return report.to_dict()
 
 
+def _api_dpop_create(body: Dict[str, Any]) -> Dict[str, Any]:
+    from jwt_inspector_guard.dpop_guard import create_dpop_proof
+    http_method = str(body.get("method", body.get("http_method", "GET"))).upper().strip()
+    http_url = str(body.get("url", body.get("http_url", "https://api.example.com/data")))
+    access_token = body.get("access_token") or body.get("token")
+    nonce = body.get("nonce")
+    alg = body.get("alg", "ES256")
+    proof_jwt, meta = create_dpop_proof(
+        http_method=http_method,
+        http_url=http_url,
+        access_token=access_token,
+        nonce=nonce,
+        alg=alg,
+    )
+    return meta
+
+
+def _api_dpop_verify(body: Dict[str, Any]) -> Dict[str, Any]:
+    from jwt_inspector_guard.dpop_guard import verify_dpop_proof
+    proof_token = str(body.get("proof_token", body.get("proof", ""))).strip()
+    http_method = str(body.get("method", body.get("http_method", "GET"))).upper().strip()
+    http_url = str(body.get("url", body.get("http_url", "https://api.example.com/data")))
+    access_token = body.get("access_token") or body.get("token")
+    expected_nonce = body.get("expected_nonce") or body.get("nonce")
+    bound_jkt = body.get("bound_jkt") or body.get("jkt")
+    max_age_seconds = int(body.get("max_age_seconds", 300))
+    result = verify_dpop_proof(
+        proof_token=proof_token,
+        http_method=http_method,
+        http_url=http_url,
+        access_token=access_token,
+        expected_nonce=expected_nonce,
+        bound_jkt=bound_jkt,
+        max_age_seconds=max_age_seconds,
+    )
+    return result.to_dict()
+
+
 _API_ROUTES = {
     "/api/decode": _api_decode,
     "/api/verify": _api_verify,
@@ -296,6 +334,8 @@ _API_ROUTES = {
     "/api/tamper": _api_tamper,
     "/api/jwks": _api_jwks,
     "/api/timing": _api_timing,
+    "/api/dpop/create": _api_dpop_create,
+    "/api/dpop/verify": _api_dpop_verify,
 }
 
 

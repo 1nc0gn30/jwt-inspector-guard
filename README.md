@@ -33,10 +33,22 @@
   - **Weak Key Dictionary Attack**: High-speed dictionary cracker checking against common passwords, defaults, and weak strings.
   - **Credential & PII Leak Scanner**: Identifies passwords, auth tokens, database connection URIs, private keys, emails, and SSNs accidentally placed in payloads.
   - **Header Injection Vectors**: Audits `jku`, `x5u`, `jwk`, and path-traversal in `kid`.
+- **RFC 9449 DPoP (Demonstrating Proof-of-Possession) Guard**:
+  - Generates and validates application-layer DPoP proof JWTs (`typ: dpop+jwt`).
+  - Strict RFC 9449 §4.3 HTU URL normalization (schemes, default ports, query/fragment stripping).
+  - Access Token Hash (`ath` = `base64url(sha256(access_token))`) binding verification.
+  - Access token confirmation claim binding via RFC 7638 thumbprints (`cnf.jkt`).
+  - Rolling-window anti-replay store rejecting duplicate `jti` nonces.
+  - Server challenge nonce (`DPoP-Nonce`) verification.
+- **JWKS & Key Rotation Simulator (RFC 7517 / RFC 7638)**:
+  - Canonical RFC 7638 SHA-256 thumbprint calculations for RSA, EC, and oct keys.
+  - Active -> Retiring -> Revoked key lifecycle simulation and token `kid` resolution.
+- **Constant-Time Timing Side-Channel Defense**:
+  - Constant-time signature verification and empirical side-channel timing benchmark.
 - **FastMCP Protocol 2.0 Server**:
-  - Built-in stdio JSON-RPC server exposing tools, resources, and prompts to Claude Desktop, Cursor, Cline, and Antigravity.
+  - Built-in stdio JSON-RPC server exposing tools (`jwt_decode`, `jwt_verify`, `jwt_audit_security`, `jwt_create_dpop_proof`, `jwt_verify_dpop_proof`, `jwt_audit_jwks`, etc.), resources, and prompts.
 - **JWT Inspector Guard Studio UI** (Design influenced by Material 3 tokens):
-  - Interactive dual-panel web interface with live decoding, vulnerability flags, signature checker, and dark/light modes.
+  - Interactive dual-panel web interface with live decoding, vulnerability flags, DPoP proof generator, signature checker, and dark/light modes.
 - **Multi-OS CLI**:
   - Clean terminal tool with ANSI styling, `--no-color`, `-v`/`--version`, `-q`/`--quiet`, and JSON output.
 
@@ -76,7 +88,13 @@ jwt-guard crack "eyJhbGciOiJIUzI1Ni..."
 # 5. List built-in attack vectors & test tokens
 jwt-guard samples
 
-# 6. Launch the JWT Inspector Guard Studio Web UI (Material 3 influenced)
+# 6. Generate RFC 9449 DPoP proof-of-possession token
+jwt-guard dpop-create --method POST --url https://api.example.com/v1/charge --token "access_token_xyz"
+
+# 7. Verify DPoP proof, access token hash (ath), and key binding
+jwt-guard dpop-verify "<dpop_proof_jwt>" --method POST --url https://api.example.com/v1/charge --token "access_token_xyz"
+
+# 8. Launch the JWT Inspector Guard Studio Web UI (Material 3 influenced)
 jwt-guard serve --port 8780
 ```
 

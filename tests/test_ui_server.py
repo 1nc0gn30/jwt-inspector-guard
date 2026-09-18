@@ -21,6 +21,8 @@ def test_api_routes_available():
     assert "/api/mint" in _API_ROUTES
     assert "/api/entropy" in _API_ROUTES
     assert "/api/tamper" in _API_ROUTES
+    assert "/api/dpop/create" in _API_ROUTES
+    assert "/api/dpop/verify" in _API_ROUTES
 
 
 def test_ui_server_lifecycle_and_endpoints():
@@ -78,6 +80,36 @@ def test_ui_server_lifecycle_and_endpoints():
             res = json.loads(resp.read().decode("utf-8"))
             assert "tampered_token" in res
             assert res["tampered_token"].endswith(".")
+
+        # 6. POST /api/dpop/create
+        dpop_c_payload = json.dumps({
+            "http_method": "POST",
+            "http_url": "https://api.example.com/checkout",
+            "access_token": token,
+        }).encode("utf-8")
+        req = urllib.request.Request(f"{base_url}/api/dpop/create", data=dpop_c_payload, headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req) as resp:
+            assert resp.status == 200
+            c_res = json.loads(resp.read().decode("utf-8"))
+            assert "proof_jwt" in c_res
+            assert "thumbprint" in c_res
+            proof = c_res["proof_jwt"]
+            jkt = c_res["thumbprint"]
+
+        # 7. POST /api/dpop/verify
+        dpop_v_payload = json.dumps({
+            "proof_token": proof,
+            "http_method": "POST",
+            "http_url": "https://api.example.com/checkout",
+            "access_token": token,
+            "bound_jkt": jkt,
+        }).encode("utf-8")
+        req = urllib.request.Request(f"{base_url}/api/dpop/verify", data=dpop_v_payload, headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req) as resp:
+            assert resp.status == 200
+            v_res = json.loads(resp.read().decode("utf-8"))
+            assert v_res["is_valid"] is True
+            assert v_res["token_binding_matched"] is True
 
     finally:
         server.shutdown()

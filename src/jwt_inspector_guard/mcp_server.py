@@ -971,6 +971,76 @@ TOOLS_REGISTRY: List[Dict[str, Any]] = [
                 }
             }
         }
+    },
+    {
+        "name": "jwt_create_dpop_proof",
+        "description": "Generate an RFC 9449 compliant DPoP (Demonstrating Proof-of-Possession) proof JWT with embedded public JWK, HTTP method (htm), normalized target URI (htu), and optional access token hash (ath).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "http_method": {
+                    "type": "string",
+                    "description": "HTTP request method (e.g. GET, POST, PUT, DELETE)."
+                },
+                "http_url": {
+                    "type": "string",
+                    "description": "HTTP request URL or path to bind proof to."
+                },
+                "access_token": {
+                    "type": "string",
+                    "description": "Optional Bearer/DPoP access token to bind via SHA-256 'ath' claim."
+                },
+                "nonce": {
+                    "type": "string",
+                    "description": "Optional server-provided challenge nonce from DPoP-Nonce header."
+                },
+                "alg": {
+                    "type": "string",
+                    "description": "Cryptographic signature algorithm (default: ES256).",
+                    "default": "ES256"
+                }
+            },
+            "required": ["http_method", "http_url"]
+        }
+    },
+    {
+        "name": "jwt_verify_dpop_proof",
+        "description": "Verify an RFC 9449 DPoP proof JWT against an HTTP request, access token binding (cnf.jkt), target URI normalization, and anti-replay store.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "proof_token": {
+                    "type": "string",
+                    "description": "The raw DPoP proof JWT string to verify."
+                },
+                "http_method": {
+                    "type": "string",
+                    "description": "Incoming HTTP request method."
+                },
+                "http_url": {
+                    "type": "string",
+                    "description": "Incoming HTTP request target URL or path."
+                },
+                "access_token": {
+                    "type": "string",
+                    "description": "Optional presented access token to check against proof 'ath' claim."
+                },
+                "expected_nonce": {
+                    "type": "string",
+                    "description": "Optional active challenge nonce required by the server."
+                },
+                "bound_jkt": {
+                    "type": "string",
+                    "description": "Optional thumbprint from access token 'cnf.jkt' to verify proof key binding."
+                },
+                "max_age_seconds": {
+                    "type": "integer",
+                    "description": "Maximum allowed age of proof in seconds (default: 300).",
+                    "default": 300
+                }
+            },
+            "required": ["proof_token", "http_method", "http_url"]
+        }
     }
 ]
 
@@ -1227,6 +1297,48 @@ def execute_tool_call(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
             report = benchmark_signature_comparison(compare_func=cmp_fn, trials=trials)
             return {
                 "content": [{"type": "text", "text": json.dumps(report.to_dict(), indent=2)}],
+                "isError": False
+            }
+
+        elif name == "jwt_create_dpop_proof":
+            from .dpop_guard import create_dpop_proof
+            http_method = arguments.get("http_method", "GET")
+            http_url = arguments.get("http_url", "")
+            access_token = arguments.get("access_token")
+            nonce = arguments.get("nonce")
+            alg = arguments.get("alg", "ES256")
+            proof_jwt, meta = create_dpop_proof(
+                http_method=http_method,
+                http_url=http_url,
+                access_token=access_token,
+                nonce=nonce,
+                alg=alg,
+            )
+            return {
+                "content": [{"type": "text", "text": json.dumps(meta, indent=2)}],
+                "isError": False
+            }
+
+        elif name == "jwt_verify_dpop_proof":
+            from .dpop_guard import verify_dpop_proof
+            proof_token = arguments.get("proof_token", "")
+            http_method = arguments.get("http_method", "GET")
+            http_url = arguments.get("http_url", "")
+            access_token = arguments.get("access_token")
+            expected_nonce = arguments.get("expected_nonce")
+            bound_jkt = arguments.get("bound_jkt")
+            max_age_seconds = int(arguments.get("max_age_seconds", 300))
+            result = verify_dpop_proof(
+                proof_token=proof_token,
+                http_method=http_method,
+                http_url=http_url,
+                access_token=access_token,
+                expected_nonce=expected_nonce,
+                bound_jkt=bound_jkt,
+                max_age_seconds=max_age_seconds,
+            )
+            return {
+                "content": [{"type": "text", "text": json.dumps(result.to_dict(), indent=2)}],
                 "isError": False
             }
 
