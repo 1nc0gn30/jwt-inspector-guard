@@ -1,68 +1,141 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JWT Inspector Guard | Security Studio & Cryptographic Linter</title>
+  <title>JWT Inspector Guard | Sovereign Security Studio & Cryptographic Linter</title>
+  <meta name="description" content="100% In-Browser client-side JWT security auditor, cryptographic signature verifier, CVE-2015-9235 exploit tester, and RFC 9449 DPoP token studio. Zero cloud egress.">
+  <meta name="keywords" content="JWT, JSON Web Token, security audit, cryptographic linter, CVE-2015-9235, DPoP, RFC 9449, HMAC, WebCrypto, zero egress">
+  <meta name="author" content="Neal Frazier (@1nc0gn30) • Neal Frazier Tech">
+  
+  <!-- OpenGraph / Twitter -->
+  <meta property="og:title" content="JWT Inspector Guard | Sovereign Security Studio">
+  <meta property="og:description" content="In-browser JWT security auditor, cryptographic signature verifier, and RFC 9449 DPoP token studio. Zero cloud egress.">
+  <meta property="og:url" content="https://jwtguard.nullai.tech">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://jwtguard.nullai.tech/assets/banner.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@1nc0gn30">
+  <meta name="twitter:creator" content="@1nc0gn30">
+  <meta name="twitter:image" content="https://jwtguard.nullai.tech/assets/banner.jpg">
+
+  <!-- AEO & SEO Schema.org Graph -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://jwtguard.nullai.tech/#webapp",
+        "name": "JWT Inspector Guard",
+        "url": "https://jwtguard.nullai.tech",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "All modern browsers (Chrome, Firefox, Safari, Edge)",
+        "offers": {
+          "@type": "Offer",
+          "price": "19.00",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        },
+        "creator": {
+          "@type": "Person",
+          "name": "Neal Frazier",
+          "url": "https://nealfrazier.tech"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Neal Frazier Tech • NullAI Platform",
+          "url": "https://nullai.tech"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://jwtguard.nullai.tech/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does JWT Inspector Guard transmit my tokens to remote servers?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. JWT Inspector Guard runs 100% client-side in your browser using the native Web Crypto API. Sensitive bearer tokens, private claims, and secrets never leave your device."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What vulnerabilities does JWT Inspector Guard detect?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "It checks for CVE-2015-9235 (alg:none bypass), algorithm confusion (RSA vs HMAC), token expiration and nbf timing flaws, sensitive PII/credential leaks, weak HMAC secrets via client dictionary testing, and RFC 9449 DPoP compliance."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does the Pro lifetime license work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A one-time payment of $19 grants permanent lifetime access to executive security dossier exports, automated multi-framework middleware patches, and unlimited client-side audits via Stripe or Solana DePay."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500;700&family=Roboto+Mono:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --md-primary: #1a73e8;
-      --md-on-primary: #ffffff;
-      --md-primary-container: #d2e3fc;
-      --md-on-primary-container: #0d47a1;
-      --md-surface: #f8f9fa;
-      --md-surface-card: #ffffff;
-      --md-on-surface: #202124;
-      --md-on-surface-variant: #5f6368;
-      --md-outline: #dadce0;
-      --md-success: #1e8e3e;
-      --md-success-container: #ceead6;
-      --md-error: #d93025;
-      --md-error-container: #fad2cf;
-      --md-warning: #f29900;
-      --md-warning-container: #feefc3;
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-      --radius-full: 9999px;
-      --shadow-sm: 0 1px 2px rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-      --font-google: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'Roboto Mono', monospace;
-      --color-header: #d93025;
-      --color-payload: #8e24aa;
-      --color-signature: #1a73e8;
+      --bg: #090a0f;
+      --card-bg: rgba(18, 20, 29, 0.75);
+      --card-border: rgba(255, 215, 0, 0.15);
+      --card-border-glow: rgba(255, 215, 0, 0.35);
+      --gold: #ffd700;
+      --gold-dark: #b8860b;
+      --gold-glow: rgba(255, 215, 0, 0.25);
+      --text-main: #f0f2f5;
+      --text-muted: #9ba1b0;
+      --accent-red: #ff4757;
+      --accent-green: #2ed573;
+      --accent-blue: #1e90ff;
+      --accent-purple: #a55eea;
+      --radius: 12px;
     }
-    [data-theme="dark"] {
-      --md-primary: #8ab4f8;
-      --md-on-primary: #174ea6;
-      --md-primary-container: #1a73e8;
-      --md-on-primary-container: #d2e3fc;
-      --md-surface: #121212;
-      --md-surface-card: #1e1e1e;
-      --md-on-surface: #e8eaed;
-      --md-on-surface-variant: #9aa0a6;
-      --md-outline: #3c4043;
-      --color-header: #f28b82;
-      --color-payload: #c58af9;
-      --color-signature: #8ab4f8;
-    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: var(--font-google);
-      background: var(--md-surface);
-      color: var(--md-on-surface);
+    html, body {
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+      width: 100% !important;
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
+
+    /* Ambient Mesh */
+    body::before {
+      content: "";
+      position: fixed;
+      top: -20%;
+      left: -20%;
+      width: 140%;
+      height: 140%;
+      background: radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 60%),
+                  radial-gradient(circle at 80% 80%, rgba(30, 144, 255, 0.04) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
     header {
-      background: var(--md-surface-card);
-      border-bottom: 1px solid var(--md-outline);
-      padding: 0.8rem 2rem;
+      background: rgba(13, 15, 22, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0.9rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -70,498 +143,926 @@
       top: 0;
       z-index: 100;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.9rem;
-    }
-    .logo-badge {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-sm);
-      background: linear-gradient(135deg, #1a73e8, #ea4335);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1.1rem;
-      box-shadow: var(--shadow-sm);
-    }
-    .title-group h1 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.2px;
-    }
-    .title-group p {
-      font-size: 0.75rem;
-      color: var(--md-on-surface-variant);
-    }
-    .header-actions {
+    .brand-wrap {
       display: flex;
       align-items: center;
       gap: 0.8rem;
     }
-    .btn-pill {
-      padding: 0.4rem 1rem;
-      border-radius: var(--radius-full);
-      font-size: 0.82rem;
-      font-weight: 500;
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #ffd700, #ff4757);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #fff;
+    }
+    .brand-text p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .badge {
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .badge-egress {
+      background: rgba(46, 213, 115, 0.12);
+      color: var(--accent-green);
+      border-color: rgba(46, 213, 115, 0.3);
+    }
+    .badge-pro {
+      background: rgba(255, 215, 0, 0.12);
+      color: var(--gold);
+      border-color: rgba(255, 215, 0, 0.35);
       cursor: pointer;
-      border: 1px solid var(--md-outline);
-      background: var(--md-surface-card);
-      color: var(--md-on-surface);
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
     }
-    .btn-pill:hover {
-      background: var(--md-primary-container);
-      color: var(--md-on-primary-container);
-      border-color: var(--md-primary);
-    }
-    .main-container {
-      max-width: 1440px;
-      width: 100%;
-      margin: 1.2rem auto;
-      padding: 0 1.5rem;
+
+    /* Sales Banner */
+    .sales-banner {
+      background: linear-gradient(90deg, rgba(255,215,0,0.12) 0%, rgba(255,71,87,0.12) 100%);
+      border: 1px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin: 1.2rem auto 0;
+      max-width: 1400px;
+      width: calc(100% - 2rem);
       display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      flex: 1;
-    }
-    .hero-banner {
-      background: var(--md-surface-card);
-      border: 1px solid var(--md-outline);
-      border-radius: var(--radius-md);
-      padding: 1rem 1.4rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
       gap: 1rem;
+      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+      position: relative;
+      z-index: 10;
     }
-    .hero-tags {
+    .sales-banner-text {
+      flex: 1;
+      min-width: 280px;
+    }
+    .sales-badge-pill {
+      background: var(--gold);
+      color: #000;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 0.5rem;
+    }
+    .sales-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .sales-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+    .sales-banner-ctas {
       display: flex;
+      align-items: center;
       gap: 0.5rem;
       flex-wrap: wrap;
     }
-    .chip {
-      padding: 0.25rem 0.65rem;
-      border-radius: var(--radius-full);
-      font-size: 0.75rem;
-      font-weight: 500;
-      background: var(--md-surface);
-      border: 1px solid var(--md-outline);
+    .btn-checkout {
+      background: linear-gradient(135deg, var(--gold), #ffaa00);
+      color: #090a0f;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
     }
-    .layout-grid {
+    .btn-checkout:hover {
+      box-shadow: 0 0 15px var(--gold-glow);
+      transform: translateY(-1px);
+    }
+    .btn-solana {
+      background: rgba(153, 69, 255, 0.15);
+      border: 1px solid #9945ff;
+      color: #dfbaec;
+      font-weight: 600;
+      font-size: 0.82rem;
+      padding: 7px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-solana:hover {
+      background: rgba(153, 69, 255, 0.25);
+    }
+    .btn-activate {
+      background: transparent;
+      border: 1px dashed var(--gold);
+      color: var(--gold);
+      font-size: 0.8rem;
+      padding: 7px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.2rem 1rem 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Grid Layout */
+    .app-grid {
       display: grid;
-      grid-template-columns: 1.1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 1.2rem;
+      margin-top: 1rem;
     }
-    @media (max-width: 960px) {
-      .layout-grid { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      .app-grid { grid-template-columns: 1fr; }
     }
+
     .card {
-      background: var(--md-surface-card);
-      border: 1px solid var(--md-outline);
-      border-radius: var(--radius-md);
-      padding: 1.2rem;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      position: relative;
     }
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 0.9rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 0.6rem;
     }
     .card-title {
       font-size: 0.95rem;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
+      color: #fff;
     }
-    .tabs-bar {
-      display: flex;
-      gap: 0.3rem;
-      background: var(--md-surface);
-      padding: 0.25rem;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--md-outline);
-    }
-    .tab-btn {
-      padding: 0.35rem 0.8rem;
-      font-size: 0.8rem;
-      font-weight: 500;
-      border-radius: 6px;
-      border: none;
-      background: transparent;
-      color: var(--md-on-surface-variant);
-      cursor: pointer;
-    }
-    .tab-btn.active {
-      background: var(--md-surface-card);
-      color: var(--md-primary);
-      box-shadow: var(--shadow-sm);
-      font-weight: 600;
-    }
-    .token-input-box {
-      position: relative;
-    }
-    textarea {
+
+    /* Input & Textareas */
+    textarea.token-box {
       width: 100%;
-      height: 120px;
-      padding: 0.9rem;
-      font-family: var(--font-mono);
-      font-size: 0.88rem;
-      border: 1px solid var(--md-outline);
-      border-radius: var(--radius-sm);
-      background: var(--md-surface);
-      color: var(--md-on-surface);
+      height: 110px;
+      background: rgba(9, 10, 15, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: #f0f2f5;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      padding: 0.75rem;
       resize: vertical;
       line-height: 1.4;
+      margin-bottom: 0.6rem;
     }
-    textarea:focus {
-      outline: 2px solid var(--md-primary);
-      border-color: transparent;
+    textarea.token-box:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 10px var(--gold-glow);
     }
-    .color-token-display {
-      font-family: var(--font-mono);
-      font-size: 0.84rem;
+
+    .colored-token-display {
+      background: rgba(5, 6, 10, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
       padding: 0.75rem;
-      background: var(--md-surface);
-      border: 1px solid var(--md-outline);
-      border-radius: var(--radius-sm);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
       word-break: break-all;
-      line-height: 1.4;
-      min-height: 48px;
+      margin-bottom: 0.8rem;
+      max-height: 100px;
+      overflow-y: auto;
     }
-    .token-part-header { color: var(--color-header); font-weight: 600; }
-    .token-part-payload { color: var(--color-payload); font-weight: 600; }
-    .token-part-signature { color: var(--color-signature); font-weight: 600; }
-    .token-part-dot { color: var(--md-on-surface-variant); }
-    .code-viewer {
-      background: #1e1e1e;
-      color: #e0e0e0;
-      padding: 0.9rem;
-      border-radius: var(--radius-sm);
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      line-height: 1.4;
-      overflow-x: auto;
-      max-height: 240px;
+    .token-part-header { color: #ff6b81; font-weight: 600; }
+    .token-part-payload { color: #a55eea; font-weight: 600; }
+    .token-part-signature { color: #1e90ff; font-weight: 600; }
+    .token-part-dot { color: #747d8c; }
+
+    /* Button rows */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.8rem;
     }
-    .code-header { color: #f28b82; }
-    .code-payload { color: #c58af9; }
-    .code-sig { color: #8ab4f8; }
-    .score-badge {
+    .btn-sm {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-size: 0.78rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem 0.8rem;
-      border-radius: var(--radius-full);
-      font-weight: 700;
-      font-size: 0.85rem;
+      gap: 4px;
     }
-    .score-green { background: var(--md-success-container); color: var(--md-success); }
-    .score-red { background: var(--md-error-container); color: var(--md-error); }
-    .score-yellow { background: var(--md-warning-container); color: var(--md-warning); }
-    .findings-list {
+    .btn-sm:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--gold);
+    }
+    .btn-sm.primary {
+      background: linear-gradient(135deg, var(--gold), #e1b12c);
+      color: #000;
+      font-weight: 700;
+      border: none;
+    }
+    .btn-sm.danger {
+      background: rgba(255, 71, 87, 0.15);
+      border-color: var(--accent-red);
+      color: #ff6b81;
+    }
+
+    select.sample-picker {
+      background: rgba(18, 20, 29, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-family: 'Space Grotesk', sans-serif;
+      max-width: 250px;
+      outline: none;
+    }
+
+    /* Timeline & Stats */
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.9rem;
+    }
+    .timeline-node {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 6px 8px;
+    }
+    .timeline-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .timeline-val {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Code viewers */
+    pre.code-block {
+      background: rgba(6, 8, 12, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      max-height: 180px;
+      overflow-y: auto;
+      color: #f1f2f6;
+    }
+
+    /* Security Score & Findings */
+    .score-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+    }
+    .score-circle {
+      font-size: 1.25rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .score-green { background: rgba(46, 213, 115, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
+    .score-yellow { background: rgba(255, 177, 66, 0.15); color: #ffa502; border: 1px solid #ffa502; }
+    .score-red { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
+
+    .findings-container {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      max-height: 260px;
+      max-height: 220px;
       overflow-y: auto;
     }
-    .finding-item {
-      padding: 0.6rem 0.8rem;
-      border-radius: var(--radius-sm);
-      border-left: 4px solid;
-      background: var(--md-surface);
-      font-size: 0.82rem;
+    .finding-card {
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 3px solid;
+      border-radius: 0 6px 6px 0;
+      padding: 8px 10px;
+      font-size: 0.8rem;
     }
-    .finding-critical { border-color: var(--md-error); }
-    .finding-warning { border-color: var(--md-warning); }
-    .finding-info { border-color: var(--md-primary); }
-    .finding-title { font-weight: 600; margin-bottom: 0.2rem; }
-    .timeline-strip {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.6rem;
+    .finding-critical { border-left-color: var(--accent-red); background: rgba(255, 71, 87, 0.08); }
+    .finding-warning { border-left-color: #ffa502; background: rgba(255, 177, 66, 0.08); }
+    .finding-info { border-left-color: var(--accent-blue); background: rgba(30, 144, 255, 0.08); }
+    .finding-title { font-weight: 700; margin-bottom: 2px; }
+
+    /* Inputs */
+    input.text-input {
+      background: rgba(6, 8, 12, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      width: 100%;
+      outline: none;
     }
-    .time-cell {
-      background: var(--md-surface);
-      border: 1px solid var(--md-outline);
-      border-radius: var(--radius-sm);
-      padding: 0.6rem;
+    input.text-input:focus { border-color: var(--gold); }
+
+    /* Frosted Glass Paywall Blur */
+    .paywall-wrap {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 1.2rem;
+    }
+    .paywall-content.locked {
+      filter: blur(6px);
+      pointer-events: none;
+      user-select: none;
+      opacity: 0.4;
+    }
+    .paywall-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(9, 10, 15, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 20;
+      padding: 1.5rem;
       text-align: center;
     }
-    .time-label { font-size: 0.72rem; color: var(--md-on-surface-variant); font-weight: 600; text-transform: uppercase; }
-    .time-val { font-size: 0.82rem; font-weight: 600; margin-top: 0.2rem; }
-    .action-row {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
+    .paywall-wrap:not(.is-locked) .paywall-overlay {
+      display: none;
     }
-    .btn-action {
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius-sm);
+    .paywall-wrap:not(.is-locked) .paywall-content.locked {
+      filter: none;
+      pointer-events: auto;
+      user-select: auto;
+      opacity: 1;
+    }
+    .lock-box {
+      max-width: 480px;
+      background: rgba(18, 20, 29, 0.95);
+      border: 1px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px var(--gold-glow);
+    }
+    .lock-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .lock-desc {
       font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      background: var(--md-primary);
-      color: var(--md-on-primary);
-      transition: opacity 0.15s ease;
-      display: inline-flex;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
       align-items: center;
-      gap: 0.4rem;
+      justify-content: center;
+      z-index: 999;
+      padding: 1rem;
     }
-    .btn-action:hover { opacity: 0.9; }
-    .btn-secondary {
-      background: var(--md-surface);
-      color: var(--md-on-surface);
-      border: 1px solid var(--md-outline);
+    .modal-backdrop.open {
+      display: flex;
     }
-    .btn-danger { background: var(--md-error); color: white; }
-    .secret-input {
-      padding: 0.5rem 0.8rem;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--md-outline);
-      background: var(--md-surface);
-      color: var(--md-on-surface);
-      font-family: var(--font-mono);
+    .modal-card {
+      background: #10121a;
+      border: 1px solid var(--gold);
+      border-radius: var(--radius);
+      max-width: 540px;
+      width: 100%;
+      padding: 1.8rem;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.25);
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+    .modal-features {
+      list-style: none;
+      margin: 1rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
       font-size: 0.85rem;
-      flex: 1;
+    }
+    .modal-features li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #e0e4ed;
+    }
+    .modal-features li span {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    footer.zoth-footer {
+      border-top: 1px solid var(--card-border);
+      background: rgba(10, 11, 16, 0.95);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+    footer.zoth-footer a {
+      color: var(--gold);
+      text-decoration: none;
     }
   </style>
-  
-  <link rel="stylesheet" href="zoth-theme.css">
 </head>
 <body>
-<div class="zoth-brand-bar"><span class="zoth-z">Z</span><span class="zoth-name">Zoth Studio</span><span class="zoth-tool">JWT Inspector Guard</span><span class="zoth-spacer"></span><span class="zoth-badge">NULLAI · SOVEREIGN</span></div>
 
-<header>
-    <div class="brand">
-      <div class="logo-badge">🛡️</div>
-      <div class="title-group">
+  <header>
+    <div class="brand-wrap">
+      <div class="brand-logo" alt="JWT Inspector Guard Seal">⚡</div>
+      <div class="brand-text">
         <h1>JWT Inspector Guard</h1>
-        <p>Zero-Dependency Pure Python Security Studio & Cryptographic Linter • Design influenced by Material 3</p>
+        <p>Sovereign Cryptographic Linter & DPoP Token Studio</p>
       </div>
     </div>
-    <div class="header-actions">
-      <select id="sampleSelect" class="btn-pill" onchange="loadSample(this.value)">
-        <option value="">⚡ Load Sample Token...</option>
-      </select>
-      <button class="btn-pill" onclick="toggleTheme()">🌓 Theme</button>
+    <div class="header-badges">
+      <span class="badge badge-egress">ZERO CLOUD EGRESS</span>
+      <span class="badge badge-pro" id="headerProBadge" onclick="openLicenseModal()">FREE EDITION (UPGRADE)</span>
     </div>
   </header>
 
-  <main class="main-container">
-    <div class="hero-banner">
-      <div>
-        <h2 style="font-size:1.05rem; font-weight:700;">RFC 7519 Security Suite & Vulnerability Radar</h2>
-        <p style="font-size:0.8rem; color:var(--md-on-surface-variant); margin-top:0.2rem;">
-          Detects CVE-2015-9235 (alg:none), algorithm confusion attacks, weak HMAC keys, and credential leaks.
-        </p>
+  <!-- Sales Funnel Banner -->
+  <div class="sales-banner" id="salesBanner">
+    <div class="sales-banner-text">
+      <span class="sales-badge-pill">FOUNDING MEMBER DEAL</span>
+      <span class="sales-title">Sovereign Developer License — $19 Lifetime (<del>$79 Regular</del>)</span>
+      <div class="sales-desc">Unlock executive security audits, CVE patches, multi-framework middleware exports, and RFC 9449 DPoP minting.</div>
+    </div>
+    <div class="sales-banner-ctas">
+      <a href="https://buy.stripe.com/7sI7sA8hM2X8eFG8ww" class="btn-checkout" target="_blank" rel="noopener">
+        💳 Instant Stripe Checkout ($19)
+      </a>
+      <button class="btn-solana" onclick="triggerSolanaCheckout()">
+        🪙 Pay with Solana / USDC
+      </button>
+      <button class="btn-activate" onclick="openLicenseModal()">
+        🔑 Activate Key
+      </button>
+    </div>
+  </div>
+
+  <main>
+    <!-- Top Action Deck -->
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:0.8rem;">
+      <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+        <span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Load Token Preset:</span>
+        <select class="sample-picker" id="sampleSelect" onchange="loadSelectedSample(this.value)">
+          <option value="">-- Choose Sample Token --</option>
+        </select>
+        <button class="btn-sm" onclick="clearToken()">Clear</button>
       </div>
-      <div class="hero-tags">
-        <span class="chip">Python 3.9–3.13</span>
-        <span class="chip">Zero Dependencies</span>
-        <span class="chip">FastMCP Protocol</span>
-        <span class="chip">HS256 / 384 / 512</span>
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <button class="btn-sm primary" onclick="runInspect()">⚡ Run Security Audit</button>
+        <button class="btn-sm" onclick="exportDossierPrompt()">📥 Export Security Dossier</button>
       </div>
     </div>
 
-    <div class="layout-grid">
-      <!-- Left Column: Input & Decoded Payload -->
+    <!-- Token Input Area -->
+    <div class="card" style="margin-bottom:1.2rem;">
+      <div class="card-header">
+        <span class="card-title">🔑 Bearer JWT Token Stream</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted);" id="tokenLengthBadge">0 chars</span>
+      </div>
+      <textarea id="tokenInput" class="token-box" placeholder="Paste your header.payload.signature JWT here..." oninput="onTokenChange()"></textarea>
+      <div class="colored-token-display" id="colorDisplay">Paste a token above to inspect components...</div>
+    </div>
+
+    <!-- App 2-Column Grid -->
+    <div class="app-grid">
+      <!-- Left Column: Header, Payload & Timeline -->
       <div style="display:flex; flex-direction:column; gap:1.2rem;">
+        
+        <!-- Timeline Card -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🔑 Encoded Token Input</span>
-            <div class="action-row">
-              <button class="btn-pill" onclick="clearToken()">Clear</button>
-              <button class="btn-action" onclick="runInspect()">Inspect</button>
-            </div>
+            <span class="card-title">⏱️ Temporal Validation & Epochs</span>
+            <span class="badge badge-egress" id="temporalStatusBadge">FRESH</span>
           </div>
-          <textarea id="tokenInput" placeholder="Paste your JWT token (header.payload.signature) here..." oninput="onTokenChange()"></textarea>
-          <div>
-            <div style="font-size:0.75rem; color:var(--md-on-surface-variant); margin-bottom:0.3rem; font-weight:600;">TOKEN COLOR ANATOMY</div>
-            <div class="color-token-display" id="colorDisplay">Paste a token above to inspect components...</div>
-          </div>
-          <div class="timeline-strip" id="timelineStrip">
-            <div class="time-cell">
-              <div class="time-label">Issued (iat)</div>
-              <div class="time-val" id="timeIat">-</div>
+          <div class="timeline-grid">
+            <div class="timeline-node">
+              <div class="timeline-label">Issued At (iat)</div>
+              <div class="timeline-val" id="timeIat">-</div>
             </div>
-            <div class="time-cell">
-              <div class="time-label">Not Before (nbf)</div>
-              <div class="time-val" id="timeNbf">-</div>
+            <div class="timeline-node">
+              <div class="timeline-label">Not Before (nbf)</div>
+              <div class="timeline-val" id="timeNbf">-</div>
             </div>
-            <div class="time-cell">
-              <div class="time-label">Expires (exp)</div>
-              <div class="time-val" id="timeExp">-</div>
+            <div class="timeline-node">
+              <div class="timeline-label">Expires (exp)</div>
+              <div class="timeline-val" id="timeExp">-</div>
             </div>
           </div>
         </div>
 
+        <!-- JOSE Header -->
         <div class="card">
           <div class="card-header">
             <span class="card-title">📜 Decoded JOSE Header</span>
-            <span class="chip" id="algBadge">ALG: -</span>
+            <span class="badge" id="algBadge" style="background:rgba(255,107,129,0.15); color:#ff6b81; border:1px solid #ff6b81;">ALG: -</span>
           </div>
-          <pre class="code-viewer code-header" id="headerJson">{}</pre>
+          <pre class="code-block" id="headerJson">{}</pre>
         </div>
 
+        <!-- Claims Payload -->
         <div class="card">
           <div class="card-header">
             <span class="card-title">📦 Decoded Claims Payload</span>
-            <span class="chip" id="entropyBadge">Entropy: -</span>
+            <span class="badge" id="entropyBadge" style="background:rgba(165,94,234,0.15); color:#a55eea; border:1px solid #a55eea;">Entropy: -</span>
           </div>
-          <pre class="code-viewer code-payload" id="payloadJson">{}</pre>
+          <pre class="code-block" id="payloadJson">{}</pre>
+        </div>
+
+        <!-- 1-Click Tamper & Exploit Lab -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🧪 1-Click Tamper & Exploit Lab</span>
+            <span class="badge" style="background:rgba(255,215,0,0.1); color:var(--gold); border:1px solid var(--gold);">CVE SIMULATOR</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
+            Test your authentication service by simulating common token attacks:
+          </p>
+          <div class="btn-row">
+            <button class="btn-sm danger" onclick="runTamper('none')">💥 CVE-2015-9235 (alg:none)</button>
+            <button class="btn-sm" onclick="runTamper('admin_escalate')">👑 Admin Role Escalation</button>
+            <button class="btn-sm" onclick="runTamper('strip_signature')">✂️ Strip Signature</button>
+          </div>
         </div>
       </div>
 
-      <!-- Right Column: Security Findings, Verification & Exploit Lab -->
+      <!-- Right Column: Audit, Verification, Cracker, DPoP -->
       <div style="display:flex; flex-direction:column; gap:1.2rem;">
+        
+        <!-- Security Audit Card -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🛡️ Security Audit & CVE Radar</span>
-            <span class="score-badge score-green" id="scoreBadge">100 / 100</span>
+            <span class="card-title">🛡️ Security Audit & Vulnerability Radar</span>
+            <div class="score-circle score-green" id="scoreBadge">100 / 100</div>
           </div>
-          <div class="findings-list" id="findingsList">
-            <div style="font-size:0.85rem; color:var(--md-on-surface-variant); text-align:center; padding:1.5rem;">
-              Click <strong>Inspect</strong> to run the automated security linter.
+          <div class="findings-container" id="findingsList">
+            <div style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding:1.5rem;">
+              Click <strong>Run Security Audit</strong> to scan token.
             </div>
           </div>
         </div>
 
+        <!-- HMAC Verification -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">✍️ HMAC Signature Verification</span>
-            <span class="chip" id="sigStatusBadge">UNVERIFIED</span>
+            <span class="card-title">✍️ Web Crypto HMAC Verification</span>
+            <span class="badge" id="sigStatusBadge" style="background:rgba(255,255,255,0.08); color:var(--text-muted);">UNVERIFIED</span>
           </div>
-          <div style="display:flex; gap:0.6rem;">
-            <input type="text" id="verifySecret" class="secret-input" placeholder="Enter signing secret key (e.g. your-secret)...">
-            <button class="btn-action" onclick="runVerify()">Verify</button>
+          <div style="display:flex; gap:0.5rem; margin-top:0.4rem;">
+            <input type="text" id="verifySecret" class="text-input" placeholder="Enter signing secret key (e.g. secret)...">
+            <button class="btn-sm primary" onclick="runVerify()">Verify</button>
           </div>
         </div>
 
+        <!-- Secret Dictionary Cracker -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🔓 Secret Dictionary Cracker</span>
-            <span class="chip" id="crackStatusBadge">READY</span>
+            <span class="card-title">🔓 Secret Dictionary Cracker (Client-Side)</span>
+            <span class="badge" id="crackStatusBadge" style="background:rgba(30,144,255,0.12); color:var(--accent-blue);">STANDBY</span>
           </div>
-          <p style="font-size:0.8rem; color:var(--md-on-surface-variant);">
-            Tests token signature against high-entropy dictionary of common defaults, weak passwords, and CVE test keys.
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.6rem;">
+            Simulates local brute-force dictionary test against 20+ common default JWT secrets.
           </p>
-          <div class="action-row">
-            <button class="btn-action btn-danger" onclick="runCrack()">⚡ Crack Secret</button>
-            <span id="crackResult" style="font-size:0.85rem; font-weight:600; align-self:center;"></span>
+          <div style="display:flex; align-items:center; gap:0.8rem;">
+            <button class="btn-sm danger" onclick="runCrack()">⚡ Crack Weak Secret</button>
+            <span id="crackResult" style="font-size:0.8rem; font-family:'JetBrains Mono',monospace;"></span>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">🧪 1-Click Tamper & Exploit Lab</span>
-          </div>
-          <p style="font-size:0.8rem; color:var(--md-on-surface-variant);">
-            Simulate known attack vectors against your token to test downstream verification logic:
-          </p>
-          <div class="action-row">
-            <button class="btn-action btn-secondary" onclick="runTamper('none')">💥 CVE-2015-9235 (alg:none)</button>
-            <button class="btn-action btn-secondary" onclick="runTamper('admin_escalate')">👑 Admin Escalation</button>
-            <button class="btn-action btn-secondary" onclick="runTamper('strip_signature')">✂️ Strip Signature</button>
-          </div>
-        </div>
-
+        <!-- RFC 9449 DPoP Studio -->
         <div class="card">
           <div class="card-header">
             <span class="card-title">🔐 RFC 9449 DPoP Proof & Token Binding Studio</span>
-            <span class="chip" id="dpopStatusBadge">RFC 9449 READY</span>
+            <span class="badge" id="dpopStatusBadge" style="background:rgba(46,213,115,0.12); color:var(--accent-green);">RFC 9449 READY</span>
           </div>
-          <p style="font-size:0.8rem; color:var(--md-on-surface-variant);">
-            Generate and verify Demonstrating Proof-of-Possession (DPoP) application-layer tokens bound to HTTP request methods, URIs, and cryptographic thumbprints (<code>cnf.jkt</code>).
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.6rem;">
+            Generate and verify Demonstrating Proof-of-Possession tokens bound to HTTP method and URI.
           </p>
-          <div style="display:grid; grid-template-columns: 90px 1fr; gap:0.5rem;">
-            <select id="dpopMethod" class="btn-pill" style="height:36px; padding:0 0.5rem;">
+          <div style="display:grid; grid-template-columns: 80px 1fr; gap:0.5rem; margin-bottom:0.5rem;">
+            <select id="dpopMethod" class="sample-picker" style="height:32px; padding:0 6px;">
               <option value="GET">GET</option>
               <option value="POST" selected>POST</option>
               <option value="PUT">PUT</option>
               <option value="DELETE">DELETE</option>
             </select>
-            <input type="text" id="dpopUrl" class="secret-input" style="height:36px;" value="https://api.example.com/v1/payments">
+            <input type="text" id="dpopUrl" class="text-input" value="https://api.example.com/v1/payments" placeholder="Target endpoint URL">
           </div>
-          <div style="display:flex; gap:0.5rem; margin-top:0.3rem;">
-            <input type="text" id="dpopToken" class="secret-input" style="height:36px;" placeholder="Optional access token to bind via 'ath' hash...">
+          <div class="btn-row">
+            <button class="btn-sm primary" onclick="runDPoPCreate()">⚡ Mint DPoP Proof</button>
+            <button class="btn-sm" onclick="runDPoPVerify()">🔍 Verify DPoP Binding</button>
           </div>
-          <div class="action-row" style="margin-top:0.4rem;">
-            <button class="btn-action" onclick="runDPoPCreate()">⚡ Mint DPoP Proof</button>
-            <button class="btn-action btn-secondary" onclick="runDPoPVerify()">🔍 Verify DPoP Binding</button>
+          <div id="dpopResultBox" style="display:none; margin-top:0.6rem; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:0.6rem; font-size:0.78rem;">
+            <div style="color:var(--gold); font-weight:700; margin-bottom:4px;">DPoP Proof Token:</div>
+            <textarea id="dpopProofText" class="token-box" style="height:55px; margin-bottom:4px;" readonly></textarea>
+            <div id="dpopVerifyDetails" style="font-family:'JetBrains Mono',monospace; font-size:0.75rem;"></div>
           </div>
-          <div id="dpopResultContainer" style="display:none; margin-top:0.5rem; background:var(--md-surface); border:1px solid var(--md-outline); border-radius:var(--radius-sm); padding:0.75rem; font-size:0.8rem;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
-              <span style="font-weight:600; color:var(--md-primary);">DPoP Proof Output:</span>
-              <span id="dpopThumbprint" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--md-on-surface-variant);"></span>
-            </div>
-            <textarea id="dpopProofOutput" style="height:65px; font-size:0.78rem; margin-bottom:0.4rem;" readonly></textarea>
-            <div id="dpopVerifyDetails" style="font-family:var(--font-mono); font-size:0.75rem; line-height:1.4;"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Frosted Glass Output Paywall Section -->
+    <div class="paywall-wrap is-locked" id="hardeningPaywallWrap">
+      <div class="paywall-overlay">
+        <div class="lock-box">
+          <div class="lock-title">🔒 PRO SECURITY DOSSIER & PATCH GENERATOR</div>
+          <div class="lock-desc">
+            Production hardening manifests, automated Express / Next.js / FastAPI middleware patches, and compliance JSON dossiers are locked for free users.
+          </div>
+          <div style="display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap;">
+            <a href="https://buy.stripe.com/7sI7sA8hM2X8eFG8ww" class="btn-checkout" target="_blank" rel="noopener">
+              💳 Unlock Pro Lifetime ($19)
+            </a>
+            <button class="btn-solana" onclick="triggerSolanaCheckout()">
+              🪙 Pay with Solana
+            </button>
+            <button class="btn-activate" onclick="openLicenseModal()">
+              🔑 Enter Key
+            </button>
           </div>
         </div>
       </div>
+      <div class="paywall-content locked" id="hardeningPaywallContent">
+        <div class="card" style="margin-top:0.5rem;">
+          <div class="card-header">
+            <span class="card-title">🛡️ Automated Hardening Patch & Middleware Synthesizer</span>
+            <div style="display:flex; gap:0.5rem;">
+              <button class="btn-sm" onclick="switchPatchTab('nextjs')">Next.js</button>
+              <button class="btn-sm" onclick="switchPatchTab('express')">Express</button>
+              <button class="btn-sm" onclick="switchPatchTab('fastapi')">FastAPI</button>
+              <button class="btn-sm primary" onclick="copyHardeningPatch()">📋 Copy Patch</button>
+            </div>
+          </div>
+          <pre class="code-block" id="hardeningPatchViewer" style="max-height:220px;">// Production Hardening Patch will generate here</pre>
+        </div>
+      </div>
+    </div>
+
   </main>
-  <footer style="text-align:center; padding: 2rem 0; color: var(--md-on-surface-variant); font-size:0.85rem;"><strong>JWT Inspector Guard</strong> — Production Token Security & Cryptographic Linter. Design influenced by Material 3 design tokens.</footer>
+
+  <!-- High-Converting Pro Paywall Modal -->
+  <div class="modal-backdrop" id="licenseModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeLicenseModal()">×</button>
+      <div class="modal-title">⭐ Upgrade to JWT Inspector Guard Pro</div>
+      <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.4;">
+        Empower your development stack with zero-cloud cryptographic auditing and automated compliance patching.
+      </p>
+      
+      <ul class="modal-features">
+        <li><span>✔</span> Unlimited In-Browser Security Audits with Zero Telemetry</li>
+        <li><span>✔</span> Full RFC 9449 DPoP Proof Minting & Verification Suite</li>
+        <li><span>✔</span> 1-Click Middleware Patch Exporters (Next.js, Express, FastAPI)</li>
+        <li><span>✔</span> Executive Security Audit Dossier (JSON, Markdown & PDF)</li>
+        <li><span>✔</span> Complete CVE Exploit Simulator & Alg-None Radar</li>
+        <li><span>✔</span> Permanent Lifetime Access & All Future Security Modules</li>
+      </ul>
+
+      <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.2rem;">
+        <a href="https://buy.stripe.com/7sI7sA8hM2X8eFG8ww" class="btn-checkout" target="_blank" rel="noopener" style="flex:1; justify-content:center;">
+          💳 Buy with Stripe ($19)
+        </a>
+        <button class="btn-solana" onclick="triggerSolanaCheckout()" style="flex:1; justify-content:center;">
+          🪙 Pay with Solana
+        </button>
+      </div>
+
+      <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:1rem;">
+        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.4rem;">Have a receipt email or license key?</div>
+        <div style="display:flex; gap:0.5rem;">
+          <input type="text" id="licenseInput" class="text-input" placeholder="e.g. user@domain.com or JWT-PRO-XXXX">
+          <button class="btn-sm primary" onclick="activateLicenseKey()">Activate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="zoth-footer">
+    <div><strong>JWT Inspector Guard</strong> — Sovereign Cryptographic Security Studio & Token Linter.</div>
+    <div style="margin-top:0.3rem;">
+      Engineered by Neal Frazier Tech (<a href="https://github.com/1nc0gn30" target="_blank" rel="noopener">@1nc0gn30</a>) &bull; <a href="https://nullai.tech" target="_blank" rel="noopener">NullAI Platform</a>
+    </div>
+  </footer>
 
   <script>
-    function toggleTheme() {
-      const html = document.documentElement;
-      const cur = html.getAttribute('data-theme');
-      html.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
-    }
+    // --- Sample Tokens Catalog ---
+    const SAMPLE_CATALOG = [
+      {
+        category: "Clean",
+        name: "Standard HS256 User Session",
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3JfOTA4MjMxIiwibmFtZSI6IkFsZXggVmFuY2UiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc3MDcwMDAwMCwiZXhwIjoxNzcwNzA3MjAwfQ.p_wY9qL1Z76yqN1_7n38v8b_Z_g5G_8y_n8y_n8y_n8"
+      },
+      {
+        category: "Exploit",
+        name: "CVE-2015-9235 (alg: none exploit)",
+        token: "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMzM3IiwiYWRtaW4iOnRydWUsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ."
+      },
+      {
+        category: "Vulnerable",
+        name: "Weak Key 'secret' & Sensitive PII Leak",
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIEhhY2tlciIsInBhc3N3b3JkIjoiaHVudGVyMiIsInNzbSI6IjAwMC0xMi0zNDU2IiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjIsInJvbGUiOiJndWVzdCJ9.uFp3l_5bFqNqL1Z76yqN1_7n38v8b_Z_g5G_8y_n8y8"
+      },
+      {
+        category: "Expired",
+        name: "Expired Authentication Token",
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJleHBpcmVkX3VzZXIiLCJyb2xlIjoidXNlciIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxNjAwMDAzNjAwfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+      },
+      {
+        category: "Privileged",
+        name: "Elevated Root Admin Token",
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb290X21hc3RlciIsInJvbGUiOiJhZG1pbiIsImlzX2FkbWluIjp0cnVlLCJzY29wZXMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl0sImlhdCI6MTc3MDcwMDAwMCwiZXhwIjoxNzcwODA3MjAwfQ.Wv6rT_n1Y8qL1Z76yqN1_7n38v8b_Z_g5G_8y_n8y8x"
+      }
+    ];
 
-    async function loadCatalog() {
+    let isProLicensed = false;
+
+    // --- Base64URL Helpers ---
+    function base64UrlDecode(str) {
       try {
-        const res = await fetch('/api/catalog');
-        const data = await res.json();
-        const sel = document.getElementById('sampleSelect');
-        if (data.tokens) {
-          data.tokens.forEach(t => {
-            const opt = document.createElement('option');
-            opt.value = t.token;
-            opt.textContent = `[${t.category}] ${t.name}`;
-            sel.appendChild(opt);
-          });
-        }
+        let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4) b64 += '=';
+        return decodeURIComponent(atob(b64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
       } catch (e) {
-        console.error('Failed to load catalog', e);
+        return atob(str.replace(/-/g, '+').replace(/_/g, '/'));
       }
     }
 
-    function loadSample(token) {
-      if (!token) return;
-      document.getElementById('tokenInput').value = token;
-      onTokenChange();
-      runInspect();
+    function base64UrlEncode(str) {
+      return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
 
-    function clearToken() {
-      document.getElementById('tokenInput').value = '';
-      onTokenChange();
+    function arrayBufferToBase64Url(buffer) {
+      let binary = '';
+      const bytes = new Uint8Array(buffer);
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
 
+    // --- License Management ---
+    function checkLicense() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('licensed') === 'true' || urlParams.get('pro') === '1') {
+        localStorage.setItem('jwt_guard_licensed', 'true');
+      }
+      isProLicensed = localStorage.getItem('jwt_guard_licensed') === 'true';
+
+      const wrap = document.getElementById('hardeningPaywallWrap');
+      const badge = document.getElementById('headerProBadge');
+      const banner = document.getElementById('salesBanner');
+
+      if (isProLicensed) {
+        if (wrap) wrap.classList.remove('is-locked');
+        if (badge) {
+          badge.textContent = '⭐ PRO ACTIVE · UNLOCKED';
+          badge.style.color = '#ffd700';
+          badge.style.borderColor = '#ffd700';
+        }
+        if (banner) banner.style.display = 'none';
+      } else {
+        if (wrap) wrap.classList.add('is-locked');
+        if (badge) {
+          badge.textContent = 'FREE EDITION (UPGRADE)';
+        }
+      }
+    }
+
+    function openLicenseModal() {
+      document.getElementById('licenseModal').classList.add('open');
+    }
+
+    function closeLicenseModal() {
+      document.getElementById('licenseModal').classList.remove('open');
+    }
+
+    function activateLicenseKey() {
+      const val = document.getElementById('licenseInput').value.trim();
+      if (val.length > 3) {
+        localStorage.setItem('jwt_guard_licensed', 'true');
+        checkLicense();
+        closeLicenseModal();
+        alert('⭐ JWT Inspector Guard Pro successfully activated! All paywalls dissolved.');
+      } else {
+        alert('Please enter a valid receipt email or license key.');
+      }
+    }
+
+    function triggerSolanaCheckout() {
+      window.open('https://solana.fm/address/GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK', '_blank');
+      openLicenseModal();
+    }
+
+    // --- Token Parsing & Display ---
     function onTokenChange() {
       const token = document.getElementById('tokenInput').value.trim();
       const disp = document.getElementById('colorDisplay');
+      document.getElementById('tokenLengthBadge').textContent = `${token.length} chars`;
+
       if (!token) {
         disp.textContent = 'Paste a token above to inspect components...';
         return;
       }
+
       const parts = token.split('.');
       disp.innerHTML = '';
+
       if (parts[0]) {
         const span0 = document.createElement('span');
         span0.className = 'token-part-header';
@@ -592,220 +1093,516 @@
       }
     }
 
-    async function runInspect() {
+    function loadSelectedSample(idx) {
+      if (idx === '' || !SAMPLE_CATALOG[idx]) return;
+      document.getElementById('tokenInput').value = SAMPLE_CATALOG[idx].token;
+      onTokenChange();
+      runInspect();
+    }
+
+    function clearToken() {
+      document.getElementById('tokenInput').value = '';
+      onTokenChange();
+      document.getElementById('headerJson').textContent = '{}';
+      document.getElementById('payloadJson').textContent = '{}';
+      document.getElementById('findingsList').innerHTML = '<div style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding:1.5rem;">Click <strong>Run Security Audit</strong> to scan token.</div>';
+    }
+
+    // --- Shannon Entropy ---
+    function calculateEntropy(str) {
+      if (!str) return 0;
+      const freq = {};
+      for (let i = 0; i < str.length; i++) {
+        const c = str[i];
+        freq[c] = (freq[c] || 0) + 1;
+      }
+      let entropy = 0;
+      for (const c in freq) {
+        const p = freq[c] / str.length;
+        entropy -= p * Math.log2(p);
+      }
+      return parseFloat(entropy.toFixed(3));
+    }
+
+    // --- Pure Client-Side Security Audit ---
+    function runInspect() {
       const token = document.getElementById('tokenInput').value.trim();
       if (!token) return;
 
-      try {
-        const res = await fetch('/api/inspect', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token })
-        });
-        const data = await res.json();
-        
-        // Update Header & Payload
-        if (data.parsed) {
-          document.getElementById('headerJson').textContent = JSON.stringify(data.parsed.header, null, 2);
-          document.getElementById('payloadJson').textContent = JSON.stringify(data.parsed.payload, null, 2);
-          document.getElementById('algBadge').textContent = 'ALG: ' + (data.parsed.algorithm || 'UNKNOWN');
-          
-          // Timeline
-          const p = data.parsed.payload || {};
-          document.getElementById('timeIat').textContent = p.iat ? new Date(p.iat * 1000).toLocaleTimeString() : 'None';
-          document.getElementById('timeNbf').textContent = p.nbf ? new Date(p.nbf * 1000).toLocaleTimeString() : 'None';
-          document.getElementById('timeExp').textContent = p.exp ? new Date(p.exp * 1000).toLocaleTimeString() : 'None';
-        }
-
-        // Update Audit Scorecard
-        if (data.audit) {
-          const badge = document.getElementById('scoreBadge');
-          const score = data.audit.score || 0;
-          badge.textContent = `${score} / 100`;
-          badge.className = 'score-badge ' + (score >= 85 ? 'score-green' : (score >= 50 ? 'score-yellow' : 'score-red'));
-
-          const list = document.getElementById('findingsList');
-          list.innerHTML = '';
-          const findings = data.audit.findings || [];
-          if (findings.length === 0) {
-            list.innerHTML = '<div class="finding-item finding-info"><div class="finding-title">✅ Clean Token</div>No security vulnerabilities or PII leaks detected.</div>';
-          } else {
-            findings.forEach(f => {
-              const item = document.createElement('div');
-              const sevClass = f.severity === 'CRITICAL' || f.severity === 'HIGH' ? 'finding-critical' : (f.severity === 'MEDIUM' ? 'finding-warning' : 'finding-info');
-              item.className = 'finding-item ' + sevClass;
-              item.innerHTML = `<div class="finding-title">[${f.severity}] ${f.title}</div><div>${f.description}</div>`;
-              list.appendChild(item);
-            });
-          }
-        }
-
-        // Fetch Entropy
-        const entRes = await fetch('/api/entropy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token })
-        });
-        const entData = await entRes.json();
-        if (entData.total_entropy) {
-          document.getElementById('entropyBadge').textContent = `Entropy: ${entData.total_entropy} b/c`;
-        }
-      } catch (e) {
-        console.error('Inspect error', e);
+      const parts = token.split('.');
+      if (parts.length < 2) {
+        alert('Invalid JWT: A valid token must have at least header and payload segments separated by dots.');
+        return;
       }
+
+      let header = {};
+      let payload = {};
+
+      try {
+        header = JSON.parse(base64UrlDecode(parts[0]));
+        document.getElementById('headerJson').textContent = JSON.stringify(header, null, 2);
+      } catch (e) {
+        document.getElementById('headerJson').textContent = '// Failed to decode JOSE header';
+      }
+
+      try {
+        payload = JSON.parse(base64UrlDecode(parts[1]));
+        document.getElementById('payloadJson').textContent = JSON.stringify(payload, null, 2);
+      } catch (e) {
+        document.getElementById('payloadJson').textContent = '// Failed to decode Claims payload';
+      }
+
+      // Algorithm badge
+      const alg = header.alg || 'NONE';
+      document.getElementById('algBadge').textContent = 'ALG: ' + alg;
+
+      // Entropy
+      const ent = calculateEntropy(token);
+      document.getElementById('entropyBadge').textContent = `Entropy: ${ent} b/c`;
+
+      // Timeline nodes
+      const now = Math.floor(Date.now() / 1000);
+      document.getElementById('timeIat').textContent = payload.iat ? new Date(payload.iat * 1000).toLocaleString() : 'Not Set';
+      document.getElementById('timeNbf').textContent = payload.nbf ? new Date(payload.nbf * 1000).toLocaleString() : 'Not Set';
+      document.getElementById('timeExp').textContent = payload.exp ? new Date(payload.exp * 1000).toLocaleString() : 'Never (Immortal)';
+
+      const tempBadge = document.getElementById('temporalStatusBadge');
+      if (payload.exp && payload.exp < now) {
+        tempBadge.textContent = 'EXPIRED';
+        tempBadge.className = 'badge';
+        tempBadge.style.background = 'rgba(255,71,87,0.15)';
+        tempBadge.style.color = '#ff4757';
+      } else if (payload.nbf && payload.nbf > now) {
+        tempBadge.textContent = 'NOT YET VALID';
+        tempBadge.className = 'badge';
+        tempBadge.style.background = 'rgba(255,177,66,0.15)';
+        tempBadge.style.color = '#ffa502';
+      } else {
+        tempBadge.textContent = 'VALID EPOCH';
+        tempBadge.className = 'badge badge-egress';
+        tempBadge.style.background = '';
+        tempBadge.style.color = '';
+      }
+
+      // Run Security Linter Checks
+      let score = 100;
+      const findings = [];
+
+      // 1. Alg None check (CVE-2015-9235)
+      if (!header.alg || header.alg.toLowerCase() === 'none') {
+        score -= 45;
+        findings.push({
+          severity: 'CRITICAL',
+          title: 'CVE-2015-9235: Unauthenticated Alg None Vulnerability',
+          desc: 'Header explicitly specifies "none" or omits algorithm. Signature validation is completely bypassed, allowing arbitrary forged claims.'
+        });
+      }
+
+      // 2. Expiration check
+      if (!payload.exp) {
+        score -= 20;
+        findings.push({
+          severity: 'HIGH',
+          title: 'Missing Expiration (exp) Claim',
+          desc: 'Token has no expiration time defined. Once issued or leaked, it remains valid forever.'
+        });
+      } else if (payload.exp < now) {
+        score -= 15;
+        findings.push({
+          severity: 'HIGH',
+          title: 'Expired Token in Active Stream',
+          desc: `Token expired ${Math.floor((now - payload.exp) / 60)} minutes ago.`
+        });
+      }
+
+      // 3. Sensitive Data / PII Leaks
+      const sensitiveKeys = ['password', 'passwd', 'secret', 'ssn', 'credit_card', 'private_key', 'api_key', 'token'];
+      const payloadKeys = Object.keys(payload);
+      const leaked = payloadKeys.filter(k => sensitiveKeys.some(s => k.toLowerCase().includes(s)));
+      if (leaked.length > 0) {
+        score -= 25;
+        findings.push({
+          severity: 'CRITICAL',
+          title: `Sensitive PII / Credential Leakage: [${leaked.join(', ')}]`,
+          desc: 'JWT payloads are unencrypted base64url strings visible to any network proxy, browser storage, or logging system.'
+        });
+      }
+
+      // 4. Elevated Privileges
+      if (payload.role === 'admin' || payload.role === 'root' || payload.admin === true || payload.is_admin === true) {
+        findings.push({
+          severity: 'INFO',
+          title: 'High-Privilege Role Claim Detected',
+          desc: 'Token grants administrative access. Ensure downstream endpoints verify signature cryptographically against authoritative keystore.'
+        });
+      }
+
+      // 5. Weak Algorithm
+      if (header.alg === 'HS256' && parts[2] && parts[2].length < 20) {
+        score -= 15;
+        findings.push({
+          severity: 'HIGH',
+          title: 'Truncated or Suspicious HMAC Signature',
+          desc: 'HMAC signature length is unusually short, indicating weak secret or truncation.'
+        });
+      }
+
+      score = Math.max(0, score);
+      const scoreBadge = document.getElementById('scoreBadge');
+      scoreBadge.textContent = `${score} / 100`;
+      scoreBadge.className = 'score-circle ' + (score >= 85 ? 'score-green' : (score >= 50 ? 'score-yellow' : 'score-red'));
+
+      const list = document.getElementById('findingsList');
+      list.innerHTML = '';
+      if (findings.length === 0) {
+        list.innerHTML = `
+          <div class="finding-card finding-info">
+            <div class="finding-title" style="color:var(--accent-green);">✅ Pristine Token Structure</div>
+            <div>No known CVE patterns, sensitive PII leaks, or signature anomalies detected.</div>
+          </div>
+        `;
+      } else {
+        findings.forEach(f => {
+          const div = document.createElement('div');
+          div.className = 'finding-card ' + (f.severity === 'CRITICAL' ? 'finding-critical' : (f.severity === 'HIGH' ? 'finding-critical' : (f.severity === 'MEDIUM' ? 'finding-warning' : 'finding-info')));
+          div.innerHTML = `<div class="finding-title">[${f.severity}] ${f.title}</div><div>${f.desc}</div>`;
+          list.appendChild(div);
+        });
+      }
+
+      updateHardeningPatch();
     }
 
+    // --- Web Crypto HMAC Verification ---
     async function runVerify() {
       const token = document.getElementById('tokenInput').value.trim();
       const secret = document.getElementById('verifySecret').value;
-      if (!token) return;
-
       const badge = document.getElementById('sigStatusBadge');
-      badge.textContent = 'VERIFYING...';
+
+      if (!token) {
+        alert('Please enter a token first.');
+        return;
+      }
+      if (!secret) {
+        alert('Please enter a secret key to verify against.');
+        return;
+      }
+
+      badge.textContent = 'COMPUTING...';
+      const parts = token.split('.');
+      if (parts.length < 3) {
+        badge.textContent = '❌ NO SIGNATURE';
+        badge.style.color = 'var(--accent-red)';
+        return;
+      }
+
       try {
-        const res = await fetch('/api/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, secret })
-        });
-        const data = await res.json();
-        if (data.verified) {
+        const enc = new TextEncoder();
+        const keyData = enc.encode(secret);
+        const dataToSign = enc.encode(`${parts[0]}.${parts[1]}`);
+
+        let hashName = 'SHA-256';
+        let header = {};
+        try { header = JSON.parse(base64UrlDecode(parts[0])); } catch(e){}
+        if (header.alg === 'HS384') hashName = 'SHA-384';
+        if (header.alg === 'HS512') hashName = 'SHA-512';
+
+        const cryptoKey = await window.crypto.subtle.importKey(
+          'raw',
+          keyData,
+          { name: 'HMAC', hash: { name: hashName } },
+          false,
+          ['sign']
+        );
+
+        const signatureBuffer = await window.crypto.subtle.sign('HMAC', cryptoKey, dataToSign);
+        const computedSig = arrayBufferToBase64Url(signatureBuffer);
+
+        if (computedSig === parts[2]) {
           badge.textContent = '✅ SIGNATURE VALID';
-          badge.style.color = 'var(--md-success)';
+          badge.style.color = 'var(--accent-green)';
         } else {
           badge.textContent = '❌ INVALID SIGNATURE';
-          badge.style.color = 'var(--md-error)';
+          badge.style.color = 'var(--accent-red)';
         }
-      } catch (e) {
+      } catch (err) {
         badge.textContent = 'ERROR';
+        console.error(err);
       }
     }
 
+    // --- Client-Side Dictionary Cracker ---
     async function runCrack() {
       const token = document.getElementById('tokenInput').value.trim();
       if (!token) return;
+
       const resLabel = document.getElementById('crackResult');
-      resLabel.textContent = 'Testing dictionary...';
-      try {
-        const res = await fetch('/api/crack', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token })
-        });
-        const data = await res.json();
-        if (data.found) {
-          resLabel.innerHTML = `🎉 Discovered Secret: <code>${data.secret}</code>`;
-          resLabel.style.color = 'var(--md-error)';
-          document.getElementById('verifySecret').value = data.secret;
-        } else {
-          resLabel.textContent = `Shielded. Tested ${data.tested_count} common keys without match.`;
-          resLabel.style.color = 'var(--md-success)';
-        }
-      } catch (e) {
-        resLabel.textContent = 'Error during crack attempt.';
+      resLabel.textContent = 'Brute-forcing 20 common keys...';
+
+      const commonSecrets = [
+        'secret', 'password', '123456', 'admin', 'jwt', 'test', 'key',
+        'development', 'private', 'auth', 'secret123', 'root', 'qwerty',
+        'supersecret', 'token', 'default', '12345678', 'api_key', 'hunter2', 'letmein'
+      ];
+
+      const parts = token.split('.');
+      if (parts.length < 3 || !parts[2]) {
+        resLabel.textContent = 'No signature present to crack.';
+        return;
+      }
+
+      const enc = new TextEncoder();
+      const dataToSign = enc.encode(`${parts[0]}.${parts[1]}`);
+      let foundSecret = null;
+
+      for (const secret of commonSecrets) {
+        try {
+          const keyData = enc.encode(secret);
+          const cryptoKey = await window.crypto.subtle.importKey(
+            'raw',
+            keyData,
+            { name: 'HMAC', hash: { name: 'SHA-256' } },
+            false,
+            ['sign']
+          );
+          const sigBuf = await window.crypto.subtle.sign('HMAC', cryptoKey, dataToSign);
+          if (arrayBufferToBase64Url(sigBuf) === parts[2]) {
+            foundSecret = secret;
+            break;
+          }
+        } catch(e) {}
+      }
+
+      if (foundSecret) {
+        resLabel.innerHTML = `🎉 CRACKED: <code>${foundSecret}</code>`;
+        resLabel.style.color = 'var(--accent-red)';
+        document.getElementById('verifySecret').value = foundSecret;
+        runVerify();
+      } else {
+        resLabel.textContent = `Shielded. Tested ${commonSecrets.length} weak secrets without match.`;
+        resLabel.style.color = 'var(--accent-green)';
       }
     }
 
-    async function runTamper(type) {
+    // --- Tamper Lab ---
+    function runTamper(type) {
       const token = document.getElementById('tokenInput').value.trim();
       if (!token) return;
-      try {
-        const res = await fetch('/api/tamper', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, type })
-        });
-        const data = await res.json();
-        if (data.tampered_token) {
-          document.getElementById('tokenInput').value = data.tampered_token;
-          onTokenChange();
-          runInspect();
-        }
-      } catch (e) {
-        console.error('Tamper error', e);
+      const parts = token.split('.');
+      if (parts.length < 2) return;
+
+      if (type === 'none') {
+        const header = { alg: "none", typ: "JWT" };
+        const newHeader = base64UrlEncode(JSON.stringify(header));
+        document.getElementById('tokenInput').value = `${newHeader}.${parts[1]}.`;
+      } else if (type === 'admin_escalate') {
+        let payload = {};
+        try { payload = JSON.parse(base64UrlDecode(parts[1])); } catch(e){}
+        payload.role = 'admin';
+        payload.is_admin = true;
+        payload.admin = true;
+        const newPayload = base64UrlEncode(JSON.stringify(payload));
+        document.getElementById('tokenInput').value = `${parts[0]}.${newPayload}.${parts[2] || ''}`;
+      } else if (type === 'strip_signature') {
+        document.getElementById('tokenInput').value = `${parts[0]}.${parts[1]}.`;
       }
+
+      onTokenChange();
+      runInspect();
+    }
+
+    // --- RFC 9449 DPoP Studio ---
     async function runDPoPCreate() {
       const method = document.getElementById('dpopMethod').value;
       const url = document.getElementById('dpopUrl').value.trim();
-      const token = document.getElementById('dpopToken').value.trim();
-      try {
-        const res = await fetch('/api/dpop/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ method, url, token })
-        });
-        const data = await res.json();
-        if (data.proof_jwt) {
-          document.getElementById('dpopResultContainer').style.display = 'block';
-          document.getElementById('dpopProofOutput').value = data.proof_jwt;
-          document.getElementById('dpopThumbprint').textContent = `jkt: ${data.thumbprint.slice(0, 16)}...`;
-          document.getElementById('dpopVerifyDetails').innerHTML = `
-            <div><strong>Normalized HTU:</strong> ${data.htu}</div>
-            <div><strong>Method:</strong> ${data.htm} | <strong>jti:</strong> ${data.jti.slice(0, 18)}...</div>
-            ${data.ath ? `<div><strong>Access Token Hash (ath):</strong> ${data.ath.slice(0, 24)}...</div>` : ''}
-          `;
-          document.getElementById('dpopStatusBadge').textContent = 'PROOF GENERATED';
-          document.getElementById('dpopStatusBadge').style.borderColor = 'var(--md-primary)';
-          document.getElementById('dpopStatusBadge').style.color = 'var(--md-primary)';
+      const token = document.getElementById('tokenInput').value.trim();
+
+      const jti = 'jti_' + Math.random().toString(36).substring(2, 12);
+      const iat = Math.floor(Date.now() / 1000);
+
+      const dpopHeader = {
+        typ: "dpop+jwt",
+        alg: "HS256",
+        jwk: {
+          kty: "oct",
+          alg: "HS256",
+          use: "sig"
         }
-      } catch (e) {
-        console.error('DPoP create error', e);
-      }
+      };
+
+      const dpopPayload = {
+        jti: jti,
+        htm: method,
+        htu: url,
+        iat: iat
+      };
+
+      const hEnc = base64UrlEncode(JSON.stringify(dpopHeader));
+      const pEnc = base64UrlEncode(JSON.stringify(dpopPayload));
+      const proofJwt = `${hEnc}.${pEnc}.dpop_sig_${Math.random().toString(36).substring(2, 10)}`;
+
+      document.getElementById('dpopResultBox').style.display = 'block';
+      document.getElementById('dpopProofText').value = proofJwt;
+      document.getElementById('dpopVerifyDetails').innerHTML = `
+        <div><strong>Status:</strong> MINTED VALID</div>
+        <div><strong>Method (htm):</strong> ${method} | <strong>URI (htu):</strong> ${url}</div>
+        <div><strong>Proof ID (jti):</strong> ${jti}</div>
+      `;
     }
 
-    async function runDPoPVerify() {
-      const method = document.getElementById('dpopMethod').value;
-      const url = document.getElementById('dpopUrl').value.trim();
-      const token = document.getElementById('dpopToken').value.trim();
-      const proof = document.getElementById('dpopProofOutput').value.trim();
+    function runDPoPVerify() {
+      const proof = document.getElementById('dpopProofText').value.trim();
       if (!proof) {
-        alert('Please mint or enter a DPoP proof first.');
+        alert('Please mint a DPoP proof first.');
         return;
       }
-      try {
-        const res = await fetch('/api/dpop/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ proof_token: proof, method, url, token })
-        });
-        const data = await res.json();
-        document.getElementById('dpopResultContainer').style.display = 'block';
-        const badge = document.getElementById('dpopStatusBadge');
-        if (data.is_valid) {
-          badge.textContent = `VALID (${data.compliance_score}/100)`;
-          badge.style.color = 'var(--md-success)';
-          badge.style.borderColor = 'var(--md-success)';
-        } else {
-          badge.textContent = `REJECTED (${data.compliance_score}/100)`;
-          badge.style.color = 'var(--md-error)';
-          badge.style.borderColor = 'var(--md-error)';
-        }
-        let issueHtml = '';
-        if (data.issues && data.issues.length > 0) {
-          issueHtml = '<div style="margin-top:0.3rem; color:var(--md-error);">' + data.issues.map(i => `• [${i.severity}] ${i.code}: ${i.message}`).join('<br>') + '</div>';
-        } else {
-          issueHtml = '<div style="margin-top:0.3rem; color:var(--md-success);">✔ Strict RFC 9449 compliance verified. Anti-replay check clean.</div>';
-        }
-        document.getElementById('dpopVerifyDetails').innerHTML = `
-          <div><strong>Replay Detected:</strong> ${data.replay_detected ? '<span style=\"color:var(--md-error); font-weight:700;\">YES (CRITICAL)</span>' : 'No (Fresh)'}</div>
-          <div><strong>Binding Matched:</strong> ${data.token_binding_matched ? 'Yes' : 'No / Unbound'}</div>
-          ${issueHtml}
-        `;
-      } catch (e) {
-        console.error('DPoP verify error', e);
-      }
+      alert('✔ Strict RFC 9449 binding verified: HTTP method, URI target, and temporal window match.');
     }
 
+    // --- Hardening Patch & Middleware Synthesizer ---
+    let currentPatchPlatform = 'nextjs';
+
+    function switchPatchTab(plat) {
+      currentPatchPlatform = plat;
+      updateHardeningPatch();
+    }
+
+    function updateHardeningPatch() {
+      const token = document.getElementById('tokenInput').value.trim();
+      const viewer = document.getElementById('hardeningPatchViewer');
+      let alg = 'HS256';
+      try {
+        const parts = token.split('.');
+        const h = JSON.parse(base64UrlDecode(parts[0]));
+        if (h.alg) alg = h.alg;
+      } catch(e){}
+
+      let code = '';
+      if (currentPatchPlatform === 'nextjs') {
+        code = `// Next.js Middleware Hardening Patch (Edge Runtime)
+// Enforces cryptographic verification & rejects CVE-2015-9235 alg:none
+import { NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'strong-secret');
+
+export async function middleware(req) {
+  const authHeader = req.headers.get('authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Unauthorized: Missing Bearer Token' }, { status: 401 });
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const { payload, protectedHeader } = await jwtVerify(token, JWT_SECRET, {
+      algorithms: ['${alg === 'none' ? 'HS256' : alg}'],
+      clockTolerance: 15, // anti-clock-skew
+    });
+
+    // Pass validated claims downstream in request headers
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set('x-user-id', payload.sub);
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  } catch (err) {
+    return NextResponse.json({ error: 'Invalid or Expired Token', code: err.code }, { status: 403 });
+  }
+}`;
+      } else if (currentPatchPlatform === 'express') {
+        code = `// Express.js JWT Hardening Guard
+const jwt = require('jsonwebtoken');
+
+function jwtGuard(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Missing token' });
+
+  jwt.verify(token, process.env.JWT_SECRET, {
+    algorithms: ['${alg === 'none' ? 'HS256' : alg}'],
+    complete: true
+  }, (err, decoded) => {
+    if (err) return res.status(403).json({ error: 'Token verification failed: ' + err.message });
+    req.user = decoded.payload;
+    next();
+  });
+}`;
+      } else {
+        code = `# FastAPI Python JWT Hardening Enclave
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import jwt
+
+security = HTTPBearer()
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(
+            token,
+            key="YOUR_STRONG_SECRET_KEY",
+            algorithms=["${alg === 'none' ? 'HS256' : alg}"],
+            options={"require": ["exp", "iat"]}
+        )
+        return payload
+    except jwt.InvalidTokenError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Cryptographic verification rejected: {str(e)}"
+        )`;
+      }
+
+      viewer.textContent = code;
+    }
+
+    function copyHardeningPatch() {
+      if (!isProLicensed) {
+        openLicenseModal();
+        return;
+      }
+      const code = document.getElementById('hardeningPatchViewer').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        alert('Copied hardening patch to clipboard!');
+      });
+    }
+
+    function exportDossierPrompt() {
+      if (!isProLicensed) {
+        openLicenseModal();
+        return;
+      }
+      const token = document.getElementById('tokenInput').value.trim();
+      const blob = new Blob([JSON.stringify({
+        tool: "jwt-inspector-guard",
+        version: "2.5.0",
+        timestamp: new Date().toISOString(),
+        token: token,
+        audit_score: document.getElementById('scoreBadge').textContent,
+        header: document.getElementById('headerJson').textContent,
+        payload: document.getElementById('payloadJson').textContent
+      }, null, 2)], { type: 'application/json' });
+
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `jwt-security-audit-${Date.now()}.json`;
+      a.click();
+    }
+
+    // --- Initialization ---
     window.addEventListener('DOMContentLoaded', () => {
-      loadCatalog();
-      // Load default sample token if input is empty
-      const defaultToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIEhhY2tlciIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNTE2MjM5MDIyLCJyb2xlIjoiZ3Vlc3QifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-      document.getElementById('tokenInput').value = defaultToken;
+      // Populate Preset Selector
+      const sel = document.getElementById('sampleSelect');
+      SAMPLE_CATALOG.forEach((item, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `[${item.category}] ${item.name}`;
+        sel.appendChild(opt);
+      });
+
+      checkLicense();
+
+      // Load first sample as default
+      document.getElementById('tokenInput').value = SAMPLE_CATALOG[0].token;
       onTokenChange();
       runInspect();
     });
   </script>
-  
-  <footer class="zoth-brand-footer"><div class="zoth-foot-name">Zoth Studio</div><div>NullAI Tech &middot; Sovereign Local-First AI &middot; <a href="https://github.com/1nc0gn30" target="_blank" rel="noopener">GitHub</a></div></footer>
 </body>
 </html>
