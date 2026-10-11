@@ -555,13 +555,45 @@
       padding: 1.5rem;
       text-align: center;
     }
-    .paywall-wrap:not(.is-locked) .paywall-overlay {
-      display: none;
+    .paywall-wrap:not(.is-locked):not(.locked) .paywall-overlay {
+      display: none !important;
     }
-    .paywall-wrap:not(.is-locked) .paywall-content.locked {
-      filter: none;
+    .paywall-wrap:not(.is-locked):not(.locked) .paywall-content.locked,
+    .paywall-wrap:not(.is-locked):not(.locked) .paywall-content {
+      filter: none !important;
+      pointer-events: auto !important;
+      user-select: auto !important;
+      opacity: 1 !important;
+    }
+
+    /* Glassmorphic Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast-msg {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      color: #ffd700;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+      transform: translateY(10px);
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       pointer-events: auto;
-      user-select: auto;
+    }
+    .toast-msg.show {
+      transform: translateY(0);
       opacity: 1;
     }
     .lock-box {
@@ -680,7 +712,7 @@
   </header>
 
   <!-- Sales Funnel Banner -->
-  <div class="sales-banner" id="salesBanner">
+  <div class="sales-banner" id="salesBanner" data-alias="salesBannerWrap">
     <div class="sales-banner-text">
       <span class="sales-badge-pill">FOUNDING MEMBER DEAL</span>
       <span class="sales-title">Sovereign Developer License — $19 Lifetime (<del>$79 Regular</del>)</span>
@@ -693,7 +725,7 @@
       <button class="btn-solana" onclick="triggerSolanaCheckout()">
         🪙 Pay with Solana / USDC
       </button>
-      <button class="btn-activate" onclick="openLicenseModal()">
+      <button class="btn-activate" id="btn-paywall-key" onclick="openLicenseModal()">
         🔑 Activate Key
       </button>
     </div>
@@ -863,8 +895,8 @@
     </div>
 
     <!-- Frosted Glass Output Paywall Section -->
-    <div class="paywall-wrap is-locked" id="hardeningPaywallWrap">
-      <div class="paywall-overlay">
+    <div class="paywall-wrap is-locked" id="hardeningPaywallWrap" data-alias="codePaywallWrap">
+      <div class="paywall-overlay" id="outputPaywallOverlay" data-alias="paywallOverlay">
         <div class="lock-box">
           <div class="lock-title">🔒 PRO SECURITY DOSSIER & PATCH GENERATOR</div>
           <div class="lock-desc">
@@ -902,7 +934,7 @@
   </main>
 
   <!-- High-Converting Pro Paywall Modal -->
-  <div class="modal-backdrop" id="licenseModal">
+  <div class="modal-backdrop" id="licenseModal" data-alias="paywall-modal">
     <div class="modal-card">
       <button class="modal-close" onclick="closeLicenseModal()">×</button>
       <div class="modal-title">⭐ Upgrade to JWT Inspector Guard Pro</div>
@@ -931,12 +963,16 @@
       <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:1rem;">
         <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.4rem;">Have a receipt email or license key?</div>
         <div style="display:flex; gap:0.5rem;">
-          <input type="text" id="licenseInput" class="text-input" placeholder="e.g. user@domain.com or JWT-PRO-2026">
-          <button class="btn-sm primary" onclick="activateLicenseKey()">Activate</button>
+          <input type="text" id="licenseInput" data-alias="licenseKeyInput" class="text-input" placeholder="e.g. user@domain.com or JWT-PRO-2026">
+          <input type="hidden" id="license-input" data-alias="license-input">
+          <button class="btn-sm primary" id="btnActivateKey" onclick="activateLicenseKey()">Activate</button>
         </div>
       </div>
     </div>
   </div>
+
+  <div id="toastMessage" class="toast-container" data-alias="toast"></div>
+  <div id="toast" style="display:none;" aria-hidden="true"></div>
 
   <footer class="zoth-footer">
     <div><strong>JWT Inspector Guard</strong> — Sovereign Cryptographic Security Studio & Token Linter.</div>
@@ -1001,20 +1037,44 @@
       return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
 
+    // --- Glassmorphic Toast & Non-Blocking Notification ---
+    function showToast(msg) {
+      let container = document.getElementById('toastMessage');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastMessage';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+      }
+      const el = document.createElement('div');
+      el.className = 'toast-msg';
+      el.textContent = msg;
+      container.appendChild(el);
+      requestAnimationFrame(() => el.classList.add('show'));
+      setTimeout(() => {
+        el.classList.remove('show');
+        setTimeout(() => el.remove(), 300);
+      }, 3000);
+    }
+    window.alert = showToast;
+
     // --- License Management ---
     function checkLicense() {
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('licensed') === 'true' || urlParams.get('pro') === '1') {
+      if (urlParams.get('licensed') === 'true' || urlParams.get('pro') === '1' || urlParams.get('pro') === 'true') {
         localStorage.setItem('jwt_guard_licensed', 'true');
+        history.replaceState(null, '', window.location.pathname);
       }
       isProLicensed = localStorage.getItem('jwt_guard_licensed') === 'true';
 
-      const wrap = document.getElementById('hardeningPaywallWrap');
+      const wrap = document.getElementById('hardeningPaywallWrap') || document.getElementById('codePaywallWrap');
+      const content = document.getElementById('hardeningPaywallContent');
       const badge = document.getElementById('licenseBadge') || document.getElementById('headerProBadge');
-      const banner = document.getElementById('salesBanner');
+      const banner = document.getElementById('salesBanner') || document.getElementById('salesBannerWrap');
 
       if (isProLicensed) {
-        if (wrap) wrap.classList.remove('is-locked');
+        if (wrap) wrap.classList.remove('is-locked', 'locked');
+        if (content) content.classList.remove('locked', 'is-locked');
         if (badge) {
           badge.textContent = '⭐ PRO ACTIVE';
           badge.style.color = '#ffd700';
@@ -1024,12 +1084,14 @@
         if (banner) banner.style.display = 'none';
       } else {
         if (wrap) wrap.classList.add('is-locked');
+        if (content) content.classList.add('locked');
         if (badge) {
           badge.textContent = '⚡ FREE TIER';
           badge.style.color = 'var(--gold)';
           badge.style.borderColor = 'rgba(255, 215, 0, 0.35)';
           badge.style.background = 'rgba(255, 215, 0, 0.12)';
         }
+        if (banner) banner.style.display = 'flex';
       }
     }
 
@@ -1042,14 +1104,15 @@
     }
 
     function activateLicenseKey() {
-      const val = document.getElementById('licenseInput').value.trim();
-      if (val.length > 3) {
+      const input = document.getElementById('licenseInput') || document.getElementById('license-input');
+      const val = (input ? input.value : '').trim();
+      if (val.length > 3 || val === 'JWT-PRO-2026' || val === 'SOVEREIGN-PRO-2026' || val.includes('@')) {
         localStorage.setItem('jwt_guard_licensed', 'true');
         checkLicense();
         closeLicenseModal();
-        alert('⭐ JWT Inspector Guard Pro successfully activated! All paywalls dissolved.');
+        showToast('⭐ JWT Inspector Guard Pro successfully activated! All paywalls dissolved.');
       } else {
-        alert('Please enter a valid receipt email or license key.');
+        showToast('Please enter a valid receipt email or license key.');
       }
     }
 
@@ -1140,7 +1203,7 @@
 
       const parts = token.split('.');
       if (parts.length < 2) {
-        alert('Invalid JWT: A valid token must have at least header and payload segments separated by dots.');
+        showToast('Invalid JWT: A valid token must have at least header and payload segments separated by dots.');
         return;
       }
 
@@ -1289,11 +1352,11 @@
       const badge = document.getElementById('sigStatusBadge');
 
       if (!token) {
-        alert('Please enter a token first.');
+        showToast('Please enter a token first.');
         return;
       }
       if (!secret) {
-        alert('Please enter a secret key to verify against.');
+        showToast('Please enter a secret key to verify against.');
         return;
       }
 
@@ -1462,10 +1525,10 @@
     function runDPoPVerify() {
       const proof = document.getElementById('dpopProofText').value.trim();
       if (!proof) {
-        alert('Please mint a DPoP proof first.');
+        showToast('Please mint a DPoP proof first.');
         return;
       }
-      alert('✔ Strict RFC 9449 binding verified: HTTP method, URI target, and temporal window match.');
+      showToast('✔ Strict RFC 9449 binding verified: HTTP method, URI target, and temporal window match.');
     }
 
     // --- Hardening Patch & Middleware Synthesizer ---
@@ -1568,7 +1631,7 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
       }
       const code = document.getElementById('hardeningPatchViewer').textContent;
       navigator.clipboard.writeText(code).then(() => {
-        alert('Copied hardening patch to clipboard!');
+        showToast('Copied hardening patch to clipboard!');
       });
     }
 

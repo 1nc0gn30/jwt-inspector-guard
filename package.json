@@ -1,6 +1,6 @@
 {
   "name": "jwt-inspector-guard",
-  "version": "2.0.0",
+  "version": "2.6.0",
   "description": "Zero-Egress Cryptographic JWT Security Auditor, Inspector & Exploit Fuzzer — Desktop Workstation",
   "main": "electron/main.cjs",
   "bin": {
@@ -8,7 +8,9 @@
     "jwt-inspector": "./bin/jwt-guard.js"
   },
   "scripts": {
-    "start": "python3 -m jwt_inspector_guard.cli serve --port 8080 --no-browser",
+    "start": "python3 -m jwt_inspector_guard.cli serve --port 8124 --no-browser",
+    "serve": "python3 -m http.server 8124 --directory public",
+    "test:ui": "python3 scripts/verify_ui.py",
     "electron": "electron .",
     "app": "electron .",
     "test": "pytest tests/"
