@@ -36,6 +36,17 @@ _PROJECT_ROOT = _HERE.parent.parent  # src/jwt_inspector_guard → src → proje
 _PUBLIC_DIR = _PROJECT_ROOT / "public"
 
 
+def _safe_rel(raw: str) -> str:
+    """Request path -> safe relative path inside a static dir; '' (index) if it
+    tries to climb out with '..' or is absolute. Raw request paths are not normalised."""
+    from urllib.parse import unquote
+    rel = unquote(str(raw or "")).replace("\\", "/").lstrip("/")
+    parts = [p for p in rel.split("/") if p not in ("", ".")]
+    if any(p == ".." for p in parts) or ":" in (parts[0] if parts else ""):
+        return ""
+    return "/".join(parts)
+
+
 def _is_local_origin(origin) -> bool:
     """True for no Origin (CLI/curl/same-origin GET) or a localhost origin."""
     if not origin:
@@ -56,7 +67,7 @@ def _cors_origin(handler) -> str:
 
 def _read_public_file(rel_path: str) -> Tuple[Optional[bytes], Optional[str]]:
     """Return (content_bytes, mime_type) for a file in the public directory, or (None, None)."""
-    safe_rel = rel_path.lstrip("/")
+    safe_rel = _safe_rel(rel_path)
     if not safe_rel or safe_rel == "":
         safe_rel = "index.html"
     target = (_PUBLIC_DIR / safe_rel).resolve()
