@@ -36,6 +36,24 @@ _PROJECT_ROOT = _HERE.parent.parent  # src/jwt_inspector_guard → src → proje
 _PUBLIC_DIR = _PROJECT_ROOT / "public"
 
 
+def _is_local_origin(origin) -> bool:
+    """True for no Origin (CLI/curl/same-origin GET) or a localhost origin."""
+    if not origin:
+        return True
+    from urllib.parse import urlparse
+    try:
+        u = urlparse(origin)
+    except Exception:
+        return False
+    return u.scheme in ("http", "https") and (u.hostname or "") in ("localhost", "127.0.0.1", "::1")
+
+
+def _cors_origin(handler) -> str:
+    """Echo the Origin only when it is local; never '*'."""
+    origin = handler.headers.get("Origin", "")
+    return origin if origin and _is_local_origin(origin) else "http://127.0.0.1"
+
+
 def _read_public_file(rel_path: str) -> Tuple[Optional[bytes], Optional[str]]:
     """Return (content_bytes, mime_type) for a file in the public directory, or (None, None)."""
     safe_rel = rel_path.lstrip("/")
@@ -357,7 +375,7 @@ class JWTInspectorHandler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Origin", _cors_origin(self))
         self.end_headers()
         self.wfile.write(body)
 
@@ -380,7 +398,7 @@ class JWTInspectorHandler(BaseHTTPRequestHandler):
 
     def do_OPTIONS(self) -> None:  # noqa: N802
         self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Origin", _cors_origin(self))
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
@@ -406,6 +424,9 @@ class JWTInspectorHandler(BaseHTTPRequestHandler):
                 self._send_json({"error": "Not found"}, 404)
 
     def do_POST(self) -> None:  # noqa: N802
+        if not _is_local_origin(self.headers.get("Origin")):
+            self.send_error(403, "Cross-origin request blocked")
+            return
         parsed = urlparse(self.path)
         path = parsed.path
 
