@@ -13,11 +13,16 @@
   <meta property="og:description" content="In-browser JWT security auditor, cryptographic signature verifier, and RFC 9449 DPoP token studio. Zero cloud egress.">
   <meta property="og:url" content="https://jwtguard.nullai.tech">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://jwtguard.nullai.tech/assets/banner.jpg">
+  <meta property="og:image" content="https://jwtguard.nullai.tech/assets/banner.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@1nc0gn30">
   <meta name="twitter:creator" content="@1nc0gn30">
-  <meta name="twitter:image" content="https://jwtguard.nullai.tech/assets/banner.jpg">
+  <meta name="twitter:image" content="https://jwtguard.nullai.tech/assets/banner.png">
+
+  <!-- Favicon & Brand Icons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icon.png">
+  <link rel="apple-touch-icon" href="/assets/icon.png">
 
   <!-- AEO & SEO Schema.org Graph -->
   <script type="application/ld+json">
@@ -662,7 +667,7 @@
 
   <header>
     <div class="brand-wrap">
-      <div class="brand-logo" alt="JWT Inspector Guard Seal">⚡</div>
+      <img src="/assets/icon.png" alt="JWT Inspector Guard Logo" class="brand-icon" style="width:36px;height:36px;border-radius:8px;object-fit:cover;box-shadow:0 0 10px rgba(0,229,255,0.4);margin-right:10px;">
       <div class="brand-text">
         <h1>JWT Inspector Guard</h1>
         <p>Sovereign Cryptographic Linter & DPoP Token Studio</p>
@@ -670,7 +675,7 @@
     </div>
     <div class="header-badges">
       <span class="badge badge-egress">ZERO CLOUD EGRESS</span>
-      <span class="badge badge-pro" id="headerProBadge" onclick="openLicenseModal()">FREE EDITION (UPGRADE)</span>
+      <span class="badge badge-pro" id="licenseBadge" onclick="openLicenseModal()">⚡ FREE TIER</span>
     </div>
   </header>
 
@@ -926,7 +931,7 @@
       <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:1rem;">
         <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.4rem;">Have a receipt email or license key?</div>
         <div style="display:flex; gap:0.5rem;">
-          <input type="text" id="licenseInput" class="text-input" placeholder="e.g. user@domain.com or JWT-PRO-XXXX">
+          <input type="text" id="licenseInput" class="text-input" placeholder="e.g. user@domain.com or JWT-PRO-2026">
           <button class="btn-sm primary" onclick="activateLicenseKey()">Activate</button>
         </div>
       </div>
@@ -1005,21 +1010,25 @@
       isProLicensed = localStorage.getItem('jwt_guard_licensed') === 'true';
 
       const wrap = document.getElementById('hardeningPaywallWrap');
-      const badge = document.getElementById('headerProBadge');
+      const badge = document.getElementById('licenseBadge') || document.getElementById('headerProBadge');
       const banner = document.getElementById('salesBanner');
 
       if (isProLicensed) {
         if (wrap) wrap.classList.remove('is-locked');
         if (badge) {
-          badge.textContent = '⭐ PRO ACTIVE · UNLOCKED';
+          badge.textContent = '⭐ PRO ACTIVE';
           badge.style.color = '#ffd700';
           badge.style.borderColor = '#ffd700';
+          badge.style.background = 'rgba(255, 215, 0, 0.15)';
         }
         if (banner) banner.style.display = 'none';
       } else {
         if (wrap) wrap.classList.add('is-locked');
         if (badge) {
-          badge.textContent = 'FREE EDITION (UPGRADE)';
+          badge.textContent = '⚡ FREE TIER';
+          badge.style.color = 'var(--gold)';
+          badge.style.borderColor = 'rgba(255, 215, 0, 0.35)';
+          badge.style.background = 'rgba(255, 215, 0, 0.12)';
         }
       }
     }
