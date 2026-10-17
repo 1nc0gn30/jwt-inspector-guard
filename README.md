@@ -1,5 +1,9 @@
 # JWT Inspector Guard 🛡️🔐
 
+> ⚡ **Live Web Application**: [https://jwt-inspector-guard.netlify.app](https://jwt-inspector-guard.netlify.app)  
+> 💳 **Unlock Pro Lifetime License ($19 One-Time, $0/mo)**: **[Instant Pro Unlock via Stripe](https://buy.stripe.com/4gMfZg9AheOsdhKbcAfw40L)** *(Use promo code `FOUNDER25` for 25% off)*  
+> 🏆 **All-Access Sovereign Pro Bundle (All 44 Tools — $49 Lifetime)**: **[Get All 44 Studios via Stripe](https://buy.stripe.com/eVq14m5k16hW4Le0xWfw40M)**
+
 > **Multi-OS Model Context Protocol (MCP) Server, CLI & Interactive Security Studio (design influenced by Material 3 tokens) for JSON Web Tokens (JWT / JWS / JWE).**
 > **Zero External Dependencies** — 100% Python Standard Library (3.9–3.13).
 
