@@ -699,7 +699,7 @@
 
   <header>
     <div class="brand-wrap">
-      <img src="/assets/icon.png" alt="JWT Inspector Guard Logo" class="brand-icon" style="width:36px;height:36px;border-radius:8px;object-fit:cover;box-shadow:0 0 10px rgba(0,229,255,0.4);margin-right:10px;">
+      <img src="assets/icon.png" alt="JWT Inspector Guard Logo" class="brand-icon" style="width:36px;height:36px;border-radius:8px;object-fit:cover;box-shadow:0 0 10px rgba(0,229,255,0.4);margin-right:10px;">
       <div class="brand-text">
         <h1>JWT Inspector Guard</h1>
         <p>Sovereign Cryptographic Linter & DPoP Token Studio</p>
@@ -720,13 +720,13 @@
     </div>
     <div class="sales-banner-ctas">
       <a href="https://buy.stripe.com/4gMfZg9AheOsdhKbcAfw40L" class="btn-checkout" target="_blank" rel="noopener">
-        💳 Instant Stripe Checkout ($19)
+        ★ Instant Stripe Checkout ($19)
       </a>
       <button class="btn-solana" onclick="triggerSolanaCheckout()">
-        🪙 Pay with Solana / USDC
+        ◉ Pay with Solana / USDC
       </button>
       <button class="btn-activate" id="btn-paywall-key" onclick="openLicenseModal()">
-        🔑 Activate Key
+        ✦ Activate Key
       </button>
     </div>
   </div>
@@ -743,14 +743,14 @@
       </div>
       <div style="display:flex; align-items:center; gap:0.5rem;">
         <button class="btn-sm primary" onclick="runInspect()">⚡ Run Security Audit</button>
-        <button class="btn-sm" onclick="exportDossierPrompt()">📥 Export Security Dossier</button>
+        <button class="btn-sm" onclick="exportDossierPrompt()">↓ Export Security Dossier</button>
       </div>
     </div>
 
     <!-- Token Input Area -->
     <div class="card" style="margin-bottom:1.2rem;">
       <div class="card-header">
-        <span class="card-title">🔑 Bearer JWT Token Stream</span>
+        <span class="card-title">✦ Bearer JWT Token Stream</span>
         <span style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted);" id="tokenLengthBadge">0 chars</span>
       </div>
       <textarea id="tokenInput" class="token-box" placeholder="Paste your header.payload.signature JWT here..." oninput="onTokenChange()"></textarea>
@@ -787,7 +787,7 @@
         <!-- JOSE Header -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">📜 Decoded JOSE Header</span>
+            <span class="card-title">▣ Decoded JOSE Header</span>
             <span class="badge" id="algBadge" style="background:rgba(255,107,129,0.15); color:#ff6b81; border:1px solid #ff6b81;">ALG: -</span>
           </div>
           <pre class="code-block" id="headerJson">{}</pre>
@@ -796,7 +796,7 @@
         <!-- Claims Payload -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">📦 Decoded Claims Payload</span>
+            <span class="card-title">▣ Decoded Claims Payload</span>
             <span class="badge" id="entropyBadge" style="background:rgba(165,94,234,0.15); color:#a55eea; border:1px solid #a55eea;">Entropy: -</span>
           </div>
           <pre class="code-block" id="payloadJson">{}</pre>
@@ -805,15 +805,15 @@
         <!-- 1-Click Tamper & Exploit Lab -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🧪 1-Click Tamper & Exploit Lab</span>
+            <span class="card-title">✦ 1-Click Tamper & Exploit Lab</span>
             <span class="badge" style="background:rgba(255,215,0,0.1); color:var(--gold); border:1px solid var(--gold);">CVE SIMULATOR</span>
           </div>
           <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
             Test your authentication service by simulating common token attacks:
           </p>
           <div class="btn-row">
-            <button class="btn-sm danger" onclick="runTamper('none')">💥 CVE-2015-9235 (alg:none)</button>
-            <button class="btn-sm" onclick="runTamper('admin_escalate')">👑 Admin Role Escalation</button>
+            <button class="btn-sm danger" onclick="runTamper('none')">✦ CVE-2015-9235 (alg:none)</button>
+            <button class="btn-sm" onclick="runTamper('admin_escalate')">✦ Admin Role Escalation</button>
             <button class="btn-sm" onclick="runTamper('strip_signature')">✂️ Strip Signature</button>
           </div>
         </div>
@@ -825,7 +825,7 @@
         <!-- Security Audit Card -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🛡️ Security Audit & Vulnerability Radar</span>
+            <span class="card-title">❖ Security Audit & Vulnerability Radar</span>
             <div class="score-circle score-green" id="scoreBadge">100 / 100</div>
           </div>
           <div class="findings-container" id="findingsList">
@@ -850,7 +850,7 @@
         <!-- Secret Dictionary Cracker -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🔓 Secret Dictionary Cracker (Client-Side)</span>
+            <span class="card-title">✓ Secret Dictionary Cracker (Client-Side)</span>
             <span class="badge" id="crackStatusBadge" style="background:rgba(30,144,255,0.12); color:var(--accent-blue);">STANDBY</span>
           </div>
           <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.6rem;">
@@ -865,7 +865,7 @@
         <!-- RFC 9449 DPoP Studio -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🔐 RFC 9449 DPoP Proof & Token Binding Studio</span>
+            <span class="card-title">★ RFC 9449 DPoP Proof & Token Binding Studio</span>
             <span class="badge" id="dpopStatusBadge" style="background:rgba(46,213,115,0.12); color:var(--accent-green);">RFC 9449 READY</span>
           </div>
           <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.6rem;">
@@ -882,7 +882,7 @@
           </div>
           <div class="btn-row">
             <button class="btn-sm primary" onclick="runDPoPCreate()">⚡ Mint DPoP Proof</button>
-            <button class="btn-sm" onclick="runDPoPVerify()">🔍 Verify DPoP Binding</button>
+            <button class="btn-sm" onclick="runDPoPVerify()">⌕ Verify DPoP Binding</button>
           </div>
           <div id="dpopResultBox" style="display:none; margin-top:0.6rem; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:0.6rem; font-size:0.78rem;">
             <div style="color:var(--gold); font-weight:700; margin-bottom:4px;">DPoP Proof Token:</div>
@@ -898,19 +898,19 @@
     <div class="paywall-wrap is-locked" id="hardeningPaywallWrap" data-alias="codePaywallWrap">
       <div class="paywall-overlay" id="outputPaywallOverlay" data-alias="paywallOverlay">
         <div class="lock-box">
-          <div class="lock-title">🔒 PRO SECURITY DOSSIER & PATCH GENERATOR</div>
+          <div class="lock-title">★ PRO SECURITY DOSSIER & PATCH GENERATOR</div>
           <div class="lock-desc">
             Production hardening manifests, automated Express / Next.js / FastAPI middleware patches, and compliance JSON dossiers are locked for free users.
           </div>
           <div style="display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap;">
             <a href="https://buy.stripe.com/4gMfZg9AheOsdhKbcAfw40L" class="btn-checkout" target="_blank" rel="noopener">
-              💳 Unlock Pro Lifetime ($19)
+              ★ Unlock Pro Lifetime ($19)
             </a>
             <button class="btn-solana" onclick="triggerSolanaCheckout()">
-              🪙 Pay with Solana
+              ◉ Pay with Solana
             </button>
             <button class="btn-activate" onclick="openLicenseModal()">
-              🔑 Enter Key
+              ✦ Enter Key
             </button>
           </div>
         </div>
@@ -918,12 +918,12 @@
       <div class="paywall-content locked" id="hardeningPaywallContent">
         <div class="card" style="margin-top:0.5rem;">
           <div class="card-header">
-            <span class="card-title">🛡️ Automated Hardening Patch & Middleware Synthesizer</span>
+            <span class="card-title">❖ Automated Hardening Patch & Middleware Synthesizer</span>
             <div style="display:flex; gap:0.5rem;">
               <button class="btn-sm" onclick="switchPatchTab('nextjs')">Next.js</button>
               <button class="btn-sm" onclick="switchPatchTab('express')">Express</button>
               <button class="btn-sm" onclick="switchPatchTab('fastapi')">FastAPI</button>
-              <button class="btn-sm primary" onclick="copyHardeningPatch()">📋 Copy Patch</button>
+              <button class="btn-sm primary" onclick="copyHardeningPatch()">✦ Copy Patch</button>
             </div>
           </div>
           <pre class="code-block" id="hardeningPatchViewer" style="max-height:220px;">// Production Hardening Patch will generate here</pre>
@@ -953,10 +953,10 @@
 
       <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.2rem;">
         <a href="https://buy.stripe.com/4gMfZg9AheOsdhKbcAfw40L" class="btn-checkout" target="_blank" rel="noopener" style="flex:1; justify-content:center;">
-          💳 Buy with Stripe ($19)
+          ★ Buy with Stripe ($19)
         </a>
         <button class="btn-solana" onclick="triggerSolanaCheckout()" style="flex:1; justify-content:center;">
-          🪙 Pay with Solana
+          ◉ Pay with Solana
         </button>
       </div>
 
@@ -1446,7 +1446,7 @@
       }
 
       if (foundSecret) {
-        resLabel.innerHTML = `🎉 CRACKED: <code>${foundSecret}</code>`;
+        resLabel.innerHTML = `★ CRACKED: <code>${foundSecret}</code>`;
         resLabel.style.color = 'var(--accent-red)';
         document.getElementById('verifySecret').value = foundSecret;
         runVerify();
