@@ -1,12 +1,18 @@
 # JWT Inspector Guard 🛡️🔐
 
-> **Multi-OS Model Context Protocol (MCP) Server, CLI & Interactive Security Studio (design influenced by Material 3 tokens) for JSON Web Tokens (JWT / JWS / JWE).**
-> **Zero External Dependencies** — 100% Python Standard Library (3.9–3.13).
-
 [![CI](https://github.com/NullAITech/jwt-inspector-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/NullAITech/jwt-inspector-guard/actions/workflows/ci.yml)
+[![License: Pro](https://img.shields.io/badge/Pro%20Lifetime-$19%20USD-635BFF?style=flat&logo=stripe)](https://buy.stripe.com/4gMfZg9AheOsdhKbcAfw40L)
+[![Solana Pay](https://img.shields.io/badge/Solana-DePay%20Accepted-14F195?style=flat&logo=solana)](https://zoth.nullai.tech/tools/jwt-inspector-guard)
+[![Zoth Studio Ready](https://img.shields.io/badge/Zoth%20Studio-God%20Mode%20Active-D4AF37?style=flat)](https://zoth.nullai.tech/tools/jwt-inspector-guard)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![FastMCP](https://img.shields.io/badge/MCP-Protocol%202.0-green.svg)](https://modelcontextprotocol.io/)
+
+> **Multi-OS Model Context Protocol (MCP) Server, CLI & Interactive Security Studio (design influenced by Material 3 tokens) for JSON Web Tokens (JWT / JWS / JWE).**  
+> **Zero External Dependencies** — 100% Python Standard Library (3.9–3.13) and in-browser client WebCrypto execution.  
+> - 💻 **Zoth Studio Enclave**: [https://zoth.nullai.tech/tools/jwt-inspector-guard](https://zoth.nullai.tech/tools/jwt-inspector-guard)  
+> - 💳 **Founding Member License**: $19 Lifetime (Regular $79) via [Stripe](https://buy.stripe.com/4gMfZg9AheOsdhKbcAfw40L) or Solana DePay (`GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK`).  
+> - ⚡ **Attribution**: Engineered by Neal Frazier Tech ([@1nc0gn30](https://github.com/1nc0gn30)) • NullAI Platform.
 
 ---
 
