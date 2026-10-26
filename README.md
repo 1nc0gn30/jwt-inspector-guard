@@ -1,3 +1,9 @@
+<div align="center">
+  <img src="assets/hero-banner.svg" alt="JWT Inspector Guard — Sovereign Architecture Banner" width="100%" />
+</div>
+
+<br />
+
 # JWT Inspector Guard 🛡️🔐
 
 [![CI](https://github.com/NullAITech/jwt-inspector-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/NullAITech/jwt-inspector-guard/actions/workflows/ci.yml)
