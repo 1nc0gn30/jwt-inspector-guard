@@ -418,8 +418,13 @@ class JWTInspectorHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
 
-        if path == "/health":
-            self._send_json({"status": "ok", "service": "jwt-inspector-guard"})
+        if path in ("/health", "/api/health"):
+            self._send_json({
+                "status": "healthy",
+                "service": "jwt-inspector-guard",
+                "version": "2.6.0",
+                "sovereign": True
+            })
             return
 
         # Static file serving

@@ -1,0 +1,149 @@
+/* ============================================================
+   JWT Inspector Guard — Wave Typography Calibration Layer
+   Precision typographic system: readable measure on the work surface,
+   tabular numeric alignment for scores and prices, and refined
+   heading optical tracking.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. Global Text Rendering & Font Feature Normalization
+   ------------------------------------------------------------ */
+html,
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ------------------------------------------------------------
+   2. Main Work Surface: Readable Measures & Paragraph Rhythms
+   Enforces 48-72ch readable measure and balanced line-heights.
+   ------------------------------------------------------------ */
+
+/* Card explanatory copy and operational instructions */
+.card p {
+  max-width: 65ch;
+  line-height: 1.55;
+}
+
+/* Hero sales funnel description */
+.sales-desc {
+  max-width: 68ch;
+  line-height: 1.5;
+}
+
+/* Frosted glass paywall lock description */
+.lock-desc {
+  max-width: 54ch;
+  line-height: 1.55;
+}
+
+/* Modal descriptive copy */
+.modal-card p {
+  max-width: 56ch;
+  line-height: 1.55;
+}
+
+/* Security finding detail measures and rhythm */
+.finding-card {
+  line-height: 1.5;
+}
+
+/* Token stream input area & code views: tab size & spacing */
+textarea.token-box {
+  tab-size: 2;
+  -moz-tab-size: 2;
+  line-height: 1.6;
+}
+
+pre.code-block {
+  tab-size: 2;
+  -moz-tab-size: 2;
+  line-height: 1.55;
+}
+
+.colored-token-display {
+  line-height: 1.65;
+}
+
+/* Footer text measure and rhythm */
+footer.zoth-footer {
+  line-height: 1.5;
+}
+
+/* ------------------------------------------------------------
+   3. Tabular Numbers: Scores, Prices & Telemetry
+   Prevents layout shift and uneven character widths across numbers.
+   ------------------------------------------------------------ */
+
+/* Security score gauges and vulnerability circles */
+.score-circle,
+#scoreBadge {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Commercial pricing labels and checkout CTAs ($19 lifetime, $79 regular) */
+.sales-title,
+.sales-title del,
+.btn-checkout {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Stream counters, temporal epochs and numeric status badges */
+#tokenLengthBadge,
+.timeline-val,
+.badge,
+#crackResult {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ------------------------------------------------------------
+   4. Clearer Heading Tracking & Eyebrow Hierarchy
+   Optical letter-spacing adjustments for titles and micro-labels.
+   ------------------------------------------------------------ */
+
+/* Main brand header */
+.brand-text h1 {
+  letter-spacing: -0.025em;
+}
+
+.brand-text p {
+  letter-spacing: 0.035em;
+}
+
+/* Work surface section card headings */
+.card-title {
+  letter-spacing: 0.035em;
+}
+
+/* Sales banner title & eyebrow badge */
+.sales-title {
+  letter-spacing: -0.015em;
+}
+
+.sales-badge-pill {
+  letter-spacing: 0.075em;
+}
+
+/* Finding report title */
+.finding-title {
+  letter-spacing: -0.012em;
+}
+
+/* Lock box heading */
+.lock-title {
+  letter-spacing: 0.025em;
+}
+
+/* Modal header */
+.modal-title {
+  letter-spacing: -0.02em;
+}
+
+/* Temporal & metadata eyebrow labels */
+.timeline-label {
+  letter-spacing: 0.09em;
+}

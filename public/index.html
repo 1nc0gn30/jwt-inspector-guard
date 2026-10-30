@@ -38,7 +38,7 @@
         "operatingSystem": "All modern browsers (Chrome, Firefox, Safari, Edge)",
         "offers": {
           "@type": "Offer",
-          "price": "19.00",
+          "price": "0",
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock"
         },
@@ -78,7 +78,7 @@
             "name": "How does the Pro lifetime license work?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "A one-time payment of $19 grants permanent lifetime access to executive security dossier exports, automated multi-framework middleware patches, and unlimited client-side audits via Stripe or Solana DePay."
+              "text": "A one-time payment of Free (100% Open Access) grants permanent lifetime access to executive security dossier exports, automated multi-framework middleware patches, and unlimited client-side audits via Stripe or Solana Tip."
             }
           }
         ]
@@ -324,7 +324,7 @@
       border: 1px solid var(--card-border);
       border-radius: var(--radius);
       padding: 1.25rem;
-      backdrop-filter: blur(8px);
+      backdrop-filter: none;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       position: relative;
     }
@@ -534,7 +534,7 @@
       margin-top: 1.2rem;
     }
     .paywall-content.locked {
-      filter: blur(6px);
+      filter: none;
       pointer-events: none;
       user-select: none;
       opacity: 0.4;
@@ -550,7 +550,7 @@
       align-items: center;
       justify-content: center;
       background: rgba(9, 10, 15, 0.7);
-      backdrop-filter: blur(4px);
+      backdrop-filter: none;
       z-index: 20;
       padding: 1.5rem;
       text-align: center;
@@ -625,7 +625,7 @@
       width: 100vw;
       height: 100vh;
       background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
+      backdrop-filter: none;
       display: none;
       align-items: center;
       justify-content: center;
@@ -694,8 +694,51 @@
       text-decoration: none;
     }
   </style>
+  <link rel="stylesheet" href="wave.css">
+  <link rel="stylesheet" href="wave-states.css">
+  <link rel="stylesheet" href="wave-type.css">
+
+  <!-- Zoth 100% Open-Access & Buy Us a Coffee Invariant -->
+  <script id="zoth-open-access-init">
+    (function() {
+      try {
+        var keys = ['agent_audiocipher_pro', 'agent_cyber_turtle_pro', 'agent_datamosh_pro', 'agent_nexus3d_pro', 'agent_policy_pro', 'audiocipher_license', 'audiocipher_pro_licensed', 'badge3d_pro_licensed', 'certpath_pro_key', 'certpath_pro_licensed', 'cron_rhythm_pro_key', 'cron_rhythm_pro_licensed', 'cwv-speed-engine_pro_licensed', 'cwv_pro_licensed', 'cyber_turtle_pro_licensed', 'datamosh_pro_licensed', 'deepsearch-research-agent_pro_licensed', 'deepsearch_pro_licensed', 'entropy_studio_licensed', 'envguard-secrets-vault_pro_licensed', 'envguard_pro_license', 'etsy_connector_pro', 'jwt_guard_licensed', 'mdg_pro_licensed', 'neuro_pro_licensed', 'nexus3d_pro_licensed', 'omnipost_pro_key', 'omnipost_pro_licensed', 'osint_pro_licensed', 'payload-entropy-studio_pro_licensed', 'polyglot_pro_licensed', 'pro_licensed', 'promptmaster_pro_licensed', 'promptmaster_pro_active', 'robots-txt-auditor_pro_licensed', 'robots_pro_licensed', 'schema_illustrator_pro_licensed', 'sovereign_pro_licensed', 'subsweep-lead-scanner_pro_licensed', 'subsweep_licensed', 'turtle_pro_licensed', 'ufo_sacred_licensed', 'vector-search-engine_pro_licensed', 'vector_studio_pro_licensed', 'web-security-guard_pro_licensed', 'web_security_guard_licensed', 'yourdigitalspace_pro', 'zela_guide_pro_licensed', 'zoth_ascii_magic_pro', 'zoth_audiocipher_licensed', 'zoth_badge3d_licensed', 'zoth_cyber_turtle_licensed', 'zoth_datamosh_licensed', 'zoth_etsy_licensed', 'zoth_nexus3d_licensed', 'zoth_osint_licensed', 'zoth_policy_licensed', 'zoth_sacred_licensed', 'zoth_ufo_licensed'];
+        for (var i = 0; i < keys.length; i++) {
+          localStorage.setItem(keys[i], 'true');
+        }
+        localStorage.setItem('pm_license_v2', JSON.stringify({ method: 'open_access', ref: 'free_forever', at: '2026-01-01T00:00:00Z' }));
+        window.isPro = true;
+        window.isProLicensed = true;
+      } catch (e) {}
+    })();
+  </script>
+  <style id="zoth-open-access-override">
+    .paywall-overlay, .output-paywall-overlay, #outputPaywallOverlay, #schemaPaywallOverlay,
+    #transformerPaywallOverlay, #proPaywallModal, #licenseModal, #salesBanner, .sales-banner, #founding-offer-banner,
+    #funnelHeroBanner, .modal-backdrop, [data-alias="salesBannerWrap"], [data-alias="paywallOverlay"], [data-alias="founding-offer-banner"] {
+      display: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    .paywall-wrap #outputPreview, .paywall-wrap #reportContentArea, .paywall-content,
+    .paywall-content.locked, .paywall-wrap.is-locked #outputPreview, .paywall-wrap.locked #outputPreview,
+    #hardeningPaywallWrap, #hardeningPaywallContent, .locked, .is-locked {
+      filter: none !important;
+      -webkit-filter: none !important;
+      user-select: auto !important;
+      pointer-events: auto !important;
+    }
+  </style>
+
 </head>
 <body>
+
+<div id="zoth-coffee-support-bar" style="background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(212,175,55,0.14)); border-bottom: 1px solid rgba(212,175,55,0.35); padding: 8px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; z-index: 9999;">
+  <span style="color: #10B981; font-weight: 800;">✦ 100% FREE &amp; OPEN ACCESS · ZERO PAYWALLS</span>
+  <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer" style="background: #D4AF37; color: #08080B; padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">☕ Buy Us a Coffee (Stripe)</a>
+  <a href="solana:GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK" onclick="if(navigator.clipboard){navigator.clipboard.writeText('GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK');this.textContent='✓ Copied GG2eQb...dXoK!';}" style="background: rgba(20,241,149,0.15); color: #14F195; border: 1px solid rgba(20,241,149,0.45); padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">◎ Solana Tip (GG2e...dXoK)</a>
+</div>
+
 
   <header>
     <div class="brand-wrap">
@@ -707,20 +750,22 @@
     </div>
     <div class="header-badges">
       <span class="badge badge-egress">ZERO CLOUD EGRESS</span>
-      <span class="badge badge-pro" id="licenseBadge" onclick="openLicenseModal()">⚡ FREE TIER</span>
+      <span class="badge badge-pro" id="licenseBadge" style="color: #10B981; border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.15); font-weight: 800;">✦ 100% UNLOCKED</span>
+      <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer" style="background: #D4AF37; color: #08080B; padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 11px;">☕ Buy Us a Coffee</a>
+      <a href="solana:GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK" onclick="if(navigator.clipboard){navigator.clipboard.writeText('GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK');this.textContent='✓ Copied!';}" style="background: rgba(20,241,149,0.15); color: #14F195; border: 1px solid rgba(20,241,149,0.45); padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 11px;">◎ Tip SOL</a>
     </div>
   </header>
 
   <!-- Sales Funnel Banner -->
   <div class="sales-banner" id="salesBanner" data-alias="salesBannerWrap">
     <div class="sales-banner-text">
-      <span class="sales-badge-pill">FOUNDING MEMBER DEAL</span>
-      <span class="sales-title">Sovereign Developer License — $19 Lifetime (<del>$79 Regular</del>)</span>
+      <span class="sales-badge-pill">100% FREE & OPEN ACCESS</span>
+      <span class="sales-title">100% Free & Open Access — Optional Coffee Tip (<del></del>)</span>
       <div class="sales-desc">Unlock executive security audits, CVE patches, multi-framework middleware exports, and RFC 9449 DPoP minting.</div>
     </div>
     <div class="sales-banner-ctas">
-      <a href="https://buy.stripe.com/4gMfZg9AheOsdhKbcAfw40L" class="btn-checkout" target="_blank" rel="noopener">
-        ★ Instant Stripe Checkout ($19)
+      <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" class="btn-checkout" target="_blank" rel="noopener">
+        ★ Instant ☕ Buy Us a Coffee (Stripe)
       </a>
       <button class="btn-solana" onclick="triggerSolanaCheckout()">
         ◉ Pay with Solana / USDC
@@ -895,7 +940,7 @@
     </div>
 
     <!-- Frosted Glass Output Paywall Section -->
-    <div class="paywall-wrap is-locked" id="hardeningPaywallWrap" data-alias="codePaywallWrap">
+    <div class="paywall-wrap" id="hardeningPaywallWrap" data-alias="codePaywallWrap">
       <div class="paywall-overlay" id="outputPaywallOverlay" data-alias="paywallOverlay">
         <div class="lock-box">
           <div class="lock-title">★ PRO SECURITY DOSSIER & PATCH GENERATOR</div>
@@ -903,8 +948,8 @@
             Production hardening manifests, automated Express / Next.js / FastAPI middleware patches, and compliance JSON dossiers are locked for free users.
           </div>
           <div style="display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap;">
-            <a href="https://buy.stripe.com/4gMfZg9AheOsdhKbcAfw40L" class="btn-checkout" target="_blank" rel="noopener">
-              ★ Unlock Pro Lifetime ($19)
+            <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" class="btn-checkout" target="_blank" rel="noopener">
+              ★ 100% Free & Unlocked
             </a>
             <button class="btn-solana" onclick="triggerSolanaCheckout()">
               ◉ Pay with Solana
@@ -952,8 +997,8 @@
       </ul>
 
       <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.2rem;">
-        <a href="https://buy.stripe.com/4gMfZg9AheOsdhKbcAfw40L" class="btn-checkout" target="_blank" rel="noopener" style="flex:1; justify-content:center;">
-          ★ Buy with Stripe ($19)
+        <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" class="btn-checkout" target="_blank" rel="noopener" style="flex:1; justify-content:center;">
+          ★ Buy with Stripe (Free (100% Open Access))
         </a>
         <button class="btn-solana" onclick="triggerSolanaCheckout()" style="flex:1; justify-content:center;">
           ◉ Pay with Solana
@@ -1011,7 +1056,7 @@
       }
     ];
 
-    let isProLicensed = false;
+    let isProLicensed = true;
 
     // --- Base64URL Helpers ---
     function base64UrlDecode(str) {
@@ -1065,34 +1110,22 @@
         localStorage.setItem('jwt_guard_licensed', 'true');
         history.replaceState(null, '', window.location.pathname);
       }
-      isProLicensed = localStorage.getItem('jwt_guard_licensed') === 'true';
+      isProLicensed = true;
 
       const wrap = document.getElementById('hardeningPaywallWrap') || document.getElementById('codePaywallWrap');
       const content = document.getElementById('hardeningPaywallContent');
       const badge = document.getElementById('licenseBadge') || document.getElementById('headerProBadge');
       const banner = document.getElementById('salesBanner') || document.getElementById('salesBannerWrap');
 
-      if (isProLicensed) {
-        if (wrap) wrap.classList.remove('is-locked', 'locked');
-        if (content) content.classList.remove('locked', 'is-locked');
-        if (badge) {
-          badge.textContent = '⭐ PRO ACTIVE';
-          badge.style.color = '#ffd700';
-          badge.style.borderColor = '#ffd700';
-          badge.style.background = 'rgba(255, 215, 0, 0.15)';
-        }
-        if (banner) banner.style.display = 'none';
-      } else {
-        if (wrap) wrap.classList.add('is-locked');
-        if (content) content.classList.add('locked');
-        if (badge) {
-          badge.textContent = '⚡ FREE TIER';
-          badge.style.color = 'var(--gold)';
-          badge.style.borderColor = 'rgba(255, 215, 0, 0.35)';
-          badge.style.background = 'rgba(255, 215, 0, 0.12)';
-        }
-        if (banner) banner.style.display = 'flex';
+      if (wrap) wrap.classList.remove('is-locked', 'locked');
+      if (content) content.classList.remove('locked', 'is-locked');
+      if (badge) {
+        badge.textContent = '✦ 100% UNLOCKED';
+        badge.style.color = '#10B981';
+        badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+        badge.style.background = 'rgba(16, 185, 129, 0.15)';
       }
+      if (banner) banner.style.display = 'none';
     }
 
     function openLicenseModal() {
@@ -1625,10 +1658,6 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     }
 
     function copyHardeningPatch() {
-      if (!isProLicensed) {
-        openLicenseModal();
-        return;
-      }
       const code = document.getElementById('hardeningPatchViewer').textContent;
       navigator.clipboard.writeText(code).then(() => {
         showToast('Copied hardening patch to clipboard!');
@@ -1636,10 +1665,6 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     }
 
     function exportDossierPrompt() {
-      if (!isProLicensed) {
-        openLicenseModal();
-        return;
-      }
       const token = document.getElementById('tokenInput').value.trim();
       const blob = new Blob([JSON.stringify({
         tool: "jwt-inspector-guard",

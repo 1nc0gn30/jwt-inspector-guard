@@ -1,0 +1,453 @@
+/* ============================================================
+   JWT Inspector Guard — Wave Precision States Layer (wave-states.css)
+   Interactive states: :focus-visible, hover, empty, error,
+   and prefers-reduced-motion for existing DOM selectors.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. Calibration-Grade :focus-visible System
+   Suppresses mouse focus outlines while guaranteeing pristine,
+   high-contrast keyboard navigation focus rings across all interactive controls.
+   ------------------------------------------------------------ */
+
+/* Keyboard focus normalization */
+:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+/* Primary checkout CTA focus ring */
+.btn-checkout:focus-visible {
+  outline: 2px solid #ffd700 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.55) !important;
+}
+
+/* Solana checkout CTA focus ring */
+.btn-solana:focus-visible {
+  outline: 2px solid #9945ff !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 16px rgba(153, 69, 255, 0.55) !important;
+}
+
+/* Key activation trigger focus ring */
+.btn-activate:focus-visible {
+  outline: 2px solid #ffd700 !important;
+  outline-offset: 2px !important;
+  background: rgba(255, 215, 0, 0.12) !important;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4) !important;
+}
+
+/* Standard tool action buttons */
+.btn-sm:focus-visible {
+  outline: 2px solid #ffd700 !important;
+  outline-offset: 2px !important;
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.35) !important;
+}
+
+/* Primary tool actions (Run Audit, Verify, Copy, Activate) */
+.btn-sm.primary:focus-visible {
+  outline: 2px solid #ffffff !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.6) !important;
+}
+
+/* Danger actions (Tamper, Crack) */
+.btn-sm.danger:focus-visible {
+  outline: 2px solid #ff4757 !important;
+  outline-offset: 2px !important;
+  border-color: #ff6b81 !important;
+  box-shadow: 0 0 14px rgba(255, 71, 87, 0.5) !important;
+}
+
+/* Sample picker & method dropdowns */
+select.sample-picker:focus-visible {
+  outline: 2px solid #ffd700 !important;
+  outline-offset: 2px !important;
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.35) !important;
+}
+
+/* Bearer token streams & code inputs */
+textarea.token-box:focus-visible {
+  outline: 2px solid #ffd700 !important;
+  outline-offset: 2px !important;
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.45), inset 0 0 8px rgba(255, 215, 0, 0.08) !important;
+}
+
+/* Text inputs (Secret key, URI, License key) */
+input.text-input:focus-visible {
+  outline: 2px solid #ffd700 !important;
+  outline-offset: 2px !important;
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.4) !important;
+}
+
+/* Modal dismiss button */
+.modal-close:focus-visible {
+  outline: 2px solid #ffd700 !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+/* Clickable header badge */
+.badge.badge-pro:focus-visible {
+  outline: 2px solid #ffd700 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4) !important;
+}
+
+/* Footer links */
+footer.zoth-footer a:focus-visible {
+  outline: 2px solid #ffd700 !important;
+  outline-offset: 3px !important;
+  border-radius: 2px;
+}
+
+/* ------------------------------------------------------------
+   2. Tactile Hover Feedback & Surface Illumination
+   Calibrated 120-180ms ease transitions for micro-interactions.
+   ------------------------------------------------------------ */
+
+/* Primary Stripe checkout link */
+.btn-checkout {
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-checkout:hover {
+  transform: translateY(-1px) !important;
+  filter: brightness(1.08) !important;
+  box-shadow: 0 4px 18px rgba(255, 215, 0, 0.45) !important;
+}
+
+.btn-checkout:active {
+  transform: translateY(1px) !important;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
+}
+
+/* Solana Tip checkout button */
+.btn-solana {
+  transition: background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-solana:hover {
+  background: rgba(153, 69, 255, 0.28) !important;
+  border-color: #b575ff !important;
+  color: #f3e6fa !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 16px rgba(153, 69, 255, 0.35) !important;
+}
+
+.btn-solana:active {
+  transform: translateY(1px) !important;
+}
+
+/* License key activation button */
+.btn-activate {
+  transition: background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-activate:hover {
+  background: rgba(255, 215, 0, 0.1) !important;
+  border-style: solid !important;
+  border-color: #ffd700 !important;
+  color: #fff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 12px rgba(255, 215, 0, 0.25) !important;
+}
+
+.btn-activate:active {
+  transform: translateY(1px) !important;
+}
+
+/* Standard tool buttons */
+.btn-sm {
+  transition: background-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-sm:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 215, 0, 0.6) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-sm:active {
+  transform: translateY(1px) !important;
+}
+
+/* Primary actions */
+.btn-sm.primary:hover {
+  background: linear-gradient(135deg, #ffe033, #e5b800) !important;
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.45) !important;
+  color: #000000 !important;
+}
+
+/* Danger actions (Tamper / Exploit / Cracker) */
+.btn-sm.danger:hover {
+  background: rgba(255, 71, 87, 0.24) !important;
+  border-color: #ff6b81 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(255, 71, 87, 0.35) !important;
+}
+
+/* Sample select hover */
+select.sample-picker {
+  transition: border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+}
+
+select.sample-picker:hover {
+  border-color: rgba(255, 215, 0, 0.45) !important;
+}
+
+/* Input hover illumination */
+textarea.token-box:hover {
+  border-color: rgba(255, 255, 255, 0.24) !important;
+}
+
+input.text-input {
+  transition: border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+input.text-input:hover {
+  border-color: rgba(255, 255, 255, 0.28) !important;
+}
+
+/* Modal close icon hover */
+.modal-close {
+  transition: color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  transform: rotate(90deg) scale(1.08) !important;
+}
+
+/* Clickable header badge hover */
+.badge.badge-pro {
+  transition: background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.badge.badge-pro:hover {
+  background: rgba(255, 215, 0, 0.22) !important;
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Timeline node hover inspection */
+.timeline-node {
+  transition: background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.timeline-node:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 215, 0, 0.3) !important;
+}
+
+/* Security finding card hover inspection */
+.finding-card {
+  transition: background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.finding-card:hover {
+  transform: translateX(3px) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Footer links hover */
+footer.zoth-footer a {
+  transition: color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              text-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+footer.zoth-footer a:hover {
+  color: #ffffff !important;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6) !important;
+}
+
+/* ------------------------------------------------------------
+   3. Empty & Idle State Presentation
+   Clean handling of vacant containers, dormant results, and placeholders.
+   ------------------------------------------------------------ */
+
+/* Dormant crack result label */
+#crackResult:empty {
+  display: none !important;
+}
+
+/* Dormant DPoP verification details */
+#dpopVerifyDetails:empty {
+  display: none !important;
+}
+
+/* Vacant code blocks */
+pre.code-block:empty::before {
+  content: '// No payload available';
+  color: var(--text-muted);
+  font-style: italic;
+  opacity: 0.6;
+}
+
+/* Vacant token display */
+.colored-token-display:empty::before {
+  content: 'Paste a token above to inspect components...';
+  color: #5a6275;
+}
+
+/* Textarea placeholder presentation */
+textarea.token-box:placeholder-shown {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ------------------------------------------------------------
+   4. Error, Alarm & Vulnerability Radar Presentation
+   Vivid, high-contrast security severity alerts and input failures.
+   ------------------------------------------------------------ */
+
+/* Critical CVE / High risk findings */
+.finding-critical {
+  border-left: 3px solid #ff4757 !important;
+  background: linear-gradient(90deg, rgba(255, 71, 87, 0.14) 0%, rgba(255, 71, 87, 0.05) 100%) !important;
+  border-top: 1px solid rgba(255, 71, 87, 0.22) !important;
+  border-right: 1px solid rgba(255, 71, 87, 0.22) !important;
+  border-bottom: 1px solid rgba(255, 71, 87, 0.22) !important;
+  box-shadow: 0 2px 10px rgba(255, 71, 87, 0.18) !important;
+}
+
+.finding-critical:hover {
+  background: linear-gradient(90deg, rgba(255, 71, 87, 0.2) 0%, rgba(255, 71, 87, 0.08) 100%) !important;
+  border-color: rgba(255, 71, 87, 0.35) !important;
+}
+
+.finding-critical .finding-title {
+  color: #ff6b81 !important;
+  letter-spacing: -0.01em;
+}
+
+/* Medium / Warning findings */
+.finding-warning {
+  border-left: 3px solid #ffa502 !important;
+  background: linear-gradient(90deg, rgba(255, 165, 2, 0.14) 0%, rgba(255, 165, 2, 0.05) 100%) !important;
+  border-top: 1px solid rgba(255, 165, 2, 0.22) !important;
+  border-right: 1px solid rgba(255, 165, 2, 0.22) !important;
+  border-bottom: 1px solid rgba(255, 165, 2, 0.22) !important;
+  box-shadow: 0 2px 10px rgba(255, 165, 2, 0.15) !important;
+}
+
+.finding-warning:hover {
+  background: linear-gradient(90deg, rgba(255, 165, 2, 0.2) 0%, rgba(255, 165, 2, 0.08) 100%) !important;
+  border-color: rgba(255, 165, 2, 0.35) !important;
+}
+
+.finding-warning .finding-title {
+  color: #ffbe42 !important;
+}
+
+/* Informational findings */
+.finding-info {
+  border-left: 3px solid #1e90ff !important;
+  background: linear-gradient(90deg, rgba(30, 144, 255, 0.14) 0%, rgba(30, 144, 255, 0.05) 100%) !important;
+  border-top: 1px solid rgba(30, 144, 255, 0.2) !important;
+  border-right: 1px solid rgba(30, 144, 255, 0.2) !important;
+  border-bottom: 1px solid rgba(30, 144, 255, 0.2) !important;
+}
+
+.finding-info:hover {
+  background: linear-gradient(90deg, rgba(30, 144, 255, 0.2) 0%, rgba(30, 144, 255, 0.08) 100%) !important;
+  border-color: rgba(30, 144, 255, 0.35) !important;
+}
+
+.finding-info .finding-title {
+  color: #60a5fa !important;
+}
+
+/* Vulnerability score circles: green, yellow, red */
+.score-red {
+  background: rgba(255, 71, 87, 0.18) !important;
+  border: 1px solid #ff4757 !important;
+  color: #ff6b81 !important;
+  box-shadow: 0 0 16px rgba(255, 71, 87, 0.35), inset 0 0 10px rgba(255, 71, 87, 0.15) !important;
+}
+
+.score-yellow {
+  background: rgba(255, 165, 2, 0.18) !important;
+  border: 1px solid #ffa502 !important;
+  color: #ffbe42 !important;
+  box-shadow: 0 0 14px rgba(255, 165, 2, 0.3), inset 0 0 8px rgba(255, 165, 2, 0.12) !important;
+}
+
+.score-green {
+  background: rgba(46, 213, 115, 0.18) !important;
+  border: 1px solid #2ed573 !important;
+  color: #2ed573 !important;
+  box-shadow: 0 0 14px rgba(46, 213, 115, 0.3), inset 0 0 8px rgba(46, 213, 115, 0.12) !important;
+}
+
+/* Form controls invalid states */
+textarea.token-box:invalid,
+input.text-input:invalid {
+  border-color: #ff4757 !important;
+  box-shadow: 0 0 10px rgba(255, 71, 87, 0.35) !important;
+}
+
+/* ------------------------------------------------------------
+   5. Accessible Motion Guarantee (prefers-reduced-motion)
+   Immediate, zero-delay rendering when user preference is active.
+   ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .btn-checkout,
+  .btn-solana,
+  .btn-activate,
+  .btn-sm,
+  .finding-card,
+  .modal-close,
+  .badge.badge-pro,
+  .toast-msg {
+    transform: none !important;
+    transition: none !important;
+  }
+}
