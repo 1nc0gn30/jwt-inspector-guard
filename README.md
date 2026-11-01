@@ -17,7 +17,7 @@
 > **Zero External Dependencies** — 100% Python Standard Library (3.9–3.13) and in-browser client WebCrypto execution. 100% Free & Open Access.  
 > - 💻 **Zoth Studio Enclave**: [https://zoth.nullai.tech/tools/jwt-inspector-guard](https://zoth.nullai.tech/tools/jwt-inspector-guard)  
 > - ☕ **Support Development**: [Buy Us a Coffee (Stripe)](https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X) | Solana Tip: `GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK`  
-> - ⚡ **Attribution**: Engineered by Neal Frazier Tech ([@1nc0gn30](https://github.com/1nc0gn30)) • NullAI Platform.
+> - ⚡ **Attribution**: Engineered by 1nc0gn30 • NullAI ([@1nc0gn30](https://github.com/1nc0gn30)) • NullAI Platform.
 
 ---
 

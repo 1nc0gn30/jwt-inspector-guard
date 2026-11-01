@@ -6,7 +6,7 @@
   <title>JWT Inspector Guard | Sovereign Security Studio & Cryptographic Linter</title>
   <meta name="description" content="100% In-Browser client-side JWT security auditor, cryptographic signature verifier, CVE-2015-9235 exploit tester, and RFC 9449 DPoP token studio. Zero cloud egress.">
   <meta name="keywords" content="JWT, JSON Web Token, security audit, cryptographic linter, CVE-2015-9235, DPoP, RFC 9449, HMAC, WebCrypto, zero egress">
-  <meta name="author" content="Neal Frazier (@1nc0gn30) • Neal Frazier Tech">
+  <meta name="author" content="1nc0gn30 (@1nc0gn30) • 1nc0gn30 • NullAI">
   
   <!-- OpenGraph / Twitter -->
   <meta property="og:title" content="JWT Inspector Guard | Sovereign Security Studio">
@@ -44,12 +44,12 @@
         },
         "creator": {
           "@type": "Person",
-          "name": "Neal Frazier",
-          "url": "https://nealfrazier.tech"
+          "name": "1nc0gn30",
+          "url": "https://nullai.tech"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "Neal Frazier Tech • NullAI Platform",
+          "name": "1nc0gn30 • NullAI • NullAI Platform",
           "url": "https://nullai.tech"
         }
       },
@@ -75,10 +75,10 @@
           },
           {
             "@type": "Question",
-            "name": "How does the Pro lifetime license work?",
+            "name": "Is JWT Inspector Guard free to use?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "A one-time payment of Free (100% Open Access) grants permanent lifetime access to executive security dossier exports, automated multi-framework middleware patches, and unlimited client-side audits via Stripe or Solana Tip."
+              "text": "Yes. JWT Inspector Guard is 100% free and open-access with zero paywalls, including executive security dossier exports, multi-framework middleware patches, and RFC 9449 DPoP proof tools. Optional community support is available via Stripe Buy Us a Coffee or Solana tips."
             }
           }
         ]
@@ -940,7 +940,7 @@
     </div>
 
     <!-- Frosted Glass Output Paywall Section -->
-    <div class="paywall-wrap" id="hardeningPaywallWrap" data-alias="codePaywallWrap">
+    <div class="paywall-wrap" id="hardeningPaywallWrap" data-alias="cosolanaTipwallWrap">
       <div class="paywall-overlay" id="outputPaywallOverlay" data-alias="paywallOverlay">
         <div class="lock-box">
           <div class="lock-title">★ PRO SECURITY DOSSIER & PATCH GENERATOR</div>
@@ -1022,7 +1022,7 @@
   <footer class="zoth-footer">
     <div><strong>JWT Inspector Guard</strong> — Sovereign Cryptographic Security Studio & Token Linter.</div>
     <div style="margin-top:0.3rem;">
-      Engineered by Neal Frazier Tech (<a href="https://github.com/1nc0gn30" target="_blank" rel="noopener">@1nc0gn30</a>) &bull; <a href="https://nullai.tech" target="_blank" rel="noopener">NullAI Platform</a>
+      Engineered by 1nc0gn30 • NullAI (<a href="https://github.com/1nc0gn30" target="_blank" rel="noopener">@1nc0gn30</a>) &bull; <a href="https://nullai.tech" target="_blank" rel="noopener">NullAI Platform</a>
     </div>
   </footer>
 
@@ -1112,7 +1112,7 @@
       }
       isProLicensed = true;
 
-      const wrap = document.getElementById('hardeningPaywallWrap') || document.getElementById('codePaywallWrap');
+      const wrap = document.getElementById('hardeningPaywallWrap') || document.getElementById('cosolanaTipwallWrap');
       const content = document.getElementById('hardeningPaywallContent');
       const badge = document.getElementById('licenseBadge') || document.getElementById('headerProBadge');
       const banner = document.getElementById('salesBanner') || document.getElementById('salesBannerWrap');
@@ -1695,11 +1695,13 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
 
       checkLicense();
 
-      // Load first sample as default
+      // Load first sample as default and immediately populate decoded claims & audit
       document.getElementById('tokenInput').value = SAMPLE_CATALOG[0].token;
       onTokenChange();
       runInspect();
+      runInspect();
     });
   </script>
+  <script src="/assets/sovereign-upgrade.js" defer></script>
 </body>
 </html>

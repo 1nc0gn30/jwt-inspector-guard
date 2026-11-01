@@ -2556,3 +2556,10 @@ def generate_exploit_tokens(
 
     return results
 
+
+# Compatibility aliases for UI server & CLI consumers
+lint_token = audit_jwt
+audit_token = audit_jwt
+COMMON_WEAK_SECRETS = COMMON_SECRET_DICTIONARY
+
+
