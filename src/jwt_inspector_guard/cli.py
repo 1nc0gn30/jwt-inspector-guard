@@ -1553,12 +1553,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_crack.add_argument("--json", action="store_true", help="Output JSON crack report")
     p_crack.set_defaults(func=cmd_crack)
 
-    # 6. samples
-    p_samples = subparsers.add_parser("samples", parents=[parent_parser], help="List built-in sample JWTs and CVE vectors")
-    p_samples.add_argument("-c", "--category", default="all", help="Category filter: all, standard, vulnerabilities, attacks, oauth2")
-    p_samples.add_argument("-g", "--get", help="Print token string for specific sample name")
-    p_samples.add_argument("--json", action="store_true", help="Output JSON catalog")
-    p_samples.set_defaults(func=cmd_samples)
+    # 6. samples / catalog
+    for sample_alias in ["samples", "catalog"]:
+        p_samples = subparsers.add_parser(sample_alias, parents=[parent_parser], help="List built-in sample JWTs and CVE vectors")
+        p_samples.add_argument("-c", "--category", default="all", help="Category filter: all, standard, vulnerabilities, attacks, oauth2")
+        p_samples.add_argument("-g", "--get", help="Print token string for specific sample name")
+        p_samples.add_argument("--json", action="store_true", help="Output JSON catalog")
+        p_samples.set_defaults(func=cmd_samples)
 
     # 7. serve
     p_serve = subparsers.add_parser("serve", parents=[parent_parser], help="Launch Material 3 JWT Studio Web UI & REST API")
