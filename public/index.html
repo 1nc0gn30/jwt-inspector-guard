@@ -1702,6 +1702,22 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
       runInspect();
     });
   </script>
-  <script src="/assets/sovereign-upgrade.js" defer></script>
+  
+
+  <script src="/sovereign_tutorial.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function() {
+      if (window.createSovereignTutorial) {
+        window.createSovereignTutorial({
+          toolId: "jwt-inspector-guard",
+          toolName: "JWT Inspector Guard",
+          tagline: "Inspect, decode, and verify JSON Web Tokens 100% locally in your browser!",
+          accentColor: "#38BDF8",
+          steps: [{"icon": "\ud83c\udfab", "title": "What is a JWT Token?", "desc": "When you log into a website, it gives your browser a digital pass called a JWT to prove who you are."}, {"icon": "\ud83d\udd0d", "title": "Decode Headers & Claims", "desc": "Look inside the token to see expiration dates, user permissions, and authentication signatures."}, {"icon": "\ud83d\udee1\ufe0f", "title": "Zero Cloud Leaks", "desc": "Never paste real tokens into public online decoders! This tool decodes everything locally in your browser."}]
+        });
+      }
+    });
+  </script>
+
 </body>
 </html>
