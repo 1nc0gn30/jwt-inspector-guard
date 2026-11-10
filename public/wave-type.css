@@ -83,7 +83,7 @@ footer.zoth-footer {
   font-feature-settings: "tnum" 1;
 }
 
-/* Commercial pricing labels and checkout CTAs ($19 lifetime, $79 regular) */
+/* Commercial pricing labels and checkout CTAs (open-access) */
 .sales-title,
 .sales-title del,
 .btn-checkout {
