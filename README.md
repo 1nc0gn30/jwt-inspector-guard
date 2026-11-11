@@ -103,7 +103,7 @@ Entry points: `jwt-inspector-guard` and `jwt-guard` (both map to `jwt_inspector_
 | `jwks [--rotate] [-f FILE] [--resolve TOKEN]` | JWKS audit and rotation simulation |
 | `timing [--test-vulnerable] [--trials N]` | Comparison timing benchmark |
 | `dpop-create [-m METHOD] [-u URL] [-t TOKEN] [-n NONCE]` | Create a DPoP proof |
-| `dpop-verify PROOF [-m] [-u] [-t] [-n] [--jkt] [--max-age]` | Verify a DPoP proof |
+| `dpop-verify PROOF [-m] [-u] [-t] [-n] [--jkt=THUMBPRINT] [--max-age]` | Verify a DPoP proof (use `--jkt=` form; base64url thumbprints can begin with `-`) |
 
 Examples:
 

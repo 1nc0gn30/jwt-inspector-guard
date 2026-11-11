@@ -229,7 +229,7 @@ def test_cli_dpop_create_and_verify(capsys):
         "--method", "POST",
         "--url", "https://api.example.com/v1/charge",
         "--token", "cli_test_token_456",
-        "--jkt", thumbprint,
+        f"--jkt={thumbprint}",  # thumbprints may start with "-" (base64url)
         "--json"
     ])
     assert ret_verify == 0
