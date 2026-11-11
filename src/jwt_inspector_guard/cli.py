@@ -1366,10 +1366,33 @@ class JWTStudioHTTPHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(resp_data).encode("utf-8"))
 
 
+DEFAULT_PORT = int(os.environ.get("JWT_GUARD_PORT", "8124"))
+
+
+def cmd_status(as_json: bool = True, host: str = "127.0.0.1", port: Optional[int] = None) -> int:
+    """Probe the loopback daemon's /health endpoint and report its state."""
+    import urllib.request
+
+    port = int(port or DEFAULT_PORT)
+    url = f"http://{host}:{port}/health"
+    status: Dict[str, Any] = {"tool": "jwt-inspector-guard", "version": SERVER_VERSION, "url": url, "online": False}
+    try:
+        with urllib.request.urlopen(url, timeout=1.5) as resp:  # noqa: S310 - loopback only
+            status["online"] = resp.status == 200
+            status["health"] = json.loads(resp.read().decode("utf-8") or "{}")
+    except Exception as exc:  # pragma: no cover - depends on host state
+        status["error"] = str(exc)
+    if as_json:
+        print(json.dumps(status, indent=2))
+    else:
+        print(f"jwt-inspector-guard {url}: {'online' if status['online'] else 'offline'}")
+    return 0
+
+
 def cmd_serve(args: argparse.Namespace) -> int:
     """Handle 'serve' subcommand: Launch JWT Studio web server."""
     host = args.host or "127.0.0.1"
-    port = int(args.port or 8080)
+    port = int(args.port if args.port is not None else DEFAULT_PORT)
 
     server_address = (host, port)
     try:
@@ -1502,6 +1525,7 @@ def build_parser() -> argparse.ArgumentParser:
     root_parser = argparse.ArgumentParser(
         prog="jwt-guard",
         description="JWT Inspector Guard: Multi-OS MCP Server, CLI & Security Auditor for JSON Web Tokens",
+        epilog="Top-level shortcuts:\n  --json     Print platform/crypto diagnostics as JSON\n  --status   Probe the loopback daemon (127.0.0.1:8124/health) and print JSON",
         parents=[parent_parser],
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
@@ -1564,7 +1588,7 @@ def build_parser() -> argparse.ArgumentParser:
     # 7. serve
     p_serve = subparsers.add_parser("serve", parents=[parent_parser], help="Launch Material 3 JWT Studio Web UI & REST API")
     p_serve.add_argument("--host", default="127.0.0.1", help="Host address to bind (default: 127.0.0.1)")
-    p_serve.add_argument("-p", "--port", type=int, default=8080, help="Port to listen on (default: 8080)")
+    p_serve.add_argument("-p", "--port", type=int, default=None, help="Port to listen on (default: 8124, or $JWT_GUARD_PORT)")
     p_serve.add_argument("--open", action="store_true", default=True, help="Automatically open browser")
     p_serve.add_argument("--no-browser", action="store_true", help="Do not open browser automatically")
     p_serve.set_defaults(func=cmd_serve)
@@ -1637,6 +1661,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     if "-v" in argv or "--version" in argv:
         print(f"jwt-inspector-guard v{SERVER_VERSION} (MCP Protocol {PROTOCOL_VERSION})")
         return 0
+
+    # Top-level machine-readable shortcuts (no subcommand)
+    if argv and argv[0] in ("--json", "--status"):
+        if argv[0] == "--status":
+            return cmd_status(as_json=True)
+        return cmd_diagnostics(argparse.Namespace(json=True, quiet=True, no_color=True))
 
     parser = build_parser()
 

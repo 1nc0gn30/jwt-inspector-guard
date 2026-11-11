@@ -1,149 +1,129 @@
 <div align="center">
-  <img src="assets/hero-banner.svg" alt="JWT Inspector Guard — Sovereign Architecture Banner" width="100%" />
+  <img src="assets/hero-banner.svg" alt="JWT Inspector Guard banner" width="100%" />
 </div>
 
-<br />
+# JWT Inspector Guard
 
-# JWT Inspector Guard 🛡️🔐
+[![CI](https://github.com/1nc0gn30/jwt-inspector-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/1nc0gn30/jwt-inspector-guard/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-10B981?style=flat-square)](LICENSE)
+[![Port](https://img.shields.io/badge/loopback-127.0.0.1%3A8124-38BDF8?style=flat-square)](#port)
 
-[![CI](https://github.com/NullAITech/jwt-inspector-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/NullAITech/jwt-inspector-guard/actions/workflows/ci.yml)
-[![Access: 100% Free](https://img.shields.io/badge/Access-100%25%20Free%20%26%20Open-10b981?style=flat)](https://jwtguard.nullai.tech)
-[![Zoth Studio Ready](https://img.shields.io/badge/Zoth%20Studio-God%20Mode%20Active-D4AF37?style=flat)](https://zoth.nullai.tech/tools/jwt-inspector-guard)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![FastMCP](https://img.shields.io/badge/MCP-Protocol%202.0-green.svg)](https://modelcontextprotocol.io/)
+Offline JSON Web Token (JWT / JWS) decoder, HMAC signature verifier, claims validator, security linter, RFC 9449 DPoP proof tool, and JWKS rotation simulator. Ships as a Python CLI, a stdio MCP server, a loopback REST API, and a single-file browser workstation. The Python core uses only the standard library.
 
-> **Multi-OS Model Context Protocol (MCP) Server, CLI & Interactive Security Studio (design influenced by Material 3 tokens) for JSON Web Tokens (JWT / JWS / JWE).**  
-> **Zero External Dependencies** — 100% Python Standard Library (3.9–3.13) and in-browser client WebCrypto execution. 100% Free & Open Access.  
-> - 💻 **Zoth Studio Enclave**: [https://zoth.nullai.tech/tools/jwt-inspector-guard](https://zoth.nullai.tech/tools/jwt-inspector-guard)  
-> - ☕ **Support Development**: [Buy Us a Coffee (Stripe)](https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X) | Solana Tip: `GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK`  
-> - ⚡ **Attribution**: Engineered by 1nc0gn30 • NullAI ([@1nc0gn30](https://github.com/1nc0gn30)) • NullAI Platform.
+- Zoth Studio v2 dossier: https://zoth.nullai.tech/tools/jwt-inspector-guard
+- Source: https://github.com/1nc0gn30/jwt-inspector-guard
 
----
+## What It Does
 
-## Overview
+- Decodes compact JWTs into JOSE header, claims payload, and signature, with Base64URL padding normalization.
+- Verifies and signs `HS256`, `HS384`, `HS512` (and `none`) using constant-time `hmac.compare_digest`.
+- Validates RFC 7519 claims (`exp`, `nbf`, `iat`, `iss`, `aud`) with configurable clock-skew leeway.
+- Lints tokens for known weaknesses: `alg: none` (CVE-2015-9235, including case variants such as `nOnE`), RSA/HMAC algorithm confusion, header injection (`jku`, `x5u`, `jwk`, `kid` path traversal), weak HMAC secrets, and sensitive data in the payload. Produces a score, grade, and recommendations.
+- Runs a dictionary attack against HMAC-signed tokens using a built-in or custom wordlist.
+- Creates and verifies RFC 9449 DPoP proofs (`htm`/`htu` binding, `ath` access-token hash, `cnf.jkt` RFC 7638 thumbprint, `jti` replay cache).
+- Simulates JWKS key lifecycles (`active -> retiring -> revoked`) and audits external JWKS files.
+- Benchmarks constant-time vs early-exit signature comparison to demonstrate timing side channels.
 
-**JWT Inspector Guard** is an enterprise-grade security analysis tool and developer studio for JSON Web Tokens. Built entirely on Python's standard library (`hmac`, `hashlib`, `json`, `base64`), it decodes, verifies, and audits tokens without requiring external cryptography libraries like `cryptography` or `PyJWT`. It acts as an autonomous vulnerability auditor detecting CVE bypasses, algorithm confusion attacks, weak signing secrets, header injection flaws, and PII leaks.
+All processing happens locally. The browser UI performs decoding, auditing, and HMAC verification with WebCrypto; no token leaves the machine.
 
----
+## How It Works
 
-## Key Features
-
-- **Zero-Dependency Token Decoder**:
-  - Full breakdown of JOSE header, payload claims, and signature.
-  - Base64URL decoding with automatic padding compensation and UTF-8 sanitization.
-- **RFC 7519 Standards Claims Verification**:
-  - Validates `exp` (expiration), `nbf` (not before), `iat` (issued at), `iss` (issuer), and `aud` (audience).
-  - Configurable clock skew leeway tolerance (default: 60 seconds).
-- **Cryptographic Signature Engine**:
-  - Verification for **HS256**, **HS384**, and **HS512** using constant-time `hmac.compare_digest`.
-  - Signature calculation and token minting for development testing.
-- **Deep Security Vulnerability Linter**:
-  - **CVE-2015-9235**: `alg: none` detection and case-insensitive algorithm bypass filtering (`None`, `nOnE`).
-  - **Algorithm Confusion Attacks**: Detects tokens signed with public keys treated as HMAC secrets.
-  - **Weak Key Dictionary Attack**: High-speed dictionary cracker checking against common passwords, defaults, and weak strings.
-  - **Credential & PII Leak Scanner**: Identifies passwords, auth tokens, database connection URIs, private keys, emails, and SSNs accidentally placed in payloads.
-  - **Header Injection Vectors**: Audits `jku`, `x5u`, `jwk`, and path-traversal in `kid`.
-- **RFC 9449 DPoP (Demonstrating Proof-of-Possession) Guard**:
-  - Generates and validates application-layer DPoP proof JWTs (`typ: dpop+jwt`).
-  - Strict RFC 9449 §4.3 HTU URL normalization (schemes, default ports, query/fragment stripping).
-  - Access Token Hash (`ath` = `base64url(sha256(access_token))`) binding verification.
-  - Access token confirmation claim binding via RFC 7638 thumbprints (`cnf.jkt`).
-  - Rolling-window anti-replay store rejecting duplicate `jti` nonces.
-  - Server challenge nonce (`DPoP-Nonce`) verification.
-- **JWKS & Key Rotation Simulator (RFC 7517 / RFC 7638)**:
-  - Canonical RFC 7638 SHA-256 thumbprint calculations for RSA, EC, and oct keys.
-  - Active -> Retiring -> Revoked key lifecycle simulation and token `kid` resolution.
-- **Constant-Time Timing Side-Channel Defense**:
-  - Constant-time signature verification and empirical side-channel timing benchmark.
-- **FastMCP Protocol 2.0 Server**:
-  - Built-in stdio JSON-RPC server exposing tools (`jwt_decode`, `jwt_verify`, `jwt_audit_security`, `jwt_create_dpop_proof`, `jwt_verify_dpop_proof`, `jwt_audit_jwks`, etc.), resources, and prompts.
-- **JWT Inspector Guard Studio UI** (Design influenced by Material 3 tokens):
-  - Interactive dual-panel web interface with live decoding, vulnerability flags, DPoP proof generator, signature checker, and dark/light modes.
-- **Multi-OS CLI**:
-  - Clean terminal tool with ANSI styling, `--no-color`, `-v`/`--version`, `-q`/`--quiet`, and JSON output.
-
----
-
-## Installation
-
-```bash
-pip install jwt-inspector-guard
+```mermaid
+flowchart LR
+    CLI["jwt-inspector-guard / jwt-guard"] --> CORE["src/jwt_inspector_guard"]
+    MCP["MCP client"] -->|"stdio JSON-RPC 2.0"| MCPSRV["mcp_server.py"]
+    UI["public/index.html"] --> HTTP["server.py -> ui_server.py (127.0.0.1:8124)"]
+    MCPSRV --> CORE
+    HTTP --> CORE
 ```
 
-Or from source:
+| Module | Responsibility |
+| :--- | :--- |
+| `token_parser.py`, `base64_url.py` | Compact JWT parsing and Base64URL codec |
+| `claims_validator.py` | RFC 7519 temporal / issuer / audience checks |
+| `crypto_engine.py` | HMAC signing and constant-time verification |
+| `security_linter.py` | Vulnerability detection, scoring, secret cracking |
+| `dpop_guard.py` | RFC 9449 DPoP proof creation and verification |
+| `jwks_manager.py` | JWKS rotation simulation and RFC 7638 thumbprints |
+| `timing_defense.py` | Comparison timing benchmarks |
+| `ui_server.py` | Threaded HTTP server for `public/` and `/api/*` |
+| `mcp_server.py` | JSON-RPC 2.0 MCP server over stdio |
+| `cli.py` | argparse CLI dispatcher |
+
+Additional launchers:
+
+- `bin/jwt-guard.js` — Node wrapper. `jwt-guard web` starts `server.py` on `127.0.0.1:8124`; no arguments (or `desktop` / `--gui`) opens the Electron shell in `electron/main.cjs`, falling back to the web server if Electron is not installed; any other arguments are forwarded to the Python CLI.
+- `bin/jwt-inspector-guard-tui` — Braille-sparkline terminal view (`--json`, `--benchmark`, `--frames N`).
+- `jwt-inspector.desktop` — Linux desktop entry calling `jwt-guard desktop` / `jwt-guard web`.
+
+## Install
+
+Requires Python 3.9+. Node.js is only needed for the `bin/jwt-guard.js` launcher and the optional Electron shell.
 
 ```bash
-git clone https://github.com/NullAITech/jwt-inspector-guard.git
+git clone https://github.com/1nc0gn30/jwt-inspector-guard.git
 cd jwt-inspector-guard
-pip install -e .
+python3 -m pip install -e .
+
+# Verify
+jwt-inspector-guard --version
+jwt-inspector-guard --help
+
+# Start the web UI + REST API on http://127.0.0.1:8124
+python3 server.py
+# or: npm start
+# or: jwt-inspector-guard serve --no-browser
 ```
 
----
-
-## CLI Reference (`jwt-inspector-guard` / `jwt-guard`)
+Optional desktop shell:
 
 ```bash
-# Check version and JSON telemetry
-jwt-inspector-guard --version
-jwt-inspector-guard --json
-
-# 1. Decode a token into formatted JSON
-jwt-inspector-guard decode "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-
-# 2. Verify signature & claims
-jwt-inspector-guard verify "eyJhbGciOiJIUzI1Ni..." --secret "super-secret" --algorithm HS256
-
-# 3. Comprehensive security vulnerability audit
-jwt-inspector-guard audit "eyJhbGciOiJIUzI1Ni..."
-
-# 4. Launch standalone Web Workstation on port 8124
-python3 server.py
-# or
-jwt-inspector-guard serve --port 8124
+npm install
+npm run app
 ```
 
-# 4. Dictionary attack against weak HMAC secrets
-jwt-guard crack "eyJhbGciOiJIUzI1Ni..."
+## CLI Reference
 
-# 5. List built-in attack vectors & test tokens
-jwt-guard samples
+Entry points: `jwt-inspector-guard` and `jwt-guard` (both map to `jwt_inspector_guard.cli:main`). Global flags `--no-color`, `-q/--quiet`, `-v/--version` are accepted before or after a subcommand. Most subcommands accept `--json`. Tokens may be passed as an argument or piped on stdin.
 
-# 6. Generate RFC 9449 DPoP proof-of-possession token
-jwt-guard dpop-create --method POST --url https://api.example.com/v1/charge --token "access_token_xyz"
+| Command | Purpose |
+| :--- | :--- |
+| `--json` | Print platform and crypto diagnostics as JSON |
+| `--status` | Probe `http://127.0.0.1:8124/health` and print a JSON status object |
+| `decode [TOKEN]` | Decode header / payload / signature |
+| `verify [TOKEN] -s SECRET [-a ALG] [--iss] [--aud] [--leeway]` | Verify signature and claims |
+| `encode -p PAYLOAD [-s SECRET] [-a ALG] [--exp] [--sub] [--iss] [--aud] [--header]` | Mint and sign a token |
+| `audit [TOKEN] [-s SECRET]` | Security lint report and score |
+| `crack [TOKEN] [-w WORDLIST] [--max-attempts N]` | Dictionary attack on HMAC secret |
+| `samples` / `catalog [-c CATEGORY] [-g NAME]` | Built-in sample tokens and CVE vectors |
+| `serve [--host H] [-p PORT] [--no-browser]` | Web UI + REST API (default `127.0.0.1:8124`) |
+| `mcp` | MCP stdio server |
+| `diagnostics` / `doctor` / `platform` | Platform and crypto diagnostics |
+| `test` | Built-in self-test runner |
+| `jwks [--rotate] [-f FILE] [--resolve TOKEN]` | JWKS audit and rotation simulation |
+| `timing [--test-vulnerable] [--trials N]` | Comparison timing benchmark |
+| `dpop-create [-m METHOD] [-u URL] [-t TOKEN] [-n NONCE]` | Create a DPoP proof |
+| `dpop-verify PROOF [-m] [-u] [-t] [-n] [--jkt] [--max-age]` | Verify a DPoP proof |
 
-# 7. Verify DPoP proof, access token hash (ath), and key binding
-jwt-guard dpop-verify "<dpop_proof_jwt>" --method POST --url https://api.example.com/v1/charge --token "access_token_xyz"
+Examples:
 
-# 8. Launch the JWT Inspector Guard Studio Web UI (Material 3 influenced)
-jwt-guard serve --port 8780
+```bash
+jwt-inspector-guard catalog
+TOKEN=$(jwt-inspector-guard catalog -g weak-secret-jwt)
+jwt-inspector-guard audit "$TOKEN" --json
+jwt-inspector-guard crack "$TOKEN"
+jwt-inspector-guard encode -p '{"sub":"usr_42"}' -s 'replace-with-a-long-random-secret' --exp 3600
+jwt-inspector-guard dpop-create -m POST -u https://api.example.com/v1/orders --json
 ```
 
----
+## MCP and REST Reference
 
-## FastMCP Configuration
-
-Integrate JWT Inspector Guard into your AI coding environment:
-
-### Claude Desktop (`claude_desktop_config.json`)
+### MCP (stdio)
 
 ```json
 {
   "mcpServers": {
-    "jwt-guard": {
-      "command": "jwt-guard",
-      "args": ["mcp"]
-    }
-  }
-}
-```
-
-### Cursor / Cline / Antigravity (`mcp.json`)
-
-```json
-{
-  "mcpServers": {
-    "jwt-guard": {
+    "jwt-inspector-guard": {
       "command": "python3",
       "args": ["-m", "jwt_inspector_guard", "mcp"]
     }
@@ -151,105 +131,49 @@ Integrate JWT Inspector Guard into your AI coding environment:
 }
 ```
 
-### Registered MCP Tools:
-- `jwt_decode`: Parse JOSE header, claims payload, and signature without external libs.
-- `jwt_verify`: Validate cryptographic HMAC signature and RFC 7519 time-based claims.
-- `jwt_audit`: Security audit against known CVEs, weak secrets, and PII leaks.
-- `jwt_crack`: Dictionary attack to recover weak HMAC signing secrets.
-- `jwt_mint`: Mint standard test tokens for automated QA and integration tests.
-- `jwt_diagnostics`: Multi-OS runtime diagnostics.
+Tools: `jwt_decode`, `jwt_verify`, `jwt_encode`, `jwt_audit_security`, `jwt_crack_secret`, `jwt_list_samples`, `jwt_diagnostics`, `jwt_audit_jwks`, `jwt_timing_defense_audit`, `jwt_create_dpop_proof`, `jwt_verify_dpop_proof`.
 
----
+### REST (`server.py`, `127.0.0.1:8124`)
 
-## Python API Usage
+`POST` routes take a JSON body and reject cross-origin requests (Origin guard).
 
-```python
-from jwt_inspector_guard import decode_token, verify_token, audit_token
+| Method | Route | Description |
+| :--- | :--- | :--- |
+| `GET` | `/health`, `/api/health` | Health and version |
+| `POST` | `/api/decode` | Decode token |
+| `POST` | `/api/verify`, `/api/validate` | Signature / claims validation |
+| `POST` | `/api/audit` | Security lint report |
+| `POST` | `/api/inspect` | Decode + validate + audit in one call |
+| `POST` | `/api/catalog` | Sample tokens |
+| `POST` | `/api/crack` | Weak-secret dictionary attack |
+| `POST` | `/api/mint` | Sign a new token |
+| `POST` | `/api/entropy` | Secret entropy estimate |
+| `POST` | `/api/tamper` | Header/payload tampering helpers |
+| `POST` | `/api/jwks` | JWKS audit / rotation |
+| `POST` | `/api/timing` | Timing benchmark |
+| `POST` | `/api/dpop/create`, `/api/dpop/verify` | DPoP proofs |
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-
-# Decode
-header, payload, sig = decode_token(token)
-print("Algorithm:", header.get("alg"))
-print("Subject:", payload.get("sub"))
-
-# Security Audit
-report = audit_token(token)
-print("Security Score:", report.score)
-for finding in report.findings:
-    print(f"[{finding.severity}] {finding.title}: {finding.description}")
+```bash
+curl -s http://127.0.0.1:8124/health
+curl -s -X POST http://127.0.0.1:8124/api/catalog -H 'Content-Type: application/json' -d '{}'
 ```
 
----
+## Port
 
-## Cross-Platform Compatibility
+`127.0.0.1:8124` — matches the `jwt-inspector-guard` entry in Zoth Studio v2 `tools.json`. Override with `PORT` (for `server.py`, `bin/jwt-guard.js`, `electron/main.cjs`) or `JWT_GUARD_PORT` / `--port` (for `jwt-inspector-guard serve`). On ZothOS v3.4.0 the `jwt-guard` binary and `jwt-inspector.desktop` launcher use the same port.
 
-Tested and guaranteed across:
-- **Linux**: Ubuntu 20.04+, Debian, Fedora, Arch Linux, Parrot OS
-- **macOS**: Sonoma, Ventura, Monterey (Apple Silicon & Intel)
-- **Windows**: Windows 10/11 (PowerShell, CMD, WSL)
-- **Mobile / Android**: Termux
-- **Python**: 3.9, 3.10, 3.11, 3.12, 3.13
+## Testing
 
----
+```bash
+python3 -m pip install pytest
+python3 -m pytest -q          # or: npm test
+jwt-inspector-guard test      # built-in self-test
+```
+
+Server tests bind to ephemeral ports. `scripts/verify_ui.py` is an optional Playwright harness for triple-viewport UI checks against a running server (`JWT_GUARD_URL`).
 
 ## License
 
-MIT License. Crafted with zero external dependencies using 100% Python Standard Library.
+MIT. Copyright (c) 2026 [1nc0gn30](https://1nc0gn30.si) and [NullAI](https://nullai.tech). See [LICENSE](LICENSE).
 
----
-
-## 🏛️ ZothOS v3.4, Zoth Studio v2 & Obsidian Second Brain Ecosystem
-
-```mermaid
-flowchart LR
-    subgraph ZothOS["🐧 ZothOS v3.4 CLI & Braille TUI"]
-        CLI["jwt-inspector-guard --help / --json"]
-        TUI["jwt-inspector-guard-tui<br/>Unicode U+2800 2x4 Braille"]
-    end
-
-    subgraph Workstation["⚡ Sovereign Workstation"]
-        WEB["http://127.0.0.1:8124<br/>REST API & /health"]
-    end
-
-    subgraph Studio["🌌 Zoth Studio v2 & ZothOS-Lite"]
-        GODMODE["http://127.0.0.1:3000/tools/jwt-inspector-guard<br/>God-Mode Workstation"]
-        LITE["http://127.0.0.1:8145<br/>ZothOS-Lite Web Desktop"]
-    end
-
-    subgraph SecondBrain["💎 Obsidian Second Brain & STDP"]
-        TRACKER["http://127.0.0.1:8151<br/>Zoth Obsidian Tracker"]
-        NEURO["http://127.0.0.1:8094<br/>Neuro-Memory STDP Cortex"]
-        NOTE["Studio/Tools/Studio jwt-inspector-guard.md"]
-    end
-
-    CLI --> WEB
-    TUI --> WEB
-    WEB <--> GODMODE
-    WEB <--> LITE
-    WEB --> TRACKER
-    TRACKER <--> NOTE
-    NOTE <--> NEURO
-```
-
-### Cross-Surface Integration Matrix
-
-| Surface | Endpoint / Binary | Capabilities |
-| :--- | :--- | :--- |
-| **Standalone Workstation** | `http://127.0.0.1:8124` | 100% Free & Open-Access Web Deck, live `/health` & REST telemetry |
-| **Zoth Studio v2 Route** | `http://127.0.0.1:3000/tools/jwt-inspector-guard` | Interactive God-Mode component inside Zoth Studio (`https://zoth.nullai.tech`) |
-| **ZothOS v3.4 CLI & TUI** | `jwt-inspector-guard` / `jwt-inspector-guard-tui` | Global binary in `/usr/local/bin/` with Unicode `U+2800` Braille TUI & `--json` output |
-| **ZothOS-Lite Web Desktop** | `http://127.0.0.1:8145` | Browser-native KDE-style window manager & terminal launcher |
-| **Zoth Obsidian Tracker** | `http://127.0.0.1:8151` | Interactive Obsidian Second Brain vault explorer (`~/Documents/Obsidian Vault/Studio/Tools/Studio jwt-inspector-guard.md`) |
-| **Neuro-Memory STDP Cortex** | `http://127.0.0.1:8094` | 3-Factor STDP synaptic memory daemon & 21-tool MCP server |
-
-```bash
-# Inspect CLI & Unicode U+2800 Braille TUI on ZothOS v3.4
-jwt-inspector-guard --help
-jwt-inspector-guard-tui --status
-jwt-inspector-guard-tui --json
-
-# Verify Second Brain Vault & 12-Step Verification Gallery on :8151
-zoth-obsidian-tracker --verify
-```
-
+Free and open source. Optional support: [Buy Us a Coffee (Stripe)](https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X).

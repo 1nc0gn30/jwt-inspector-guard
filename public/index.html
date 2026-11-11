@@ -78,7 +78,7 @@
             "name": "Is JWT Inspector Guard free to use?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. JWT Inspector Guard is 100% free and open-access with zero paywalls, including executive security dossier exports, multi-framework middleware patches, and RFC 9449 DPoP proof tools. Optional community support is available via Stripe Buy Us a Coffee or Solana tips."
+              "text": "Yes. JWT Inspector Guard is 100% free and open source, including executive security dossier exports, multi-framework middleware patches, and RFC 9449 DPoP proof tools. Optional community support is available via Stripe Buy Us a Coffee."
             }
           }
         ]
@@ -269,23 +269,6 @@
     .btn-checkout:hover {
       box-shadow: 0 0 15px var(--gold-glow);
       transform: translateY(-1px);
-    }
-    .btn-solana {
-      background: rgba(153, 69, 255, 0.15);
-      border: 1px solid #9945ff;
-      color: #dfbaec;
-      font-weight: 600;
-      font-size: 0.82rem;
-      padding: 7px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-solana:hover {
-      background: rgba(153, 69, 255, 0.25);
     }
     .btn-activate {
       background: transparent;
@@ -526,46 +509,6 @@
     }
     input.text-input:focus { border-color: var(--gold); }
 
-    /* Frosted Glass Paywall Blur */
-    .paywall-wrap {
-      position: relative;
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-top: 1.2rem;
-    }
-    .paywall-content.locked {
-      filter: none;
-      pointer-events: none;
-      user-select: none;
-      opacity: 0.4;
-    }
-    .paywall-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(9, 10, 15, 0.7);
-      backdrop-filter: none;
-      z-index: 20;
-      padding: 1.5rem;
-      text-align: center;
-    }
-    .paywall-wrap:not(.is-locked):not(.locked) .paywall-overlay {
-      display: none !important;
-    }
-    .paywall-wrap:not(.is-locked):not(.locked) .paywall-content.locked,
-    .paywall-wrap:not(.is-locked):not(.locked) .paywall-content {
-      filter: none !important;
-      pointer-events: auto !important;
-      user-select: auto !important;
-      opacity: 1 !important;
-    }
-
     /* Glassmorphic Toast Notification */
     .toast-container {
       position: fixed;
@@ -698,45 +641,13 @@
   <link rel="stylesheet" href="wave-states.css">
   <link rel="stylesheet" href="wave-type.css">
 
-  <!-- Zoth 100% Open-Access & Buy Us a Coffee Invariant -->
-  <script id="zoth-open-access-init">
-    (function() {
-      try {
-        var keys = ['agent_audiocipher_pro', 'agent_cyber_turtle_pro', 'agent_datamosh_pro', 'agent_nexus3d_pro', 'agent_policy_pro', 'audiocipher_license', 'audiocipher_pro_licensed', 'badge3d_pro_licensed', 'certpath_pro_key', 'certpath_pro_licensed', 'cron_rhythm_pro_key', 'cron_rhythm_pro_licensed', 'cwv-speed-engine_pro_licensed', 'cwv_pro_licensed', 'cyber_turtle_pro_licensed', 'datamosh_pro_licensed', 'deepsearch-research-agent_pro_licensed', 'deepsearch_pro_licensed', 'entropy_studio_licensed', 'envguard-secrets-vault_pro_licensed', 'envguard_pro_license', 'etsy_connector_pro', 'jwt_guard_licensed', 'mdg_pro_licensed', 'neuro_pro_licensed', 'nexus3d_pro_licensed', 'omnipost_pro_key', 'omnipost_pro_licensed', 'osint_pro_licensed', 'payload-entropy-studio_pro_licensed', 'polyglot_pro_licensed', 'pro_licensed', 'promptmaster_pro_licensed', 'promptmaster_pro_active', 'robots-txt-auditor_pro_licensed', 'robots_pro_licensed', 'schema_illustrator_pro_licensed', 'sovereign_pro_licensed', 'subsweep-lead-scanner_pro_licensed', 'subsweep_licensed', 'turtle_pro_licensed', 'ufo_sacred_licensed', 'vector-search-engine_pro_licensed', 'vector_studio_pro_licensed', 'web-security-guard_pro_licensed', 'web_security_guard_licensed', 'yourdigitalspace_pro', 'zela_guide_pro_licensed', 'zoth_ascii_magic_pro', 'zoth_audiocipher_licensed', 'zoth_badge3d_licensed', 'zoth_cyber_turtle_licensed', 'zoth_datamosh_licensed', 'zoth_etsy_licensed', 'zoth_nexus3d_licensed', 'zoth_osint_licensed', 'zoth_policy_licensed', 'zoth_sacred_licensed', 'zoth_ufo_licensed'];
-        for (var i = 0; i < keys.length; i++) {
-          localStorage.setItem(keys[i], 'true');
-        }
-        localStorage.setItem('pm_license_v2', JSON.stringify({ method: 'open_access', ref: 'free_forever', at: '2026-01-01T00:00:00Z' }));
-        window.isPro = true;
-        window.isProLicensed = true;
-      } catch (e) {}
-    })();
-  </script>
-  <style id="zoth-open-access-override">
-    .paywall-overlay, .output-paywall-overlay, #outputPaywallOverlay, #schemaPaywallOverlay,
-    #transformerPaywallOverlay, #proPaywallModal, #licenseModal, #salesBanner, .sales-banner, #founding-offer-banner,
-    #funnelHeroBanner, .modal-backdrop, [data-alias="salesBannerWrap"], [data-alias="paywallOverlay"], [data-alias="founding-offer-banner"] {
-      display: none !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-    .paywall-wrap #outputPreview, .paywall-wrap #reportContentArea, .paywall-content,
-    .paywall-content.locked, .paywall-wrap.is-locked #outputPreview, .paywall-wrap.locked #outputPreview,
-    #hardeningPaywallWrap, #hardeningPaywallContent, .locked, .is-locked {
-      filter: none !important;
-      -webkit-filter: none !important;
-      user-select: auto !important;
-      pointer-events: auto !important;
-    }
-  </style>
 
 </head>
 <body>
 
 <div id="zoth-coffee-support-bar" style="background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(212,175,55,0.14)); border-bottom: 1px solid rgba(212,175,55,0.35); padding: 8px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; z-index: 9999;">
-  <span style="color: #10B981; font-weight: 800;">✦ 100% FREE &amp; OPEN ACCESS · ZERO PAYWALLS</span>
+  <span style="color: #10B981; font-weight: 800;">✦ 100% FREE &amp; OPEN SOURCE</span>
   <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer" style="background: #D4AF37; color: #08080B; padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">☕ Buy Us a Coffee (Stripe)</a>
-  <a href="solana:GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK" onclick="if(navigator.clipboard){navigator.clipboard.writeText('GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK');this.textContent='✓ Copied GG2eQb...dXoK!';}" style="background: rgba(20,241,149,0.15); color: #14F195; border: 1px solid rgba(20,241,149,0.45); padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">◎ Solana Tip (GG2e...dXoK)</a>
 </div>
 
 
@@ -750,31 +661,10 @@
     </div>
     <div class="header-badges">
       <span class="badge badge-egress">ZERO CLOUD EGRESS</span>
-      <span class="badge badge-pro" id="licenseBadge" style="color: #10B981; border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.15); font-weight: 800;">✦ 100% UNLOCKED</span>
+      <span class="badge badge-pro" id="openBadge" style="color: #10B981; border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.15); font-weight: 800;">✦ 100% UNLOCKED</span>
       <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer" style="background: #D4AF37; color: #08080B; padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 11px;">☕ Buy Us a Coffee</a>
-      <a href="solana:GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK" onclick="if(navigator.clipboard){navigator.clipboard.writeText('GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK');this.textContent='✓ Copied!';}" style="background: rgba(20,241,149,0.15); color: #14F195; border: 1px solid rgba(20,241,149,0.45); padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 11px;">◎ Tip SOL</a>
     </div>
   </header>
-
-  <!-- Sales Funnel Banner -->
-  <div class="sales-banner" id="salesBanner" data-alias="salesBannerWrap">
-    <div class="sales-banner-text">
-      <span class="sales-badge-pill">100% FREE & OPEN ACCESS</span>
-      <span class="sales-title">100% Free & Open Access — Optional Coffee Tip (<del></del>)</span>
-      <div class="sales-desc">Unlock executive security audits, CVE patches, multi-framework middleware exports, and RFC 9449 DPoP minting.</div>
-    </div>
-    <div class="sales-banner-ctas">
-      <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" class="btn-checkout" target="_blank" rel="noopener">
-        ★ Instant ☕ Buy Us a Coffee (Stripe)
-      </a>
-      <button class="btn-solana" onclick="triggerSolanaCheckout()">
-        ◉ Pay with Solana / USDC
-      </button>
-      <button class="btn-activate" id="btn-paywall-key" onclick="openLicenseModal()">
-        ✦ Activate Key
-      </button>
-    </div>
-  </div>
 
   <main>
     <!-- Top Action Deck -->
@@ -939,28 +829,9 @@
       </div>
     </div>
 
-    <!-- Frosted Glass Output Paywall Section -->
-    <div class="paywall-wrap" id="hardeningPaywallWrap" data-alias="cosolanaTipwallWrap">
-      <div class="paywall-overlay" id="outputPaywallOverlay" data-alias="paywallOverlay">
-        <div class="lock-box">
-          <div class="lock-title">★ PRO SECURITY DOSSIER & PATCH GENERATOR</div>
-          <div class="lock-desc">
-            Production hardening manifests, automated Express / Next.js / FastAPI middleware patches, and compliance JSON dossiers are locked for free users.
-          </div>
-          <div style="display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap;">
-            <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" class="btn-checkout" target="_blank" rel="noopener">
-              ★ 100% Free & Unlocked
-            </a>
-            <button class="btn-solana" onclick="triggerSolanaCheckout()">
-              ◉ Pay with Solana
-            </button>
-            <button class="btn-activate" onclick="openLicenseModal()">
-              ✦ Enter Key
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="paywall-content locked" id="hardeningPaywallContent">
+    <!-- Automated Hardening Patch & Middleware Synthesizer -->
+    <div id="hardeningWrap">
+      <div id="hardeningContent">
         <div class="card" style="margin-top:0.5rem;">
           <div class="card-header">
             <span class="card-title">❖ Automated Hardening Patch & Middleware Synthesizer</span>
@@ -977,44 +848,6 @@
     </div>
 
   </main>
-
-  <!-- High-Converting Pro Paywall Modal -->
-  <div class="modal-backdrop" id="licenseModal" data-alias="paywall-modal">
-    <div class="modal-card">
-      <button class="modal-close" onclick="closeLicenseModal()">×</button>
-      <div class="modal-title">⭐ Upgrade to JWT Inspector Guard Pro</div>
-      <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.4;">
-        Empower your development stack with zero-cloud cryptographic auditing and automated compliance patching.
-      </p>
-      
-      <ul class="modal-features">
-        <li><span>✔</span> Unlimited In-Browser Security Audits with Zero Telemetry</li>
-        <li><span>✔</span> Full RFC 9449 DPoP Proof Minting & Verification Suite</li>
-        <li><span>✔</span> 1-Click Middleware Patch Exporters (Next.js, Express, FastAPI)</li>
-        <li><span>✔</span> Executive Security Audit Dossier (JSON, Markdown & PDF)</li>
-        <li><span>✔</span> Complete CVE Exploit Simulator & Alg-None Radar</li>
-        <li><span>✔</span> Permanent Lifetime Access & All Future Security Modules</li>
-      </ul>
-
-      <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.2rem;">
-        <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" class="btn-checkout" target="_blank" rel="noopener" style="flex:1; justify-content:center;">
-          ★ Buy with Stripe (Free (100% Open Access))
-        </a>
-        <button class="btn-solana" onclick="triggerSolanaCheckout()" style="flex:1; justify-content:center;">
-          ◉ Pay with Solana
-        </button>
-      </div>
-
-      <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:1rem;">
-        <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.4rem;">Have a receipt email or license key?</div>
-        <div style="display:flex; gap:0.5rem;">
-          <input type="text" id="licenseInput" data-alias="licenseKeyInput" class="text-input" placeholder="e.g. user@domain.com or JWT-PRO-2026">
-          <input type="hidden" id="license-input" data-alias="license-input">
-          <button class="btn-sm primary" id="btnActivateKey" onclick="activateLicenseKey()">Activate</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <div id="toastMessage" class="toast-container" data-alias="toast"></div>
   <div id="toast" style="display:none;" aria-hidden="true"></div>
@@ -1056,7 +889,6 @@
       }
     ];
 
-    let isProLicensed = true;
 
     // --- Base64URL Helpers ---
     function base64UrlDecode(str) {
@@ -1103,56 +935,6 @@
     }
     window.alert = showToast;
 
-    // --- License Management ---
-    function checkLicense() {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('licensed') === 'true' || urlParams.get('pro') === '1' || urlParams.get('pro') === 'true') {
-        localStorage.setItem('jwt_guard_licensed', 'true');
-        history.replaceState(null, '', window.location.pathname);
-      }
-      isProLicensed = true;
-
-      const wrap = document.getElementById('hardeningPaywallWrap') || document.getElementById('cosolanaTipwallWrap');
-      const content = document.getElementById('hardeningPaywallContent');
-      const badge = document.getElementById('licenseBadge') || document.getElementById('headerProBadge');
-      const banner = document.getElementById('salesBanner') || document.getElementById('salesBannerWrap');
-
-      if (wrap) wrap.classList.remove('is-locked', 'locked');
-      if (content) content.classList.remove('locked', 'is-locked');
-      if (badge) {
-        badge.textContent = '✦ 100% UNLOCKED';
-        badge.style.color = '#10B981';
-        badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-        badge.style.background = 'rgba(16, 185, 129, 0.15)';
-      }
-      if (banner) banner.style.display = 'none';
-    }
-
-    function openLicenseModal() {
-      document.getElementById('licenseModal').classList.add('open');
-    }
-
-    function closeLicenseModal() {
-      document.getElementById('licenseModal').classList.remove('open');
-    }
-
-    function activateLicenseKey() {
-      const input = document.getElementById('licenseInput') || document.getElementById('license-input');
-      const val = (input ? input.value : '').trim();
-      if (val.length > 3 || val === 'JWT-PRO-2026' || val === 'SOVEREIGN-PRO-2026' || val.includes('@')) {
-        localStorage.setItem('jwt_guard_licensed', 'true');
-        checkLicense();
-        closeLicenseModal();
-        showToast('⭐ JWT Inspector Guard Pro successfully activated! All paywalls dissolved.');
-      } else {
-        showToast('Please enter a valid receipt email or license key.');
-      }
-    }
-
-    function triggerSolanaCheckout() {
-      window.open('https://solana.fm/address/GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK', '_blank');
-      openLicenseModal();
-    }
 
     // --- Token Parsing & Display ---
     function onTokenChange() {
@@ -1692,8 +1474,6 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
         opt.textContent = `[${item.category}] ${item.name}`;
         sel.appendChild(opt);
       });
-
-      checkLicense();
 
       // Load first sample as default and immediately populate decoded claims & audit
       document.getElementById('tokenInput').value = SAMPLE_CATALOG[0].token;

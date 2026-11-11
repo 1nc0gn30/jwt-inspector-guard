@@ -77,6 +77,7 @@ dmypy.json
 .ruff_cache/
 
 node_modules/
+.netlify/
 
 .venv/
 .venv*/
@@ -87,3 +88,4 @@ release-artifacts/
 build/*.iso*
 build/live_workspace/
 build/release-*/
+.verify_shots/

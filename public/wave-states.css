@@ -76,7 +76,7 @@ textarea.token-box:focus-visible {
   box-shadow: 0 0 16px rgba(255, 215, 0, 0.45), inset 0 0 8px rgba(255, 215, 0, 0.08) !important;
 }
 
-/* Text inputs (Secret key, URI, License key) */
+/* Text inputs (HMAC secret, DPoP URI) */
 input.text-input:focus-visible {
   outline: 2px solid #ffd700 !important;
   outline-offset: 2px !important;
@@ -148,7 +148,7 @@ footer.zoth-footer a:focus-visible {
   transform: translateY(1px) !important;
 }
 
-/* License key activation button */
+/* Secondary dashed action button */
 .btn-activate {
   transition: background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),

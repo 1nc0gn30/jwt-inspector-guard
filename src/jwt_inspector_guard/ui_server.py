@@ -470,12 +470,12 @@ class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
     allow_reuse_address = True
 
 
-def run_server(host: str = "127.0.0.1", port: int = 8765, open_browser: bool = True) -> None:
+def run_server(host: str = "127.0.0.1", port: int = 8124, open_browser: bool = True) -> None:
     """Start the JWT Inspector Guard web UI server.
 
     Args:
         host: Bind address (default: 127.0.0.1).
-        port: Port to listen on (default: 8765).
+        port: Port to listen on (default: 8124).
         open_browser: Whether to open the default browser automatically.
     """
     server = ThreadingHTTPServer((host, port), JWTInspectorHandler)

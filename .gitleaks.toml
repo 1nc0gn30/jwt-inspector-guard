@@ -1,0 +1,20 @@
+# Gitleaks configuration for jwt-inspector-guard.
+# This project is a JWT security auditor. It ships deliberately synthetic sample
+# tokens (jwt.io "John Doe" example, alg:none CVE-2015-9235 vectors, weak-secret
+# demo tokens with fake claims such as "Alice Hacker") used by the sample catalog,
+# browser UI demos, and the test suite. None of them are real credentials.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Synthetic JWT sample catalog and test fixtures"
+paths = [
+  '''^tests/test_jwt_inspector_guard\.py$''',
+  '''^src/jwt_inspector_guard/mcp_server\.py$''',
+  '''^public/index\.html$''',
+  '''(^|/)__pycache__/''',
+]
+
+[[allowlists]]
+description = "Historical README example using the public jwt.io sample token"
+commits = ["e794913887fbbefa2e776c9e824e0476464b2e1a"]
