@@ -29,7 +29,7 @@
     <rect x="0" y="-14" width="420" height="22" rx="11" fill="rgba(255,255,255,0.06)" stroke="#D4AF37" stroke-opacity="0.45"/>
     <text x="12" y="1" fill="#D4AF37" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" letter-spacing="1.1">JWT SECURITY // NULLAI ENGINE // PORT :8124</text>
     <text x="0" y="34" fill="#FFFFFF" font-family="Syne, Space Grotesk, sans-serif" font-size="30" font-weight="800" letter-spacing="0.4">JWT INSPECTOR GUARD</text>
-    <text x="0" y="60" fill="#94A3B8" font-family="Inter, sans-serif" font-size="13.5">Zero-dependency JWT/JWS decoder, HMAC verifier, CVE security linter, RFC 9449 DPoP guard, and 11-tool MCP server.</text>
+    <text x="0" y="60" fill="#94A3B8" font-family="Inter, sans-serif" font-size="13.5">Zero-dependency JWT/JWS decoder, HMAC verifier, CVE linter, and RFC 9449 DPoP guard.</text>
   </g>
 
   <!-- 3 Feature Cards -->
