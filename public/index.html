@@ -30,7 +30,7 @@
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "WebApplication",
+        "@type": ["WebApplication", "SoftwareApplication"],
         "@id": "https://jwtguard.nullai.tech/#webapp",
         "name": "JWT Inspector Guard",
         "url": "https://jwtguard.nullai.tech",
@@ -197,89 +197,11 @@
       color: var(--accent-green);
       border-color: rgba(46, 213, 115, 0.3);
     }
-    .badge-pro {
-      background: rgba(255, 215, 0, 0.12);
-      color: var(--gold);
-      border-color: rgba(255, 215, 0, 0.35);
-      cursor: pointer;
-    }
-
-    /* Sales Banner */
-    .sales-banner {
-      background: linear-gradient(90deg, rgba(255,215,0,0.12) 0%, rgba(255,71,87,0.12) 100%);
-      border: 1px solid var(--gold);
-      border-radius: var(--radius);
-      padding: 1rem 1.25rem;
-      margin: 1.2rem auto 0;
-      max-width: 1400px;
-      width: calc(100% - 2rem);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
-      position: relative;
-      z-index: 10;
-    }
-    .sales-banner-text {
-      flex: 1;
-      min-width: 280px;
-    }
-    .sales-badge-pill {
-      background: var(--gold);
-      color: #000;
-      font-size: 0.68rem;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-right: 0.5rem;
-    }
-    .sales-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #fff;
-    }
-    .sales-desc {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-    }
-    .sales-banner-ctas {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .btn-checkout {
-      background: linear-gradient(135deg, var(--gold), #ffaa00);
-      color: #090a0f;
-      font-weight: 700;
-      font-size: 0.82rem;
-      padding: 8px 16px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-    .btn-checkout:hover {
-      box-shadow: 0 0 15px var(--gold-glow);
-      transform: translateY(-1px);
-    }
-    .btn-activate {
-      background: transparent;
-      border: 1px dashed var(--gold);
-      color: var(--gold);
-      font-size: 0.8rem;
-      padding: 7px 12px;
-      border-radius: 6px;
-      cursor: pointer;
+    .badge-open {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10B981;
+      border-color: rgba(16, 185, 129, 0.4);
+      cursor: default;
     }
 
     /* Main Container */
@@ -664,7 +586,7 @@
     </div>
     <div class="header-badges" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
       <span class="badge badge-egress" style="white-space: nowrap;">ZERO CLOUD EGRESS</span>
-      <span class="badge badge-pro" id="openBadge" style="color: #10B981; border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.15); font-weight: 800; white-space: nowrap;">✦ 100% UNLOCKED</span>
+      <span class="badge badge-open" id="openBadge" style="color: #10B981; border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.15); font-weight: 800; white-space: nowrap;">✦ 100% OPEN ACCESS</span>
       <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer" style="background: #D4AF37; color: #08080B; padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; white-space: nowrap;">☕ Buy Us a Coffee</a>
     </div>
   </header>

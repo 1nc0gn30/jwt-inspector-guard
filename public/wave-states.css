@@ -91,8 +91,8 @@ input.text-input:focus-visible {
   border-radius: 4px;
 }
 
-/* Clickable header badge */
-.badge.badge-pro:focus-visible {
+/* Open-access header badge */
+.badge.badge-open:focus-visible {
   outline: 2px solid #ffd700 !important;
   outline-offset: 2px !important;
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.4) !important;
@@ -249,19 +249,12 @@ input.text-input:hover {
   transform: rotate(90deg) scale(1.08) !important;
 }
 
-/* Clickable header badge hover */
-.badge.badge-pro {
+/* Open-access header badge */
+.badge.badge-open {
   transition: background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-.badge.badge-pro:hover {
-  background: rgba(255, 215, 0, 0.22) !important;
-  border-color: #ffd700 !important;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.35) !important;
-  transform: translateY(-1px) !important;
 }
 
 /* Timeline node hover inspection */
@@ -439,13 +432,11 @@ input.text-input:invalid {
     scroll-behavior: auto !important;
   }
 
-  .btn-checkout,
   .btn-solana,
-  .btn-activate,
   .btn-sm,
   .finding-card,
   .modal-close,
-  .badge.badge-pro,
+  .badge.badge-open,
   .toast-msg {
     transform: none !important;
     transition: none !important;
