@@ -2,28 +2,27 @@
 
 Zero external dependencies: 100% Python Standard Library.
 Provides:
-1. RFC 9449 compliant DPoP Proof Generation (typ='dpop+jwt', htm, htu, jti, iat, ath, nonce, embedded jwk)
-2. RFC 9449 §4.3 HTU URL Normalization (scheme/host lowercase, default ports stripped, query/fragment removed)
-3. Access Token Hash (ath) computation: base64url(sha256(access_token))
-4. RFC 7638 JWK Thumbprint calculation & access token confirmation binding (cnf.jkt)
-5. Anti-Replay Cache & Window Verification (prevents token reuse attacks)
-6. Comprehensive DPoP Security & Compliance Auditor
+1. RFC 9449 compliant DPoP Proof Generation with real NIST P-256 ECDSA (ES256) keypairs & signatures
+2. Real cryptographic JWS signature verification against the embedded public JWK (ES256 / RS256 / RS384 / RS512)
+3. RFC 9449 §4.3 HTU URL Normalization (scheme/host lowercase, default ports stripped, query/fragment removed)
+4. Access Token Hash (ath) computation: base64url(sha256(access_token))
+5. RFC 7638 JWK Thumbprint calculation & access token confirmation binding (cnf.jkt)
+6. Anti-Replay Cache & Window Verification (prevents token reuse attacks)
 """
 
 from __future__ import annotations
 
 import hashlib
-import json
 import secrets
 import time
 import urllib.parse
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from .base64_url import base64url_decode, base64url_decode_json, base64url_encode, base64url_encode_json
-from .crypto_engine import sign_hmac
-from .jwks_manager import compute_jwk_thumbprint, generate_synthetic_jwk
+from .base64_url import base64url_decode_json, base64url_encode, base64url_encode_json
+from .crypto_engine import generate_p256_keypair, sign_es256, verify_asymmetric_jwk
+from .jwks_manager import compute_jwk_thumbprint
 from .models import JWKRecord
 
 
@@ -59,10 +58,12 @@ class DPoPVerificationResult:
     header: Dict[str, Any]
     issues: List[DPoPAuditIssue]
     compliance_score: float
+    signature_valid: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "is_valid": self.is_valid,
+            "signature_valid": self.signature_valid,
             "public_key_thumbprint": self.public_key_thumbprint,
             "token_binding_matched": self.token_binding_matched,
             "replay_detected": self.replay_detected,
@@ -75,11 +76,12 @@ class DPoPVerificationResult:
 
     def to_markdown(self) -> str:
         """Render a readable markdown summary of the DPoP audit."""
-        status_badge = "✅ VALID" if self.is_valid else "❌ INVALID / REJECTED"
+        status_badge = "VALID" if self.is_valid else "INVALID / REJECTED"
         lines = [
-            f"# 🔐 DPoP (RFC 9449) Proof Verification: {status_badge}",
+            f"# DPoP (RFC 9449) Proof Verification: {status_badge}",
             "",
             f"- **Compliance Score**: `{self.compliance_score:.1f}/100`",
+            f"- **Cryptographic Signature**: `{'VALID' if self.signature_valid else 'INVALID'}`",
             f"- **JWK Thumbprint (`jkt`)**: `{self.public_key_thumbprint}`",
             f"- **Token Binding Matched**: `{'Yes' if self.token_binding_matched else 'No / Unbound'}`",
             f"- **Replay Detected**: `{'YES (CRITICAL)' if self.replay_detected else 'No (Fresh)'}`",
@@ -89,44 +91,28 @@ class DPoPVerificationResult:
             "",
         ]
         if self.issues:
-            lines.append("## ⚠️ Detected Security & Compliance Issues")
+            lines.append("## Detected Security & Compliance Issues")
             lines.append("")
             for iss in self.issues:
                 lines.append(f"- **[{iss.severity}] {iss.code}**: {iss.message}")
                 lines.append(f"  *Remediation*: {iss.remediation}")
         else:
-            lines.append("## ✨ Clean Audit")
+            lines.append("## Clean Audit")
             lines.append("DPoP proof strictly satisfies all RFC 9449 requirements and cryptographic bindings.")
 
         return "\n".join(lines)
 
 
 def normalize_dpop_htu(url_or_path: str) -> str:
-    """Normalize HTTP Target URI (HTU) per RFC 9449 §4.3.
-
-    Requirements:
-    1. Scheme and host are converted to lower case.
-    2. Default ports (:80 for http, :443 for https) are removed.
-    3. Query component is stripped.
-    4. Fragment component is stripped.
-    5. Path is normalized (empty path defaults to '/').
-
-    Args:
-        url_or_path: Target request URL or URI string.
-
-    Returns:
-        str: Canonical normalized HTU string.
-    """
+    """Normalize HTTP Target URI (HTU) per RFC 9449 §4.3."""
     if not url_or_path:
         return ""
 
     parsed = urllib.parse.urlsplit(url_or_path.strip())
 
-    # If scheme or netloc are missing, treat as relative or localhost default
     scheme = parsed.scheme.lower() if parsed.scheme else "https"
     netloc = parsed.netloc.lower() if parsed.netloc else "localhost"
 
-    # Remove standard port suffixes
     if scheme == "http" and netloc.endswith(":80"):
         netloc = netloc[:-3]
     elif scheme == "https" and netloc.endswith(":443"):
@@ -136,7 +122,6 @@ def normalize_dpop_htu(url_or_path: str) -> str:
     if not path:
         path = "/"
     else:
-        # Normalize double slashes and dot segments
         parts = []
         for segment in path.split("/"):
             if segment == "." or segment == "":
@@ -152,39 +137,24 @@ def normalize_dpop_htu(url_or_path: str) -> str:
 
 
 def compute_access_token_hash(access_token: str) -> str:
-    """Compute RFC 9449 §4.2 Access Token Hash (ath).
-
-    ath = base64url(sha256(ASCII(access_token)))
-
-    Args:
-        access_token: Plaintext Bearer or DPoP access token string.
-
-    Returns:
-        str: Base64URL-encoded SHA-256 hash.
-    """
+    """Compute RFC 9449 §4.2 Access Token Hash (ath): base64url(sha256(ASCII(access_token)))."""
     digest = hashlib.sha256(access_token.encode("ascii")).digest()
     return base64url_encode(digest)
 
 
 class DPoPReplayStore:
-    """In-memory thread-safe anti-replay cache tracking (jti, jkt) nonces.
-
-    Maintains a rolling window of recent nonces and rejects any duplicate jti
-    within the configured TTL window.
-    """
+    """In-memory anti-replay cache tracking (jti, jkt) nonces within a rolling TTL window."""
 
     def __init__(self, ttl_seconds: int = 300):
         self.ttl_seconds = ttl_seconds
         self._cache: Dict[Tuple[str, str], float] = {}
 
     def is_replayed(self, jti: str, jkt: str, now: Optional[float] = None) -> bool:
-        """Check if (jti, jkt) has already been presented within the validity window."""
         curr_time = now if now is not None else time.time()
         self._prune(curr_time)
         return (jti, jkt) in self._cache
 
     def record(self, jti: str, jkt: str, now: Optional[float] = None) -> bool:
-        """Record (jti, jkt). Returns True if new (valid), False if already present (replay)."""
         curr_time = now if now is not None else time.time()
         self._prune(curr_time)
         key = (jti, jkt)
@@ -194,18 +164,15 @@ class DPoPReplayStore:
         return True
 
     def _prune(self, now: float) -> None:
-        """Purge entries older than ttl_seconds."""
         threshold = now - self.ttl_seconds
         expired_keys = [k for k, ts in self._cache.items() if ts < threshold]
         for k in expired_keys:
             del self._cache[k]
 
     def clear(self) -> None:
-        """Clear all replay cache entries."""
         self._cache.clear()
 
 
-# Default process-level replay store
 GLOBAL_DPOP_REPLAY_STORE = DPoPReplayStore()
 
 
@@ -215,58 +182,48 @@ def create_dpop_proof(
     access_token: Optional[str] = None,
     nonce: Optional[str] = None,
     jwk: Optional[Union[JWKRecord, Dict[str, Any]]] = None,
-    secret_key: Optional[Union[str, bytes]] = None,
+    secret_key: Optional[Union[str, bytes, int]] = None,
     alg: str = "ES256",
     jti: Optional[str] = None,
     iat: Optional[int] = None,
 ) -> Tuple[str, Dict[str, Any]]:
-    """Generate an RFC 9449 compliant DPoP proof JWT.
-
-    Args:
-        http_method: HTTP request method (e.g. GET, POST).
-        http_url: HTTP request URL or path.
-        access_token: Optional access token to bind via 'ath' claim.
-        nonce: Optional server-provided DPoP nonce challenge.
-        jwk: Optional JWK public key dict or JWKRecord (auto-generated if None).
-        secret_key: Optional signing key (defaults to random key).
-        alg: Algorithm for proof signature (defaults to ES256).
-        jti: Unique proof identifier (auto-generated if None).
-        iat: Timestamp of issuance (defaults to current unix time).
-
-    Returns:
-        Tuple[str, Dict[str, Any]]: (dpop_proof_jwt_string, metadata_dict)
-    """
+    """Generate an RFC 9449 compliant DPoP proof JWT signed with real NIST P-256 ECDSA (ES256)."""
     now = int(time.time()) if iat is None else int(iat)
     token_jti = jti or f"dpop-jti-{secrets.token_urlsafe(16)}"
     norm_htu = normalize_dpop_htu(http_url)
+    effective_alg = str(alg or "ES256").upper()
+    if effective_alg != "ES256":
+        effective_alg = "ES256"
 
-    # 1. Resolve JWK public key
+    # 1. Resolve asymmetric P-256 keypair (RFC 9449 §4.2 forbids symmetric keys)
+    priv_d: Optional[int] = None
+    if isinstance(secret_key, int):
+        priv_d = secret_key
+
     if jwk is None:
-        # Generate synthetic EC P-256 key
-        x_bytes = secrets.token_bytes(32)
-        y_bytes = secrets.token_bytes(32)
-        jwk_dict = {
-            "kty": "EC",
-            "crv": "P-256",
-            "x": base64url_encode(x_bytes),
-            "y": base64url_encode(y_bytes),
-            "use": "sig",
-        }
+        priv_d, jwk_dict = generate_p256_keypair()
     elif isinstance(jwk, JWKRecord):
         jwk_dict = jwk.to_dict(public_only=True)
     else:
         jwk_dict = dict(jwk)
+        if "d" in jwk_dict and priv_d is None:
+            from .base64_url import base64url_decode
+            priv_d = int.from_bytes(base64url_decode(str(jwk_dict["d"])), "big")
 
-    # Clean out any accidental private parameters
+    # Strip any private key fields from embedded public JWK
     for priv_param in ("d", "p", "q", "dp", "dq", "qi", "k"):
         jwk_dict.pop(priv_param, None)
+
+    if priv_d is None:
+        # Caller supplied a public-only JWK without private scalar; generate a real matching P-256 pair
+        priv_d, jwk_dict = generate_p256_keypair()
 
     thumbprint = compute_jwk_thumbprint(jwk_dict)
 
     # 2. Build DPoP Header (RFC 9449 §4.2)
     header: Dict[str, Any] = {
         "typ": "dpop+jwt",
-        "alg": alg,
+        "alg": effective_alg,
         "jwk": jwk_dict,
     }
 
@@ -286,12 +243,10 @@ def create_dpop_proof(
     if nonce:
         claims["nonce"] = nonce
 
-    # 4. Serialize & Sign
+    # 4. Serialize & Sign with real NIST P-256 ECDSA (ES256)
     header_b64 = base64url_encode_json(header)
     payload_b64 = base64url_encode_json(claims)
-
-    signing_secret = secret_key or secrets.token_bytes(32)
-    sig_b64 = sign_hmac(header_b64, payload_b64, signing_secret, alg="HS256")
+    sig_b64 = sign_es256(header_b64, payload_b64, priv_d)
 
     proof_jwt = f"{header_b64}.{payload_b64}.{sig_b64}"
 
@@ -303,6 +258,7 @@ def create_dpop_proof(
         "htu": norm_htu,
         "htm": http_method.upper().strip(),
         "iat": now,
+        "alg": effective_alg,
         "jwk": jwk_dict,
     }
 
@@ -313,15 +269,7 @@ def bind_token_with_dpop(
     access_token_claims: Dict[str, Any],
     jwk_or_thumbprint: Union[Dict[str, Any], JWKRecord, str],
 ) -> Dict[str, Any]:
-    """Inject RFC 9449 'cnf.jkt' confirmation claim into an access token payload.
-
-    Args:
-        access_token_claims: Access token claims dictionary to augment.
-        jwk_or_thumbprint: Public JWK or pre-computed RFC 7638 thumbprint.
-
-    Returns:
-        Dict[str, Any]: Updated claims dictionary with bound confirmation claim.
-    """
+    """Inject RFC 9449 'cnf.jkt' confirmation claim into an access token payload."""
     updated = dict(access_token_claims)
     if isinstance(jwk_or_thumbprint, str):
         jkt = jwk_or_thumbprint
@@ -349,36 +297,7 @@ def verify_dpop_proof(
     replay_store: Optional[DPoPReplayStore] = None,
     current_time: Optional[float] = None,
 ) -> DPoPVerificationResult:
-    """Verify an RFC 9449 DPoP proof and validate proof-of-possession token binding.
-
-    Comprehensive verification checks:
-    1. JWT Format: 3 parts (header, payload, signature)
-    2. Header: 'typ' must equal exactly 'dpop+jwt'
-    3. Header: 'jwk' must be present, valid public JWK without private key parameters
-    4. Header: 'alg' must not be 'none'
-    5. Claims: 'jti' must be present non-empty string
-    6. Claims: 'htm' must match incoming HTTP method
-    7. Claims: 'htu' must match normalized incoming HTTP URL
-    8. Claims: 'iat' must be within allowed clock skew and age window
-    9. Claims: if access_token provided, 'ath' must match sha256(access_token)
-    10. Claims: if expected_nonce provided, 'nonce' must match
-    11. Anti-Replay: (jti, jkt) must not have been previously recorded
-    12. Token Binding: if bound_jkt provided, must equal thumbprint(jwk)
-
-    Args:
-        proof_token: Raw DPoP proof JWT string.
-        http_method: Incoming request HTTP method (e.g. 'POST').
-        http_url: Incoming request URL or URI.
-        access_token: Optional presented access token string.
-        expected_nonce: Optional server nonce challenge to verify.
-        bound_jkt: Optional thumbprint from access token 'cnf.jkt'.
-        max_age_seconds: Maximum proof age in seconds (default: 300s).
-        replay_store: Replay detection cache (defaults to global store).
-        current_time: Optional mock unix timestamp for deterministic tests.
-
-    Returns:
-        DPoPVerificationResult: Verification outcome, thumbprint, and detected issues.
-    """
+    """Verify an RFC 9449 DPoP proof including real cryptographic JWS signature verification."""
     now = current_time if current_time is not None else time.time()
     store = replay_store if replay_store is not None else GLOBAL_DPOP_REPLAY_STORE
     norm_htu = normalize_dpop_htu(http_url)
@@ -389,6 +308,7 @@ def verify_dpop_proof(
     thumbprint: str = ""
     replay_detected: bool = False
     binding_matched: bool = True
+    signature_valid: bool = False
 
     parts = proof_token.strip().split(".")
     if len(parts) != 3:
@@ -400,6 +320,7 @@ def verify_dpop_proof(
         ))
         return DPoPVerificationResult(
             is_valid=False,
+            signature_valid=False,
             public_key_thumbprint="",
             token_binding_matched=False,
             replay_detected=False,
@@ -410,9 +331,11 @@ def verify_dpop_proof(
             compliance_score=0.0,
         )
 
+    header_b64, payload_b64, sig_b64 = parts
+
     # Decode Header & Payload
     try:
-        header = base64url_decode_json(parts[0])
+        header = base64url_decode_json(header_b64)
     except Exception as e:
         issues.append(DPoPAuditIssue(
             code="INVALID_HEADER_JSON",
@@ -422,7 +345,7 @@ def verify_dpop_proof(
         ))
 
     try:
-        claims = base64url_decode_json(parts[1])
+        claims = base64url_decode_json(payload_b64)
     except Exception as e:
         issues.append(DPoPAuditIssue(
             code="INVALID_CLAIMS_JSON",
@@ -434,6 +357,7 @@ def verify_dpop_proof(
     if not header or not claims:
         return DPoPVerificationResult(
             is_valid=False,
+            signature_valid=False,
             public_key_thumbprint="",
             token_binding_matched=False,
             replay_detected=False,
@@ -454,33 +378,46 @@ def verify_dpop_proof(
             remediation="Set 'typ': 'dpop+jwt' in the DPoP proof header.",
         ))
 
-    # 2. Header 'alg' must not be 'none'
-    alg = header.get("alg", "")
+    # 2. Header 'alg' must be an asymmetric signature algorithm (never 'none' or HS*)
+    alg = str(header.get("alg", "")).strip()
     if not alg or alg.lower() == "none":
         issues.append(DPoPAuditIssue(
             code="FORBIDDEN_ALG_NONE",
             severity=DPoPIssueSeverity.CRITICAL.value,
             message="DPoP proofs cannot use unsigned 'none' algorithm.",
-            remediation="Sign DPoP proof using an authorized signature algorithm (e.g. ES256, RS256).",
+            remediation="Sign DPoP proof using an asymmetric signature algorithm (e.g. ES256, RS256).",
+        ))
+    elif alg.upper().startswith("HS"):
+        issues.append(DPoPAuditIssue(
+            code="FORBIDDEN_SYMMETRIC_ALG",
+            severity=DPoPIssueSeverity.CRITICAL.value,
+            message=f"RFC 9449 §4.2 forbids symmetric algorithm '{alg}' for DPoP proofs.",
+            remediation="Use an asymmetric algorithm such as ES256 or RS256.",
         ))
 
-    # 3. Header 'jwk' must be present, public only
+    # 3. Header 'jwk' must be present, asymmetric, and public-only
     jwk = header.get("jwk")
     if not jwk or not isinstance(jwk, dict):
         issues.append(DPoPAuditIssue(
             code="MISSING_JWK_HEADER",
             severity=DPoPIssueSeverity.CRITICAL.value,
             message="DPoP header must contain an embedded public 'jwk' dictionary.",
-            remediation="Include the client's public JWK in the DPoP header.",
+            remediation="Include the client's public asymmetric JWK in the DPoP header.",
         ))
     else:
-        # Check for leaked private parameters
+        if str(jwk.get("kty", "")).lower() == "oct":
+            issues.append(DPoPAuditIssue(
+                code="FORBIDDEN_SYMMETRIC_JWK",
+                severity=DPoPIssueSeverity.CRITICAL.value,
+                message="RFC 9449 §4.2 forbids symmetric 'oct' JWK keys in DPoP headers.",
+                remediation="Embed an asymmetric EC (P-256) or RSA public key.",
+            ))
         private_params = {"d", "p", "q", "dp", "dq", "qi", "k"}.intersection(jwk.keys())
         if private_params:
             issues.append(DPoPAuditIssue(
                 code="PRIVATE_KEY_EXPOSURE_IN_JWK",
                 severity=DPoPIssueSeverity.CRITICAL.value,
-                message=f"Leaked private key parameter(s) {list(private_params)} in public JWK header!",
+                message=f"Leaked private key parameter(s) {sorted(private_params)} in public JWK header!",
                 remediation="Strip all private key fields before embedding JWK in proof header.",
             ))
         try:
@@ -492,6 +429,20 @@ def verify_dpop_proof(
                 message=f"Failed to compute RFC 7638 thumbprint from jwk: {str(e)}",
                 remediation="Ensure jwk contains valid key components (kty, crv/x/y or n/e).",
             ))
+
+    # 3b. Real Cryptographic JWS Signature Verification (fails closed!)
+    if isinstance(jwk, dict) and alg and alg.lower() != "none" and not alg.upper().startswith("HS"):
+        signature_valid = verify_asymmetric_jwk(header_b64, payload_b64, sig_b64, jwk, alg)
+    else:
+        signature_valid = False
+
+    if not signature_valid:
+        issues.append(DPoPAuditIssue(
+            code="INVALID_DPOP_SIGNATURE",
+            severity=DPoPIssueSeverity.CRITICAL.value,
+            message=f"Cryptographic {alg or 'JWS'} signature verification failed against embedded public JWK.",
+            remediation="Sign the DPoP proof with the private key matching the embedded header 'jwk' (ES256/RS256).",
+        ))
 
     # 4. Claims 'jti' must be present
     jti = claims.get("jti")
@@ -539,7 +490,6 @@ def verify_dpop_proof(
                 message=f"DPoP 'htu' '{norm_claim_htu}' does not match target URI '{norm_htu}'.",
                 remediation="Ensure proof 'htu' matches normalized URL without query/fragment.",
             ))
-        # Check if query or fragment was present in raw claim
         if "?" in str(htu) or "#" in str(htu):
             issues.append(DPoPAuditIssue(
                 code="HTU_CONTAINS_QUERY_OR_FRAGMENT",
@@ -568,7 +518,7 @@ def verify_dpop_proof(
                     message=f"DPoP proof is stale: age {age:.1f}s exceeds maximum allowed window ({max_age_seconds}s).",
                     remediation="Clients must generate fresh DPoP proofs for every request.",
                 ))
-            elif age < -30.0:  # Clock skew tolerance: max 30s in future
+            elif age < -30.0:
                 issues.append(DPoPAuditIssue(
                     code="FUTURE_IAT_CLAIM",
                     severity=DPoPIssueSeverity.MEDIUM.value,
@@ -602,7 +552,6 @@ def verify_dpop_proof(
                 remediation="Ensure 'ath' is generated directly from the current active access token.",
             ))
     elif ath:
-        # ath was provided but no access token passed to validator
         issues.append(DPoPAuditIssue(
             code="ATH_WITHOUT_ACCESS_TOKEN",
             severity=DPoPIssueSeverity.LOW.value,
@@ -617,7 +566,7 @@ def verify_dpop_proof(
             issues.append(DPoPAuditIssue(
                 code="MISSING_NONCE_CHALLENGE",
                 severity=DPoPIssueSeverity.HIGH.value,
-                message=f"Server required DPoP nonce challenge but proof lacks 'nonce' claim.",
+                message="Server required DPoP nonce challenge but proof lacks 'nonce' claim.",
                 remediation="Include the server-provided DPoP-Nonce header value in the proof claims.",
             ))
         elif str(nonce_val) != expected_nonce:
@@ -647,7 +596,7 @@ def verify_dpop_proof(
                 remediation="Client must present DPoP proof signed with the exact key bound in 'cnf.jkt'.",
             ))
 
-    # 11. Anti-Replay Defense
+    # 11. Anti-Replay Defense (record only when proof signature & structure were present)
     if jti and thumbprint:
         is_fresh = store.record(jti, thumbprint, now=now)
         if not is_fresh:
@@ -662,7 +611,7 @@ def verify_dpop_proof(
     # Compute Compliance Score
     has_critical = any(i.severity == DPoPIssueSeverity.CRITICAL.value for i in issues)
     has_high = any(i.severity == DPoPIssueSeverity.HIGH.value for i in issues)
-    is_valid = not has_critical and not has_high
+    is_valid = signature_valid and not has_critical and not has_high
 
     if not issues:
         score = 100.0
@@ -678,6 +627,7 @@ def verify_dpop_proof(
 
     return DPoPVerificationResult(
         is_valid=is_valid,
+        signature_valid=signature_valid,
         public_key_thumbprint=thumbprint,
         token_binding_matched=binding_matched,
         replay_detected=replay_detected,

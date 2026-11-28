@@ -26,32 +26,18 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 PROTOCOL_VERSION = "2024-11-05"
 SERVER_NAME = "jwt-inspector-guard"
-SERVER_VERSION = "0.1.0"
+SERVER_VERSION = "2.6.0"
 
-COMMON_SECRETS: List[str] = [
-    "secret", "password", "123456", "12345678", "admin", "jwt", "key", "root",
-    "123456789", "qwerty", "test", "demo", "development", "jwt_secret", "mysecret",
-    "supersecret", "secret123", "auth", "token", "default", "master", "access",
-    "private", "api_key", "changeme", "letmein", "welcome", "login", "session",
-    "app_secret", "secret_key", "shhhhh", "node_env", "production", "staging",
-    "test_key", "secretkey", "jwtsecret", "your-256-bit-secret", "your-secret-key",
-    "my-secret-key", "secret123456", "111111", "000000", "iloveyou", "monkey",
-    "dragon", "football", "baseball", "trustno1", "starwars", "passphrase",
-    "signature", "signature_key", "super_secret", "topsecret", "top_secret",
-    "security", "credentials", "symmetric", "hmac_secret", "key123", "secret01",
-    "dev_secret", "local_secret", "testsecret", "secrettoken", "access_token",
-    "id_token", "bearer", "sample_secret", "example_secret", "test_secret_key",
-    "test1234", "password123", "admin123", "administrator", "guest", "anonymous",
-    "service", "system", "internal", "config_secret", "encryption_key", "signing_key",
-    "jwt_signing_key", "flask_secret_key", "django_secret_key", "express_secret",
-    "rails_secret", "spring_secret", "aspnet_secret", "laravel_secret", "1234",
-    "12345", "pass", "auth0", "firebase", "supabase", "nextauth", "jsonwebtoken",
-    "jwks", "asdf", "qweasd", "123123", "abc123", "hello", "world", "helloworld",
-    "test1", "masterkey", "database", "db_password", "apikey", "privatekey",
-    "publickey", "signing", "verifier", "tester", "user", "superuser", "root123",
-    "toor", "pass123", "secretword", "hidden", "secure", "vault", "safe",
-    "strongkey", "superkey", "secretpass", "temp", "temporary", "temp123"
-]
+from . import (
+    base64_url as _b64_mod,
+    catalog as _catalog_mod,
+    claims_validator as _claims_mod,
+    crypto_engine as _crypto_mod,
+    security_linter as _linter_mod,
+)
+
+# Consolidated onto the canonical 1,954-word security_linter dictionary
+COMMON_SECRETS: List[str] = list(_linter_mod.COMMON_WEAK_SECRETS)
 
 # Sensitive keys regex for PII and credential leakage in JWT payload
 SENSITIVE_KEY_PATTERN = re.compile(
@@ -127,33 +113,34 @@ def format_timestamp(ts: Any) -> Optional[str]:
         return None
 
 
-def sign_hmac(header: Dict[str, Any], payload: Dict[str, Any], secret: str, algorithm: str = "HS256") -> str:
-    """Sign header and payload with HMAC secret."""
-    header_json = json.dumps(header, separators=(",", ":"), sort_keys=True)
-    payload_json = json.dumps(payload, separators=(",", ":"), sort_keys=True)
+def sign_hmac(
+    header: Union[Dict[str, Any], str],
+    payload: Union[Dict[str, Any], str],
+    secret: Union[str, bytes],
+    algorithm: str = "HS256",
+) -> str:
+    """Sign header and payload with HMAC secret via canonical crypto_engine.
 
-    header_b64 = base64url_encode(header_json)
-    payload_b64 = base64url_encode(payload_json)
-    signing_input = f"{header_b64}.{payload_b64}".encode("utf-8")
-
-    alg_upper = algorithm.upper()
-    if alg_upper == "NONE":
-        return f"{header_b64}.{payload_b64}."
-    elif alg_upper == "HS256":
-        digest = hmac.new(secret.encode("utf-8"), signing_input, hashlib.sha256).digest()
-    elif alg_upper == "HS384":
-        digest = hmac.new(secret.encode("utf-8"), signing_input, hashlib.sha384).digest()
-    elif alg_upper == "HS512":
-        digest = hmac.new(secret.encode("utf-8"), signing_input, hashlib.sha512).digest()
-    else:
-        raise ValueError(f"Unsupported HMAC signing algorithm: {algorithm}")
-
-    sig_b64 = base64url_encode(digest)
-    return f"{header_b64}.{payload_b64}.{sig_b64}"
+    Supports both:
+    - sign_hmac(header_dict, payload_dict, secret, algorithm) -> compact JWT
+    - sign_hmac(header_b64_str, payload_b64_str, secret, algorithm) -> Base64URL signature
+    """
+    if isinstance(header, str) and isinstance(payload, str):
+        return _crypto_mod.sign_hmac(header, payload, secret, algorithm)
+    assert isinstance(header, dict) and isinstance(payload, dict)
+    return _crypto_mod.generate_hmac_jwt(header, payload, secret, algorithm)
 
 
-def verify_hmac(token: str, secret: str, algorithm: Optional[str] = None) -> bool:
-    """Verify HMAC signature of a compact JWT."""
+def verify_hmac(
+    token: str,
+    secret: str,
+    algorithm: Optional[str] = None,
+    allow_none: bool = False,
+) -> bool:
+    """Verify HMAC signature of a compact JWT via canonical crypto_engine.
+
+    Rejects `alg: none` by default unless `allow_none=True` is explicitly provided.
+    """
     try:
         header, _, sig_b64, header_b64, payload_b64, _ = decode_jwt_parts(token)
     except Exception:
@@ -161,26 +148,9 @@ def verify_hmac(token: str, secret: str, algorithm: Optional[str] = None) -> boo
 
     token_alg = str(header.get("alg", "HS256")).upper()
     effective_alg = (algorithm or token_alg).upper()
-
-    if effective_alg == "NONE":
-        return sig_b64 == ""
-
-    signing_input = f"{header_b64}.{payload_b64}".encode("utf-8")
-    if effective_alg == "HS256":
-        expected_digest = hmac.new(secret.encode("utf-8"), signing_input, hashlib.sha256).digest()
-    elif effective_alg == "HS384":
-        expected_digest = hmac.new(secret.encode("utf-8"), signing_input, hashlib.sha384).digest()
-    elif effective_alg == "HS512":
-        expected_digest = hmac.new(secret.encode("utf-8"), signing_input, hashlib.sha512).digest()
-    else:
-        return False
-
-    try:
-        actual_digest = base64url_decode(sig_b64)
-    except Exception:
-        return False
-
-    return hmac.compare_digest(actual_digest, expected_digest)
+    return _crypto_mod.verify_hmac(
+        header_b64, payload_b64, sig_b64, secret, effective_alg, allow_none=allow_none
+    )
 
 
 def validate_claims(
@@ -188,77 +158,30 @@ def validate_claims(
     issuer: Optional[str] = None,
     audience: Optional[str] = None,
     leeway: float = 0.0,
-    current_time: Optional[float] = None
+    current_time: Optional[float] = None,
 ) -> Dict[str, Any]:
-    """Validate standard RFC 7519 claims against policy and current timestamp."""
-    now = current_time if current_time is not None else time.time()
-    errors: List[str] = []
-    warnings: List[str] = []
-
-    # Expiration (exp)
-    is_expired = False
-    time_to_expiry = None
-    exp = payload.get("exp")
-    if exp is not None:
-        try:
-            exp_val = float(exp)
-            time_to_expiry = exp_val - now
-            if now > (exp_val + leeway):
-                is_expired = True
-                errors.append(f"Token expired at {format_timestamp(exp_val)} ({abs(int(time_to_expiry))}s ago)")
-        except (ValueError, TypeError):
-            errors.append(f"Invalid 'exp' claim format: {exp}")
-    else:
-        warnings.append("Missing 'exp' (Expiration Time) claim: token never expires")
-
-    # Not Before (nbf)
-    nbf = payload.get("nbf")
-    if nbf is not None:
-        try:
-            nbf_val = float(nbf)
-            if now < (nbf_val - leeway):
-                errors.append(f"Token not valid before {format_timestamp(nbf_val)} (in {int(nbf_val - now)}s)")
-        except (ValueError, TypeError):
-            errors.append(f"Invalid 'nbf' claim format: {nbf}")
-
-    # Issued At (iat)
-    iat = payload.get("iat")
-    if iat is not None:
-        try:
-            iat_val = float(iat)
-            if iat_val > (now + leeway + 300):
-                warnings.append(f"Token issued in the future ({format_timestamp(iat_val)})")
-        except (ValueError, TypeError):
-            warnings.append(f"Invalid 'iat' claim format: {iat}")
-
-    # Issuer (iss)
-    iss = payload.get("iss")
-    if issuer is not None:
-        if iss != issuer:
-            errors.append(f"Issuer mismatch: expected '{issuer}', got '{iss}'")
-
-    # Audience (aud)
-    aud = payload.get("aud")
-    if audience is not None:
-        if isinstance(aud, list):
-            if audience not in aud:
-                errors.append(f"Audience mismatch: '{audience}' not in {aud}")
-        elif aud != audience:
-            errors.append(f"Audience mismatch: expected '{audience}', got '{aud}'")
-
-    claims_valid = len(errors) == 0
-
+    """Validate standard RFC 7519 claims via canonical claims_validator."""
+    res = _claims_mod.validate_claims(
+        payload,
+        expected_issuer=issuer,
+        expected_audience=audience,
+        leeway_sec=int(leeway),
+        current_time=current_time,
+    )
+    exp = payload.get("exp") if isinstance(payload, dict) else None
+    iat = payload.get("iat") if isinstance(payload, dict) else None
+    nbf = payload.get("nbf") if isinstance(payload, dict) else None
     return {
-        "claims_valid": claims_valid,
-        "is_expired": is_expired,
-        "time_to_expiry_seconds": time_to_expiry,
-        "errors": errors,
-        "warnings": warnings,
+        "claims_valid": res.claims_valid,
+        "is_expired": res.expired,
+        "time_to_expiry_seconds": res.time_to_expiration_sec,
+        "errors": list(res.errors),
+        "warnings": list(res.warnings),
         "formatted_dates": {
             "exp": format_timestamp(exp) if exp is not None else None,
             "iat": format_timestamp(iat) if iat is not None else None,
             "nbf": format_timestamp(nbf) if nbf is not None else None,
-        }
+        },
     }
 
 
@@ -585,160 +508,41 @@ def crack_jwt_secret(token: str, wordlist: Optional[List[str]] = None, max_attem
 
 
 # ---------------------------------------------------------------------------
-# Sample Tokens Catalog
+# Sample Tokens Catalog (Consolidated onto canonical catalog.py — 25 samples)
 # ---------------------------------------------------------------------------
 
-SAMPLE_TOKENS_CATALOG: List[Dict[str, Any]] = [
-    {
-        "name": "standard-hs256",
-        "category": "standard",
-        "description": "Standard RFC 7519 compliant HS256 token signed with secret 'your-256-bit-secret'.",
-        "token": sign_hmac(
-            {"alg": "HS256", "typ": "JWT"},
-            {"sub": "user_12345", "name": "Alice Smith", "iss": "https://auth.example.com", "aud": "https://api.example.com", "iat": int(time.time()), "exp": int(time.time()) + 3600},
-            "your-256-bit-secret",
-            "HS256"
-        ),
-        "vulnerability_notes": "Well-formed standard token with valid exp, iss, and aud claims."
-    },
-    {
-        "name": "cve-2015-9235-none",
-        "category": "vulnerabilities",
-        "description": "Critical CVE-2015-9235 exploit vector using 'alg: none' and an empty signature.",
-        "token": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiIsImlzX2FkbWluIjp0cnVlLCJyb2xlIjoiYWRtaW5pc3RyYXRvciIsImV4cCI6MjAwMDAwMDAwMH0.",
-        "vulnerability_notes": "Vulnerable to signature bypass if server does not explicitly prohibit 'none' algorithm."
-    },
-    {
-        "name": "cve-alg-none-titlecase",
-        "category": "vulnerabilities",
-        "description": "Case-bypass attack vector using 'alg: None' to evade naive case-sensitive filters.",
-        "token": "eyJhbGciOiJOb25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiIsImlzX2FkbWluIjp0cnVlLCJyb2xlIjoiYWRtaW4iLCJleHAiOjIwMDAwMDAwMDB9.",
-        "vulnerability_notes": "Attempts to bypass string filters that check only lowercase 'none'."
-    },
-    {
-        "name": "weak-secret-jwt",
-        "category": "vulnerabilities",
-        "description": "Token signed using common weak secret 'secret'. Easily cracked by dictionary attacks.",
-        "token": sign_hmac(
-            {"alg": "HS256", "typ": "JWT"},
-            {"sub": "dev_user", "role": "developer", "iat": int(time.time()), "exp": int(time.time()) + 7200},
-            "secret",
-            "HS256"
-        ),
-        "vulnerability_notes": "Signs with word 'secret'. Highly vulnerable to offline brute force."
-    },
-    {
-        "name": "weak-password-jwt",
-        "category": "vulnerabilities",
-        "description": "Token signed with weak password 'password123'.",
-        "token": sign_hmac(
-            {"alg": "HS256", "typ": "JWT"},
-            {"sub": "operator", "access": "read-write", "iat": int(time.time()), "exp": int(time.time()) + 3600},
-            "password123",
-            "HS256"
-        ),
-        "vulnerability_notes": "Vulnerable to dictionary attack with common passwords."
-    },
-    {
-        "name": "expired-token",
-        "category": "standard",
-        "description": "Properly signed HS256 token whose expiration timestamp ('exp') is in the past.",
-        "token": sign_hmac(
-            {"alg": "HS256", "typ": "JWT"},
-            {"sub": "expired_session", "iat": 1500000000, "exp": 1500003600},
-            "your-256-bit-secret",
-            "HS256"
-        ),
-        "vulnerability_notes": "Expired token. Verifiers must reject with 401 Unauthorized."
-    },
-    {
-        "name": "no-expiry-jwt",
-        "category": "vulnerabilities",
-        "description": "Token omitting the 'exp' claim, causing perpetual validity and replay vulnerability.",
-        "token": sign_hmac(
-            {"alg": "HS256", "typ": "JWT"},
-            {"sub": "infinite_user", "role": "member", "iat": int(time.time())},
-            "your-256-bit-secret",
-            "HS256"
-        ),
-        "vulnerability_notes": "Lacks 'exp' claim. If leaked, cannot be invalidated without server-side revocation."
-    },
-    {
-        "name": "pii-leakage-jwt",
-        "category": "vulnerabilities",
-        "description": "Token leaking sensitive user credentials and PII (SSN, credit card, password hash) in unencrypted payload.",
-        "token": sign_hmac(
-            {"alg": "HS256", "typ": "JWT"},
-            {
-                "sub": "victim_user",
-                "email": "victim@example.com",
-                "ssn": "123-45-6789",
-                "credit_card": "4532-1234-5678-9012",
-                "password_hash": "$2b$12$e8YQz.kF5K7Q1Zz...example_hash",
-                "exp": int(time.time()) + 3600
-            },
-            "your-256-bit-secret",
-            "HS256"
-        ),
-        "vulnerability_notes": "High risk PII exposure. JWT payload is readable by anyone with access to the token."
-    },
-    {
-        "name": "header-injection-jku",
-        "category": "attacks",
-        "description": "Header injection vulnerability using attacker-controlled 'jku' URL.",
-        "token": sign_hmac(
-            {"alg": "RS256", "typ": "JWT", "jku": "https://attacker.evil.com/jwks.json", "kid": "key1"},
-            {"sub": "admin_escalated", "role": "superadmin", "exp": int(time.time()) + 3600},
-            "dummy_key",
-            "HS256"
-        ),
-        "vulnerability_notes": "SSRF and signature spoofing risk if verifier fetches jku without domain whitelist."
-    },
-    {
-        "name": "header-injection-kid-traversal",
-        "category": "attacks",
-        "description": "Path traversal exploit in 'kid' header parameter pointing to /dev/null.",
-        "token": sign_hmac(
-            {"alg": "HS256", "typ": "JWT", "kid": "../../../dev/null"},
-            {"sub": "attacker", "role": "root", "exp": int(time.time()) + 3600},
-            "",
-            "HS256"
-        ),
-        "vulnerability_notes": "CVE-2018-1000531 pattern. Exploits verifiers reading key files by filesystem path."
-    },
-    {
-        "name": "oauth2-access-token",
-        "category": "oauth2",
-        "description": "RFC 9068 JSON Web Token Profile for OAuth 2.0 Access Tokens.",
-        "token": sign_hmac(
-            {"alg": "HS256", "typ": "at+jwt"},
-            {
-                "iss": "https://authorization-server.example.com/",
-                "sub": "5f47a61d-8692-4a00-bf7a-6242485c2c77",
-                "aud": "https://resource-server.example.com/api",
-                "client_id": "client_app_abc123",
-                "iat": int(time.time()),
-                "exp": int(time.time()) + 1800,
-                "scope": "openid profile email api:read api:write"
-            },
-            "your-256-bit-secret",
-            "HS256"
-        ),
-        "vulnerability_notes": "Standard OAuth2 access token with scoped permissions and strict audience."
+def _catalog_sample_to_dict(sample: Any) -> Dict[str, Any]:
+    raw = sample.to_dict() if hasattr(sample, "to_dict") else dict(sample)
+    return {
+        "name": raw.get("name", ""),
+        "category": raw.get("category", "general"),
+        "description": raw.get("description", ""),
+        "token": raw.get("raw_token", raw.get("token", "")),
+        "raw_token": raw.get("raw_token", raw.get("token", "")),
+        "vulnerability_notes": ", ".join(raw.get("expected_findings", [])) or raw.get("description", ""),
+        "expected_findings": raw.get("expected_findings", []),
+        "secret_hint": raw.get("secret_hint"),
     }
+
+
+SAMPLE_TOKENS_CATALOG: List[Dict[str, Any]] = [
+    _catalog_sample_to_dict(s) for s in _catalog_mod.list_sample_tokens()
 ]
 
 
 def list_sample_tokens(category: Optional[str] = None) -> List[Dict[str, Any]]:
-    """Retrieve sample tokens optionally filtered by category."""
+    """Retrieve canonical sample tokens optionally filtered by category."""
     if not category or category.lower() == "all":
-        return SAMPLE_TOKENS_CATALOG
+        return list(SAMPLE_TOKENS_CATALOG)
     cat_lower = category.lower()
-    return [s for s in SAMPLE_TOKENS_CATALOG if s["category"].lower() == cat_lower]
+    return [s for s in SAMPLE_TOKENS_CATALOG if cat_lower in s["category"].lower()]
 
 
 def get_sample_token(name: str) -> Optional[Dict[str, Any]]:
-    """Retrieve a specific sample token by name."""
+    """Retrieve a specific sample token by name from the canonical catalog."""
+    sample = _catalog_mod.get_sample_token(name)
+    if sample is not None:
+        return _catalog_sample_to_dict(sample)
     name_lower = name.lower()
     for s in SAMPLE_TOKENS_CATALOG:
         if s["name"].lower() == name_lower:

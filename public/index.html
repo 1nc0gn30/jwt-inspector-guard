@@ -1,84 +1,75 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JWT Inspector Guard | Sovereign Security Studio & Cryptographic Linter</title>
-  <meta name="description" content="100% In-Browser client-side JWT security auditor, cryptographic signature verifier, CVE-2015-9235 exploit tester, and RFC 9449 DPoP token studio. Zero cloud egress.">
-  <meta name="keywords" content="JWT, JSON Web Token, security audit, cryptographic linter, CVE-2015-9235, DPoP, RFC 9449, HMAC, WebCrypto, zero egress">
-  <meta name="author" content="1nc0gn30 (@1nc0gn30) • 1nc0gn30 • NullAI">
-  
-  <!-- OpenGraph / Twitter -->
-  <meta property="og:title" content="JWT Inspector Guard | Sovereign Security Studio">
-  <meta property="og:description" content="In-browser JWT security auditor, cryptographic signature verifier, and RFC 9449 DPoP token studio. Zero cloud egress.">
-  <meta property="og:url" content="https://jwtguard.nullai.tech">
+  <meta name="color-scheme" content="light dark">
+  <title>JWT Inspector Guard v2.6.0 — Local Cryptographic JWT, JWKS &amp; DPoP Auditor</title>
+  <meta name="description" content="Zero-egress JWT decoder, HS256/384/512 &amp; RS256/ES256 JWK verifier, CVE security linter, weak-secret cracker, RFC 9449 DPoP studio, and 11-tool MCP server.">
+  <meta name="author" content="Neal Frazier Tech (@1nc0gn30) • NullAI Platform">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="canonical" href="https://jwtguard.nullai.tech/">
+  <meta property="og:title" content="JWT Inspector Guard v2.6.0 — Local Cryptographic JWT, JWKS &amp; DPoP Auditor">
+  <meta property="og:description" content="Zero-egress JWT decoder, HS256/384/512 &amp; RS256/ES256 JWK verifier, RFC 9449 DPoP proof studio, and 11-tool MCP server. 100% Free &amp; Open-Access.">
+  <meta property="og:url" content="https://jwtguard.nullai.tech/">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://jwtguard.nullai.tech/assets/banner.png">
+  <meta property="og:image" content="https://jwtguard.nullai.tech/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@1nc0gn30">
   <meta name="twitter:creator" content="@1nc0gn30">
-  <meta name="twitter:image" content="https://jwtguard.nullai.tech/assets/banner.png">
-
-  <!-- Favicon & Brand Icons -->
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icon.png">
-  <link rel="apple-touch-icon" href="/assets/icon.png">
-
-  <!-- AEO & SEO Schema.org Graph -->
+  <meta name="twitter:image" content="https://jwtguard.nullai.tech/og-image.png">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": ["WebApplication", "SoftwareApplication"],
-        "@id": "https://jwtguard.nullai.tech/#webapp",
+        "@type": "WebApplication",
         "name": "JWT Inspector Guard",
-        "url": "https://jwtguard.nullai.tech",
-        "applicationCategory": "DeveloperApplication",
-        "operatingSystem": "All modern browsers (Chrome, Firefox, Safari, Edge)",
+        "softwareVersion": "2.6.0",
+        "url": "https://jwtguard.nullai.tech/",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Linux, macOS, Windows, Web",
         "offers": {
           "@type": "Offer",
           "price": "0",
-          "priceCurrency": "USD",
-          "availability": "https://schema.org/InStock"
+          "priceCurrency": "USD"
         },
         "creator": {
           "@type": "Person",
-          "name": "Neal Frazier (@1nc0gn30)",
-          "url": "https://nullai.tech"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Neal Frazier Tech • NullAI Platform",
+          "name": "Neal Frazier",
+          "alternateName": "1nc0gn30",
+          "affiliation": {
+            "@type": "Organization",
+            "name": "Neal Frazier Tech"
+          },
           "url": "https://nullai.tech"
         }
       },
       {
         "@type": "FAQPage",
-        "@id": "https://jwtguard.nullai.tech/#faq",
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "Does JWT Inspector Guard transmit my tokens to remote servers?",
+            "name": "Does JWT Inspector Guard upload tokens or secrets to external servers?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. JWT Inspector Guard runs 100% client-side in your browser using the native Web Crypto API. Sensitive bearer tokens, private claims, and secrets never leave your device."
+              "text": "No. JWT Inspector Guard runs locally on loopback 127.0.0.1:8124 and in-browser Web Crypto with zero external CDN requests and zero cloud uploads."
             }
           },
           {
             "@type": "Question",
-            "name": "What vulnerabilities does JWT Inspector Guard detect?",
+            "name": "Which cryptographic algorithms and standards are supported in v2.6.0?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "It checks for CVE-2015-9235 (alg:none bypass), algorithm confusion (RSA vs HMAC), token expiration and nbf timing flaws, sensitive PII/credential leaks, weak HMAC secrets via client dictionary testing, and RFC 9449 DPoP compliance."
+              "text": "v2.6.0 supports HS256/HS384/HS512 HMAC verification and minting, RS256/ES256 JWK signature verification, fail-closed alg:none rejection, RFC 7519 claims validation, RFC 7638 JWK thumbprints, RFC 9449 ECDSA P-256 DPoP proofs, empirical timing benchmarks, and 11 JSON-RPC 2.0 MCP tools."
             }
           },
           {
             "@type": "Question",
-            "name": "Is JWT Inspector Guard free to use?",
+            "name": "Is JWT Inspector Guard free and open-access?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. JWT Inspector Guard is 100% free and open access with zero paywalls, including executive security dossier exports, multi-framework middleware patches, and RFC 9449 DPoP proof tools. Optional community support is available via Stripe Buy Us a Coffee (https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X) or Solana Tip (GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK)."
+              "text": "Yes. Every tool, export, cracker, and DPoP workflow is 100% free and open-access under the MIT license with optional community support via Stripe Buy Us a Coffee or Solana tips."
             }
           }
         ]
@@ -86,1347 +77,1707 @@
     ]
   }
   </script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var qTheme = params.get('theme');
+      var saved = null;
+      try { saved = localStorage.getItem('jwt-guard-theme'); } catch (e) {}
+      var prefDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = (qTheme === 'light' || qTheme === 'dark') ? qTheme : (saved === 'light' || saved === 'dark' ? saved : (prefDark ? 'dark' : 'light'));
+      document.documentElement.setAttribute('data-theme', theme);
+      if (params.get('embed') === '1') {
+        document.documentElement.setAttribute('data-embed', '1');
+      }
+    })();
+  </script>
   <style>
-    :root {
-      --bg: #090a0f;
-      --card-bg: rgba(18, 20, 29, 0.75);
-      --card-border: rgba(255, 215, 0, 0.15);
-      --card-border-glow: rgba(255, 215, 0, 0.35);
-      --gold: #ffd700;
-      --gold-dark: #b8860b;
-      --gold-glow: rgba(255, 215, 0, 0.25);
-      --text-main: #f0f2f5;
-      --text-muted: #9ba1b0;
-      --accent-red: #ff4757;
-      --accent-green: #2ed573;
-      --accent-blue: #1e90ff;
-      --accent-purple: #a55eea;
-      --radius: 12px;
+    :root,
+    html[data-theme="light"] {
+      --bg: #FAF8F3;
+      --surface: #FFFFFF;
+      --surface-alt: #F5F0E4;
+      --code-bg: #F3EFE6;
+      --border: #D9D2C0;
+      --border-strong: #B8A986;
+      --text: #141417;
+      --text-muted: #475467;
+      --gold: #8A6500;
+      --gold-bg: #FEF7DC;
+      --emerald: #047857;
+      --emerald-bg: #ECFDF5;
+      --crimson: #991B1B;
+      --crimson-bg: #FEF2F2;
+      --sapphire: #0369A1;
+      --sapphire-bg: #F0F9FF;
+      --violet: #6D28D9;
+      --violet-bg: #F5F3FF;
+      --amber: #92400E;
+      --amber-bg: #FFFBEB;
+      --btn-primary-bg: #8A6500;
+      --btn-primary-fg: #FFFFFF;
+      --shadow: 0 4px 18px rgba(20, 20, 23, 0.06);
+      --scroll-track: #EFECE3;
+      --scroll-thumb: #C5BCA8;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      overflow-x: hidden !important;
-      max-width: 100vw !important;
-      width: 100% !important;
-      background-color: var(--bg);
-      color: var(--text-main);
-      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    html[data-theme="dark"] {
+      --bg: #08080B;
+      --surface: #11131A;
+      --surface-alt: #171A24;
+      --code-bg: #0C0E14;
+      --border: #272B3A;
+      --border-strong: #3E455C;
+      --text: #F8FAFC;
+      --text-muted: #A3B1C6;
+      --gold: #E5C158;
+      --gold-bg: #241F10;
+      --emerald: #34D399;
+      --emerald-bg: #0E261F;
+      --crimson: #FB7185;
+      --crimson-bg: #2A1219;
+      --sapphire: #38BDF8;
+      --sapphire-bg: #0F2230;
+      --violet: #C084FC;
+      --violet-bg: #1F1530;
+      --amber: #FBBF24;
+      --amber-bg: #271E0E;
+      --btn-primary-bg: #E5C158;
+      --btn-primary-fg: #08080B;
+      --shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+      --scroll-track: #0C0E14;
+      --scroll-thumb: #2D3346;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; overflow-x: hidden; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.5;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* Ambient Mesh */
-    body::before {
-      content: "";
-      position: fixed;
-      top: -20%;
-      left: -20%;
-      width: 140%;
-      height: 140%;
-      background: radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 60%),
-                  radial-gradient(circle at 80% 80%, rgba(30, 144, 255, 0.04) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
-    }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: var(--scroll-track); }
+    ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 6px; }
 
-    header {
-      background: rgba(13, 15, 22, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--card-border);
-      padding: 0.9rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.75rem;
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 20;
     }
-    .brand-wrap {
+    html[data-embed="1"] .topbar { padding: 10px 14px; }
+    .topbar-inner {
+      max-width: 1380px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
     }
-    .brand-logo {
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .brand img {
       width: 38px;
       height: 38px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #ffd700, #ff4757);
-      color: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      flex-shrink: 0;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 1.15rem;
       font-weight: 800;
-      font-size: 1.15rem;
-      box-shadow: 0 0 15px var(--gold-glow);
+      letter-spacing: -0.01em;
+      color: var(--text);
     }
-    .brand-text h1 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      color: #fff;
-    }
-    .brand-text p {
-      font-size: 0.72rem;
+    .brand-sub {
+      font-size: 0.78rem;
       color: var(--text-muted);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: var(--mono);
     }
-    .header-badges {
+    .topbar-actions {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 8px;
+      flex-wrap: wrap;
     }
-    .badge {
-      font-size: 0.72rem;
-      padding: 4px 10px;
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
       border-radius: 999px;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      border: 1px solid transparent;
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      white-space: nowrap;
     }
-    .badge-egress {
-      background: rgba(46, 213, 115, 0.12);
-      color: var(--accent-green);
-      border-color: rgba(46, 213, 115, 0.3);
-    }
-    .badge-open {
-      background: rgba(16, 185, 129, 0.15);
-      color: #10B981;
-      border-color: rgba(16, 185, 129, 0.4);
-      cursor: default;
-    }
+    .pill-gold { background: var(--gold-bg); color: var(--gold); border-color: var(--gold); }
+    .pill-emerald { background: var(--emerald-bg); color: var(--emerald); border-color: var(--emerald); }
+    .pill-crimson { background: var(--crimson-bg); color: var(--crimson); border-color: var(--crimson); }
+    .pill-sapphire { background: var(--sapphire-bg); color: var(--sapphire); border-color: var(--sapphire); }
+    .pill-amber { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
 
-    /* Main Container */
-    main {
-      flex: 1;
-      max-width: 1400px;
+    .container {
       width: 100%;
+      max-width: 1380px;
       margin: 0 auto;
-      padding: 1.2rem 1rem 3rem;
-      position: relative;
-      z-index: 1;
+      padding: 18px 20px 28px;
+      flex: 1;
     }
-
-    /* Grid Layout */
-    .app-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.2rem;
-      margin-top: 1rem;
-    }
-    @media (max-width: 900px) {
-      .app-grid { grid-template-columns: 1fr; }
-    }
+    html[data-embed="1"] .container { padding: 12px 14px 20px; }
 
     .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      backdrop-filter: none;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
     }
     .card-header {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.9rem;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      padding-bottom: 0.6rem;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
     }
-    .card-title {
-      font-size: 0.95rem;
+    .card h2 {
+      margin: 0;
+      font-size: 0.96rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 0.86rem;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      color: #fff;
+      color: var(--text);
     }
 
-    /* Input & Textareas */
-    textarea.token-box {
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 960px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .grid-3 { grid-template-columns: 1fr; }
+      .container { padding: 12px 12px 22px; }
+      .card { padding: 14px; }
+    }
+
+    label.field-label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    textarea, input[type="text"], input[type="number"], select {
       width: 100%;
-      height: 110px;
-      background: rgba(9, 10, 15, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 8px;
-      color: #f0f2f5;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem;
-      padding: 0.75rem;
-      resize: vertical;
-      line-height: 1.4;
-      margin-bottom: 0.6rem;
+      min-height: 44px;
+      background: var(--code-bg);
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-size: 0.84rem;
+      line-height: 1.45;
     }
-    textarea.token-box:focus {
-      outline: none;
-      border-color: var(--gold);
-      box-shadow: 0 0 10px var(--gold-glow);
+    textarea { min-height: 92px; resize: vertical; word-break: break-all; }
+    textarea:focus, input:focus, select:focus {
+      outline: 2px solid var(--sapphire);
+      outline-offset: 1px;
     }
 
-    .colored-token-display {
-      background: rgba(5, 6, 10, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      padding: 0.75rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      word-break: break-all;
-      margin-bottom: 0.8rem;
-      max-height: 100px;
-      overflow-y: auto;
-    }
-    .token-part-header { color: #ff6b81; font-weight: 600; }
-    .token-part-payload { color: #a55eea; font-weight: 600; }
-    .token-part-signature { color: #1e90ff; font-weight: 600; }
-    .token-part-dot { color: #747d8c; }
-
-    /* Button rows */
     .btn-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 0.8rem;
+      gap: 8px;
+      align-items: center;
     }
-    .btn-sm {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #fff;
-      font-size: 0.78rem;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s ease;
+    button, a.btn {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      gap: 6px;
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: 10px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-alt);
+      color: var(--text);
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
-    .btn-sm:hover {
-      background: rgba(255, 255, 255, 0.12);
+    button:hover, a.btn:hover {
       border-color: var(--gold);
     }
-    .btn-sm.primary {
-      background: linear-gradient(135deg, var(--gold), #e1b12c);
-      color: #000;
-      font-weight: 700;
-      border: none;
+    button.btn-primary, a.btn-primary {
+      background: var(--btn-primary-bg);
+      color: var(--btn-primary-fg);
+      border-color: var(--btn-primary-bg);
     }
-    .btn-sm.danger {
-      background: rgba(255, 71, 87, 0.15);
-      border-color: var(--accent-red);
-      color: #ff6b81;
+    button.btn-danger {
+      background: var(--crimson-bg);
+      color: var(--crimson);
+      border-color: var(--crimson);
+    }
+    button.btn-emerald {
+      background: var(--emerald-bg);
+      color: var(--emerald);
+      border-color: var(--emerald);
+    }
+    button.btn-sapphire {
+      background: var(--sapphire-bg);
+      color: var(--sapphire);
+      border-color: var(--sapphire);
     }
 
-    select.sample-picker {
-      background: rgba(18, 20, 29, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn[aria-selected="true"] {
+      background: var(--btn-primary-bg);
+      color: var(--btn-primary-fg);
+      border-color: var(--btn-primary-bg);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .segments {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: var(--mono);
       font-size: 0.78rem;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-family: 'Space Grotesk', sans-serif;
-      max-width: 250px;
-      outline: none;
+      word-break: break-all;
+      margin-top: 10px;
+    }
+    .seg-h { color: var(--crimson); font-weight: 700; }
+    .seg-p { color: var(--violet); font-weight: 700; }
+    .seg-s { color: var(--sapphire); font-weight: 700; }
+    .seg-dot { color: var(--text-muted); font-weight: 800; }
+
+    pre.code-box {
+      margin: 0;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 280px;
+      overflow: auto;
     }
 
-    /* Timeline & Stats */
-    .timeline-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.5rem;
-      margin-bottom: 0.9rem;
+    .stat-tile {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
     }
-    @media (max-width: 640px) {
-      .timeline-grid { grid-template-columns: 1fr; }
-    }
-    .timeline-node {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 6px;
-      padding: 6px 8px;
-      min-width: 0;
-    }
-    .timeline-label {
-      font-size: 0.68rem;
+    .stat-k {
+      font-family: var(--mono);
+      font-size: 0.72rem;
       color: var(--text-muted);
       text-transform: uppercase;
-      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
     }
-    .timeline-val {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: #fff;
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Code viewers */
-    pre.code-block {
-      background: rgba(6, 8, 12, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      padding: 0.75rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      max-height: 180px;
-      overflow-y: auto;
-      color: #f1f2f6;
+    .stat-v {
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-top: 4px;
+      color: var(--text);
+      word-break: break-word;
     }
 
-    /* Security Score & Findings */
-    .score-banner {
+    .status-banner {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-top: 12px;
+      word-break: break-word;
+    }
+    .status-ok { background: var(--emerald-bg); color: var(--emerald); border-color: var(--emerald); }
+    .status-err { background: var(--crimson-bg); color: var(--crimson); border-color: var(--crimson); }
+    .status-warn { background: var(--amber-bg); color: var(--amber); border-color: var(--amber); }
+    .status-info { background: var(--sapphire-bg); color: var(--sapphire); border-color: var(--sapphire); }
+
+    .finding-item {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--gold);
+      background: var(--surface-alt);
+      margin-bottom: 10px;
+    }
+    .finding-item.sev-CRITICAL { border-left-color: var(--crimson); background: var(--crimson-bg); }
+    .finding-item.sev-HIGH { border-left-color: var(--amber); background: var(--amber-bg); }
+    .finding-item.sev-MEDIUM { border-left-color: var(--sapphire); background: var(--sapphire-bg); }
+    .finding-head {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+    .finding-desc {
+      font-size: 0.84rem;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .finding-fix {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 16px 20px;
+      margin-top: auto;
+    }
+    .footer-inner {
+      max-width: 1380px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.8rem;
-    }
-    .score-circle {
-      font-size: 1.25rem;
-      font-weight: 800;
-      padding: 4px 12px;
-      border-radius: 8px;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .score-green { background: rgba(46, 213, 115, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
-    .score-yellow { background: rgba(255, 177, 66, 0.15); color: #ffa502; border: 1px solid #ffa502; }
-    .score-red { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
-
-    .findings-container {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-height: 220px;
-      overflow-y: auto;
-    }
-    .finding-card {
-      background: rgba(0, 0, 0, 0.25);
-      border-left: 3px solid;
-      border-radius: 0 6px 6px 0;
-      padding: 8px 10px;
-      font-size: 0.8rem;
-    }
-    .finding-critical { border-left-color: var(--accent-red); background: rgba(255, 71, 87, 0.08); }
-    .finding-warning { border-left-color: #ffa502; background: rgba(255, 177, 66, 0.08); }
-    .finding-info { border-left-color: var(--accent-blue); background: rgba(30, 144, 255, 0.08); }
-    .finding-title { font-weight: 700; margin-bottom: 2px; }
-
-    /* Inputs */
-    input.text-input {
-      background: rgba(6, 8, 12, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 6px;
-      color: #fff;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      padding: 6px 10px;
-      width: 100%;
-      outline: none;
-    }
-    input.text-input:focus { border-color: var(--gold); }
-
-    /* Glassmorphic Toast Notification */
-    .toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 9999;
-      pointer-events: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .toast-msg {
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(255, 215, 0, 0.4);
-      color: #ffd700;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(12px);
-      transform: translateY(10px);
-      opacity: 0;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: auto;
-    }
-    .toast-msg.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    .lock-box {
-      max-width: 480px;
-      background: rgba(18, 20, 29, 0.95);
-      border: 1px solid var(--gold);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px var(--gold-glow);
-    }
-    .lock-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--gold);
-      margin-bottom: 0.5rem;
-    }
-    .lock-desc {
+      flex-wrap: wrap;
+      gap: 12px;
       font-size: 0.82rem;
       color: var(--text-muted);
-      margin-bottom: 1rem;
-      line-height: 1.4;
     }
-
-    /* Modal */
-    .modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: none;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      padding: 1rem;
-    }
-    .modal-backdrop.open {
-      display: flex;
-    }
-    .modal-card {
-      background: #10121a;
-      border: 1px solid var(--gold);
-      border-radius: var(--radius);
-      max-width: 540px;
-      width: 100%;
-      padding: 1.8rem;
-      box-shadow: 0 0 30px rgba(255, 215, 0, 0.25);
-      position: relative;
-    }
-    .modal-close {
-      position: absolute;
-      top: 1rem;
-      right: 1.2rem;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.3rem;
-      cursor: pointer;
-    }
-    .modal-title {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 0.4rem;
-    }
-    .modal-features {
-      list-style: none;
-      margin: 1rem 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      font-size: 0.85rem;
-    }
-    .modal-features li {
+    .footer-links {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      color: #e0e4ed;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .modal-features li span {
-      color: var(--gold);
+    .footer-links a:not(.btn) {
+      color: var(--sapphire);
+      font-family: var(--mono);
       font-weight: 700;
+      text-decoration: underline;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
     }
-
-    footer.zoth-footer {
-      border-top: 1px solid var(--card-border);
-      background: rgba(10, 11, 16, 0.95);
-      padding: 1.5rem 1rem;
-      text-align: center;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      margin-top: auto;
-    }
-    footer.zoth-footer a {
-      color: var(--gold);
+    .footer-links a.btn-primary {
+      color: var(--btn-primary-fg);
       text-decoration: none;
     }
+    .sol-chip {
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: var(--text);
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      word-break: break-all;
+    }
   </style>
-  <link rel="stylesheet" href="wave.css">
-  <link rel="stylesheet" href="wave-states.css">
-  <link rel="stylesheet" href="wave-type.css">
-
-
 </head>
 <body>
-
-<div id="zoth-coffee-support-bar" style="background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(212,175,55,0.14)); border-bottom: 1px solid rgba(212,175,55,0.35); padding: 8px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; z-index: 9999;">
-  <span style="color: #10B981; font-weight: 800;">✦ 100% FREE &amp; OPEN SOURCE</span>
-  <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer" style="background: #D4AF37; color: #08080B; padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">☕ Buy Us a Coffee (Stripe)</a>
-  <a href="solana:GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK" style="background: #047857; color: #FFFFFF; padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">◎ Solana Tip</a>
-</div>
-
-
-  <header>
-    <div class="brand-wrap">
-      <img src="assets/icon.png" alt="JWT Inspector Guard Logo" class="brand-icon" style="width:36px;height:36px;border-radius:8px;object-fit:cover;box-shadow:0 0 10px rgba(0,229,255,0.4);margin-right:10px;">
-      <div class="brand-text">
-        <h1>JWT Inspector Guard</h1>
-        <p>Sovereign Cryptographic Linter & DPoP Token Studio</p>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="/assets/icon.png" alt="JWT Inspector Guard cryptographic seal icon" width="38" height="38">
+        <div>
+          <h1>JWT Inspector Guard</h1>
+          <div class="brand-sub">v2.6.0 • Local Cryptographic JWT, JWKS &amp; RFC 9449 DPoP Workstation</div>
+        </div>
       </div>
-    </div>
-    <div class="header-badges" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
-      <span class="badge badge-egress" style="white-space: nowrap;">ZERO CLOUD EGRESS</span>
-      <span class="badge badge-open" id="openBadge" style="color: #10B981; border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.15); font-weight: 800; white-space: nowrap;">✦ 100% OPEN ACCESS</span>
-      <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer" style="background: #D4AF37; color: #08080B; padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; white-space: nowrap;">☕ Buy Us a Coffee</a>
+      <div class="topbar-actions">
+        <span id="runtimeModePill" class="pill pill-sapphire">ENGINE: CHECKING :8124</span>
+        <span id="entropyPill" class="pill pill-gold">ENTROPY: 0.00 b/c</span>
+        <span id="scorePill" class="pill pill-emerald">SCORE: 100/100</span>
+        <button id="themeToggleBtn" type="button" aria-label="Toggle Light or Dark Theme">Theme: Light</button>
+      </div>
     </div>
   </header>
 
-  <main>
-    <!-- Top Action Deck -->
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:0.8rem;">
-      <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-        <span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">Load Token Preset:</span>
-        <select class="sample-picker" id="sampleSelect" onchange="loadSelectedSample(this.value)">
-          <option value="">-- Choose Sample Token --</option>
-        </select>
-        <button class="btn-sm" onclick="clearToken()">Clear</button>
-      </div>
-      <div style="display:flex; align-items:center; gap:0.5rem;">
-        <button class="btn-sm primary" onclick="runInspect()">⚡ Run Security Audit</button>
-        <button class="btn-sm" onclick="exportDossierPrompt()">↓ Export Security Dossier</button>
-      </div>
-    </div>
-
-    <!-- Token Input Area -->
-    <div class="card" style="margin-bottom:1.2rem;">
+  <main class="container">
+    <!-- Token Input & Catalog Selector -->
+    <section class="card" aria-label="Bearer JWT Input">
       <div class="card-header">
-        <span class="card-title">✦ Bearer JWT Token Stream</span>
-        <span style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted);" id="tokenLengthBadge">0 chars</span>
+        <h2>Encoded JWT Token Stream</h2>
+        <div class="btn-row" style="width:100%; max-width:640px;">
+          <label for="sampleSelect" class="field-label" style="margin:0;">Sample Vector</label>
+          <select id="sampleSelect" aria-label="Select a sample JWT or CVE vector" style="flex:1 1 200px; min-width:0; max-width:100%;">
+            <option value="default-valid">Standard Valid HS256 (Future EXP)</option>
+            <option value="alg-none">CVE-2015-9235 (alg: none)</option>
+            <option value="weak-secret">Weak Secret HS256 ("secret")</option>
+            <option value="kid-traversal">CVE-2018-1000531 (kid Path Traversal)</option>
+            <option value="jku-ssrf">CVE-2018-0114 (jku Untrusted URL)</option>
+            <option value="pii-leak">Sensitive Credential &amp; PII Exposure</option>
+          </select>
+          <button id="copyTokenBtn" type="button">Copy Token</button>
+          <button id="clearTokenBtn" type="button">Clear</button>
+        </div>
       </div>
-      <textarea id="tokenInput" class="token-box" placeholder="Paste your header.payload.signature JWT here..." oninput="onTokenChange()"></textarea>
-      <div class="colored-token-display" id="colorDisplay">Paste a token above to inspect components...</div>
-    </div>
 
-    <!-- App 2-Column Grid -->
-    <div class="app-grid">
-      <!-- Left Column: Header, Payload & Timeline -->
-      <div style="display:flex; flex-direction:column; gap:1.2rem;">
-        
-        <!-- Timeline Card -->
+      <label for="tokenInput" class="field-label">Compact JWS / JWT Token (Header.Payload.Signature)</label>
+      <textarea id="tokenInput" rows="3" placeholder="Paste compact JWT (header.payload.signature)..."></textarea>
+      <div id="segmentPreview" class="segments" aria-label="Color-coded JWT segments"></div>
+    </section>
+
+    <!-- Primary Navigation Tabs -->
+    <nav class="tabs" role="tablist" aria-label="Workstation Panels">
+      <button class="tab-btn" role="tab" id="tabBtnDecode" aria-selected="true" aria-controls="panelDecode" data-tab="panelDecode" type="button">1. Decode &amp; Audit</button>
+      <button class="tab-btn" role="tab" id="tabBtnVerify" aria-selected="false" aria-controls="panelVerify" data-tab="panelVerify" type="button">2. Verify &amp; Mint (HS/RS/ES)</button>
+      <button class="tab-btn" role="tab" id="tabBtnTamper" aria-selected="false" aria-controls="panelTamper" data-tab="panelTamper" type="button">3. Tamper &amp; Cracker</button>
+      <button class="tab-btn" role="tab" id="tabBtnDpop" aria-selected="false" aria-controls="panelDpop" data-tab="panelDpop" type="button">4. RFC 9449 DPoP Studio</button>
+      <button class="tab-btn" role="tab" id="tabBtnJwks" aria-selected="false" aria-controls="panelJwks" data-tab="panelJwks" type="button">5. JWKS &amp; Timing Lab</button>
+      <button class="tab-btn" role="tab" id="tabBtnExport" aria-selected="false" aria-controls="panelExport" data-tab="panelExport" type="button">6. Export Report</button>
+    </nav>
+
+    <!-- PANEL 1: Decode & Security Audit -->
+    <section id="panelDecode" class="tab-panel active" role="tabpanel" aria-labelledby="tabBtnDecode">
+      <div class="grid-3" style="margin-bottom:16px;">
+        <div class="stat-tile">
+          <div class="stat-k">Algorithm / Type</div>
+          <div id="statAlg" class="stat-v">HS256 / JWT</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-k">RFC 7519 Expiration</div>
+          <div id="statExp" class="stat-v">Valid</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-k">Security Risk Verdict</div>
+          <div id="statRisk" class="stat-v">LOW (100/100)</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">⏱️ Temporal Validation & Epochs</span>
-            <span class="badge badge-egress" id="temporalStatusBadge">FRESH</span>
+            <h2>Decoded JOSE Header</h2>
+            <button id="copyHeaderBtn" type="button">Copy Header</button>
           </div>
-          <div class="timeline-grid">
-            <div class="timeline-node">
-              <div class="timeline-label">Issued At (iat)</div>
-              <div class="timeline-val" id="timeIat">-</div>
-            </div>
-            <div class="timeline-node">
-              <div class="timeline-label">Not Before (nbf)</div>
-              <div class="timeline-val" id="timeNbf">-</div>
-            </div>
-            <div class="timeline-node">
-              <div class="timeline-label">Expires (exp)</div>
-              <div class="timeline-val" id="timeExp">-</div>
-            </div>
+          <pre id="headerPre" class="code-box">{}</pre>
+          <div class="card-header" style="margin-top:16px;">
+            <h2>Decoded Payload Claims</h2>
+            <button id="copyPayloadBtn" type="button">Copy Payload</button>
           </div>
+          <pre id="payloadPre" class="code-box">{}</pre>
         </div>
 
-        <!-- JOSE Header -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">▣ Decoded JOSE Header</span>
-            <span class="badge" id="algBadge" style="background:rgba(255,107,129,0.15); color:#ff6b81; border:1px solid #ff6b81;">ALG: -</span>
+            <h2>Security Linter &amp; CVE Findings</h2>
+            <span id="findingsCountPill" class="pill pill-emerald">0 FINDINGS</span>
           </div>
-          <pre class="code-block" id="headerJson">{}</pre>
+          <div id="findingsList" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 2: Verify & Mint (HS256/384/512 + RS256/ES256 JWK) -->
+    <section id="panelVerify" class="tab-panel" role="tabpanel" aria-labelledby="tabBtnVerify">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2>Cryptographic Signature Verifier</h2>
+          </div>
+          <label for="verifySecret" class="field-label">HMAC Shared Secret (HS256 / HS384 / HS512)</label>
+          <input id="verifySecret" type="text" value="sovereign-jwt-256bit-demo-key-2026" placeholder="Enter HMAC secret...">
+
+          <div style="margin-top:12px;">
+            <label for="verifyJwk" class="field-label">Or Asymmetric Public JWK JSON (RS256 / ES256)</label>
+            <textarea id="verifyJwk" rows="4" placeholder='{"kty":"EC","crv":"P-256","x":"...","y":"..."}'></textarea>
+          </div>
+
+          <div class="btn-row" style="margin-top:12px;">
+            <button id="verifyBtn" class="btn-primary" type="button">Verify Signature</button>
+            <button id="mintEs256DemoBtn" class="btn-sapphire" type="button">Generate ES256 Keypair &amp; Mint</button>
+          </div>
+          <div id="verifyResult" class="status-banner status-info" aria-live="polite">Ready to verify HMAC (HS256/384/512) or JWK (RS256/ES256). alg:none fails closed.</div>
         </div>
 
-        <!-- Claims Payload -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">▣ Decoded Claims Payload</span>
-            <span class="badge" id="entropyBadge" style="background:rgba(165,94,234,0.15); color:#a55eea; border:1px solid #a55eea;">Entropy: -</span>
+            <h2>Mint Signed HMAC Token</h2>
           </div>
-          <pre class="code-block" id="payloadJson">{}</pre>
-        </div>
+          <label for="mintAlg" class="field-label">Signing Algorithm</label>
+          <select id="mintAlg">
+            <option value="HS256">HS256 (HMAC-SHA256)</option>
+            <option value="HS384">HS384 (HMAC-SHA384)</option>
+            <option value="HS512">HS512 (HMAC-SHA512)</option>
+          </select>
 
-        <!-- 1-Click Tamper & Exploit Lab -->
+          <div style="margin-top:12px;">
+            <label for="mintPayload" class="field-label">Payload Claims JSON</label>
+            <textarea id="mintPayload" rows="5"></textarea>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label for="mintSecret" class="field-label">Signing Secret</label>
+            <input id="mintSecret" type="text" value="sovereign-jwt-256bit-demo-key-2026">
+          </div>
+
+          <div class="btn-row" style="margin-top:12px;">
+            <button id="mintBtn" class="btn-emerald" type="button">Mint &amp; Load Token</button>
+          </div>
+          <div id="mintResult" class="status-banner" aria-live="polite">Configure claims and click Mint &amp; Load Token.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: Tamper & Weak-Secret Cracker -->
+    <section id="panelTamper" class="tab-panel" role="tabpanel" aria-labelledby="tabBtnTamper">
+      <div class="grid-2">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">✦ 1-Click Tamper & Exploit Lab</span>
-            <span class="badge" style="background:rgba(255,215,0,0.1); color:var(--gold); border:1px solid var(--gold);">CVE SIMULATOR</span>
+            <h2>1-Click Exploit Vector Mutator</h2>
           </div>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
-            Test your authentication service by simulating common token attacks:
+          <p style="margin:0 0 12px; color:var(--text-muted); font-size:0.86rem;">
+            Synthesize common JWT attack mutations directly into the active token to test downstream verification policies.
           </p>
           <div class="btn-row">
-            <button class="btn-sm danger" onclick="runTamper('none')">✦ CVE-2015-9235 (alg:none)</button>
-            <button class="btn-sm" onclick="runTamper('admin_escalate')">✦ Admin Role Escalation</button>
-            <button class="btn-sm" onclick="runTamper('strip_signature')">✂️ Strip Signature</button>
+            <button type="button" class="btn-danger" data-tamper="none">CVE-2015-9235 (alg: none)</button>
+            <button type="button" class="btn-danger" data-tamper="kid_traversal">kid Path Traversal</button>
+            <button type="button" class="btn-danger" data-tamper="jku_ssrf">jku Untrusted URL</button>
+            <button type="button" class="btn-sapphire" data-tamper="admin_escalate">Escalate Role=admin</button>
+            <button type="button" data-tamper="strip_signature">Strip Signature</button>
           </div>
+          <div id="tamperResult" class="status-banner" aria-live="polite">Select a mutation vector above to transform the active token.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Weak HMAC Dictionary Cracker</h2>
+          </div>
+          <p style="margin:0 0 12px; color:var(--text-muted); font-size:0.86rem;">
+            Audits HS256/HS384/HS512 tokens against the local 1,954-secret dictionary via :8124/api/crack (with in-browser Web Crypto fallback).
+          </p>
+          <label for="customWordlist" class="field-label">Optional Extra Candidate Secrets (comma-separated)</label>
+          <input id="customWordlist" type="text" placeholder="e.g. secret, password123, dev_jwt_key">
+          <div class="btn-row" style="margin-top:12px;">
+            <button id="crackBtn" class="btn-primary" type="button">Run Dictionary Audit</button>
+          </div>
+          <div id="crackResult" class="status-banner" aria-live="polite">Ready to test active HMAC token against weak secrets.</div>
         </div>
       </div>
+    </section>
 
-      <!-- Right Column: Audit, Verification, Cracker, DPoP -->
-      <div style="display:flex; flex-direction:column; gap:1.2rem;">
-        
-        <!-- Security Audit Card -->
+    <!-- PANEL 4: RFC 9449 DPoP Studio (Real WebCrypto ECDSA P-256 + :8124 Verify) -->
+    <section id="panelDpop" class="tab-panel" role="tabpanel" aria-labelledby="tabBtnDpop">
+      <div class="grid-2">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">❖ Security Audit & Vulnerability Radar</span>
-            <div class="score-circle score-green" id="scoreBadge">100 / 100</div>
+            <h2>RFC 9449 ECDSA P-256 DPoP Proof Minter</h2>
           </div>
-          <div class="findings-container" id="findingsList">
-            <div style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding:1.5rem;">
-              Click <strong>Run Security Audit</strong> to scan token.
+          <div class="grid-2" style="gap:10px;">
+            <div>
+              <label for="dpopMethod" class="field-label">HTTP Method (htm)</label>
+              <select id="dpopMethod">
+                <option value="POST">POST</option>
+                <option value="GET">GET</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+              </select>
+            </div>
+            <div>
+              <label for="dpopNonce" class="field-label">Optional Server Nonce</label>
+              <input id="dpopNonce" type="text" placeholder="srv-nonce-optional">
             </div>
           </div>
+          <div style="margin-top:12px;">
+            <label for="dpopUrl" class="field-label">Target HTTP URI (htu)</label>
+            <input id="dpopUrl" type="text" value="https://api.example.com/v1/payments">
+          </div>
+          <div class="btn-row" style="margin-top:12px;">
+            <button id="dpopCreateBtn" class="btn-primary" type="button">Mint Real ES256 DPoP Proof</button>
+            <button id="dpopTamperBtn" class="btn-danger" type="button">Corrupt Proof Signature</button>
+          </div>
+          <div id="dpopMetaBox" class="status-banner" aria-live="polite">Uses real Web Crypto ECDSA P-256 (ES256) with RFC 7638 jkt &amp; SHA-256 ath.</div>
         </div>
 
-        <!-- HMAC Verification -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">✍️ Web Crypto HMAC Verification</span>
-            <span class="badge" id="sigStatusBadge" style="background:rgba(255,255,255,0.08); color:var(--text-muted);">UNVERIFIED</span>
+            <h2>Cryptographic DPoP Proof Verifier</h2>
           </div>
-          <div style="display:flex; gap:0.5rem; margin-top:0.4rem;">
-            <input type="text" id="verifySecret" class="text-input" placeholder="Enter signing secret key (e.g. secret)...">
-            <button class="btn-sm primary" onclick="runVerify()">Verify</button>
+          <label for="dpopProofInput" class="field-label">DPoP Proof JWT (typ: dpop+jwt)</label>
+          <textarea id="dpopProofInput" rows="4" placeholder="Mint or paste an ES256 DPoP proof JWT..."></textarea>
+          <div class="btn-row" style="margin-top:12px;">
+            <button id="dpopVerifyBtn" class="btn-emerald" type="button">Verify Cryptographic Proof</button>
           </div>
+          <div id="dpopVerifyDetails" class="status-banner" aria-live="polite">Verification mathematically validates ES256 signature against embedded public JWK, htm, htu, ath, and cnf.jkt.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 5: JWKS & Timing Side-Channel Lab -->
+    <section id="panelJwks" class="tab-panel" role="tabpanel" aria-labelledby="tabBtnJwks">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2>RFC 7517 JWKS Rotation &amp; Health Auditor</h2>
+          </div>
+          <label for="jwksInput" class="field-label">Optional External JWKS JSON (leave blank for live simulator)</label>
+          <textarea id="jwksInput" rows="5" placeholder='{"keys":[{"kty":"EC","crv":"P-256","kid":"k1","x":"...","y":"..."}]}'></textarea>
+          <div class="btn-row" style="margin-top:12px;">
+            <button id="jwksAuditBtn" class="btn-primary" type="button">Audit JWKS</button>
+            <button id="jwksRotateBtn" class="btn-sapphire" type="button">Simulate Key Rotation</button>
+          </div>
+          <pre id="jwksOutput" class="code-box" style="margin-top:12px;">Click Audit JWKS to inspect active/retiring keys and detect private-key leaks.</pre>
         </div>
 
-        <!-- Secret Dictionary Cracker -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">✓ Secret Dictionary Cracker (Client-Side)</span>
-            <span class="badge" id="crackStatusBadge" style="background:rgba(30,144,255,0.12); color:var(--accent-blue);">STANDBY</span>
+            <h2>Empirical Timing Side-Channel Benchmark</h2>
           </div>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.6rem;">
-            Simulates local brute-force dictionary test against 20+ common default JWT secrets.
-          </p>
-          <div style="display:flex; align-items:center; gap:0.8rem;">
-            <button class="btn-sm danger" onclick="runCrack()">⚡ Crack Weak Secret</button>
-            <span id="crackResult" style="font-size:0.8rem; font-family:'JetBrains Mono',monospace;"></span>
+          <label for="timingTrials" class="field-label">Benchmark Trials (1–5000)</label>
+          <input id="timingTrials" type="number" min="5" max="5000" value="40">
+          <div class="btn-row" style="margin-top:12px;">
+            <button id="timingSafeBtn" class="btn-emerald" type="button">Benchmark Constant-Time (compare_digest)</button>
+            <button id="timingVulnBtn" class="btn-danger" type="button">Benchmark Early-Exit (Vulnerable)</button>
           </div>
+          <pre id="timingOutput" class="code-box" style="margin-top:12px;">Measures actual early-mismatch vs late-mismatch nanosecond medians via :8124/api/timing.</pre>
         </div>
+      </div>
+    </section>
 
-        <!-- RFC 9449 DPoP Studio -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">★ RFC 9449 DPoP Proof & Token Binding Studio</span>
-            <span class="badge" id="dpopStatusBadge" style="background:rgba(46,213,115,0.12); color:var(--accent-green);">RFC 9449 READY</span>
-          </div>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.6rem;">
-            Generate and verify Demonstrating Proof-of-Possession tokens bound to HTTP method and URI.
-          </p>
-          <div style="display:grid; grid-template-columns: 80px 1fr; gap:0.5rem; margin-bottom:0.5rem;">
-            <select id="dpopMethod" class="sample-picker" style="height:32px; padding:0 6px;">
-              <option value="GET">GET</option>
-              <option value="POST" selected>POST</option>
-              <option value="PUT">PUT</option>
-              <option value="DELETE">DELETE</option>
-            </select>
-            <input type="text" id="dpopUrl" class="text-input" value="https://api.example.com/v1/payments" placeholder="Target endpoint URL">
-          </div>
+    <!-- PANEL 6: Export Report -->
+    <section id="panelExport" class="tab-panel" role="tabpanel" aria-labelledby="tabBtnExport">
+      <div class="card">
+        <div class="card-header">
+          <h2>Export Local Audit Dossier (v2.6.0)</h2>
           <div class="btn-row">
-            <button class="btn-sm primary" onclick="runDPoPCreate()">⚡ Mint DPoP Proof</button>
-            <button class="btn-sm" onclick="runDPoPVerify()">⌕ Verify DPoP Binding</button>
-          </div>
-          <div id="dpopResultBox" style="display:none; margin-top:0.6rem; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:0.6rem; font-size:0.78rem;">
-            <div style="color:var(--gold); font-weight:700; margin-bottom:4px;">DPoP Proof Token:</div>
-            <textarea id="dpopProofText" class="token-box" style="height:55px; margin-bottom:4px;" readonly></textarea>
-            <div id="dpopVerifyDetails" style="font-family:'JetBrains Mono',monospace; font-size:0.75rem;"></div>
+            <button id="exportJsonBtn" class="btn-primary" type="button">Download JSON Report</button>
+            <button id="exportMdBtn" class="btn-sapphire" type="button">Download Markdown Report</button>
+            <button id="copyReportBtn" type="button">Copy JSON</button>
           </div>
         </div>
-
+        <pre id="exportPreview" class="code-box"></pre>
       </div>
-    </div>
-
-    <!-- Automated Hardening Patch & Middleware Synthesizer -->
-    <div id="hardeningWrap">
-      <div id="hardeningContent">
-        <div class="card" style="margin-top:0.5rem;">
-          <div class="card-header">
-            <span class="card-title">❖ Automated Hardening Patch & Middleware Synthesizer</span>
-            <div style="display:flex; gap:0.5rem;">
-              <button class="btn-sm" onclick="switchPatchTab('nextjs')">Next.js</button>
-              <button class="btn-sm" onclick="switchPatchTab('express')">Express</button>
-              <button class="btn-sm" onclick="switchPatchTab('fastapi')">FastAPI</button>
-              <button class="btn-sm primary" onclick="copyHardeningPatch()">✦ Copy Patch</button>
-            </div>
-          </div>
-          <pre class="code-block" id="hardeningPatchViewer" style="max-height:220px;">// Production Hardening Patch will generate here</pre>
-        </div>
-      </div>
-    </div>
-
+    </section>
   </main>
 
-  <div id="toastMessage" class="toast-container" data-alias="toast"></div>
-  <div id="toast" style="display:none;" aria-hidden="true"></div>
-
-  <footer class="zoth-footer">
-    <div><strong>JWT Inspector Guard</strong> — Sovereign Cryptographic Security Studio & Token Linter.</div>
-    <div style="margin-top:0.3rem;">
-      Engineered by Neal Frazier Tech (<a href="https://github.com/1nc0gn30/jwt-inspector-guard" target="_blank" rel="noopener">@1nc0gn30</a>) &bull; <a href="https://nullai.tech" target="_blank" rel="noopener">NullAI Platform</a> &bull; <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer">☕ Buy Us a Coffee</a> &bull; Solana: <code>GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK</code>
+  <footer>
+    <div class="footer-inner">
+      <div><strong>Engineered by Neal Frazier Tech (@1nc0gn30) • NullAI Platform</strong> · 100% Free &amp; Open-Access</div>
+      <div class="footer-links">
+        <a href="https://github.com/1nc0gn30/jwt-inspector-guard" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
+        <a href="https://nullai.tech" target="_blank" rel="noopener noreferrer">NullAI Platform</a>
+        <a class="btn btn-primary" href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer">☕ Buy Us a Coffee</a>
+        <span class="sol-chip" title="Solana Tip Address">SOL: GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK</span>
+      </div>
     </div>
   </footer>
 
   <script>
-    // --- Sample Tokens Catalog ---
-    const SAMPLE_CATALOG = [
-      {
-        category: "Clean",
-        name: "Standard HS256 User Session",
-        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3JfOTA4MjMxIiwibmFtZSI6IkFsZXggVmFuY2UiLCJlbWFpbCI6ImFsZXhAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc3MDcwMDAwMCwiZXhwIjoxNzcwNzA3MjAwfQ.p_wY9qL1Z76yqN1_7n38v8b_Z_g5G_8y_n8y_n8y_n8"
-      },
-      {
-        category: "Exploit",
-        name: "CVE-2015-9235 (alg: none exploit)",
-        token: "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMzM3IiwiYWRtaW4iOnRydWUsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ."
-      },
-      {
-        category: "Vulnerable",
-        name: "Weak Key 'secret' & Sensitive PII Leak",
-        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIEhhY2tlciIsInBhc3N3b3JkIjoiaHVudGVyMiIsInNzbSI6IjAwMC0xMi0zNDU2IiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjIsInJvbGUiOiJndWVzdCJ9.uFp3l_5bFqNqL1Z76yqN1_7n38v8b_Z_g5G_8y_n8y8"
-      },
-      {
-        category: "Expired",
-        name: "Expired Authentication Token",
-        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJleHBpcmVkX3VzZXIiLCJyb2xlIjoidXNlciIsImlhdCI6MTYwMDAwMDAwMCwiZXhwIjoxNjAwMDAzNjAwfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-      },
-      {
-        category: "Privileged",
-        name: "Elevated Root Admin Token",
-        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb290X21hc3RlciIsInJvbGUiOiJhZG1pbiIsImlzX2FkbWluIjp0cnVlLCJzY29wZXMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl0sImlhdCI6MTc3MDcwMDAwMCwiZXhwIjoxNzcwODA3MjAwfQ.Wv6rT_n1Y8qL1Z76yqN1_7n38v8b_Z_g5G_8y_n8y8x"
-      }
-    ];
+    (function () {
+      'use strict';
 
+      var APP_VERSION = '2.6.0';
+      var API_ONLINE = false;
+      var SERVER_CATALOG = [];
+      var LAST_DPOP_JKT = '';
+      var LAST_AUDIT = { score: 100, risk: 'LOW', findings: [], header: null, payload: null, entropy: 0 };
 
-    // --- Base64URL Helpers ---
-    function base64UrlDecode(str) {
-      try {
-        let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
-        while (b64.length % 4) b64 += '=';
-        return decodeURIComponent(atob(b64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-      } catch (e) {
-        return atob(str.replace(/-/g, '+').replace(/_/g, '/'));
-      }
-    }
-
-    function base64UrlEncode(str) {
-      return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    }
-
-    function arrayBufferToBase64Url(buffer) {
-      let binary = '';
-      const bytes = new Uint8Array(buffer);
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    }
-
-    // --- Glassmorphic Toast & Non-Blocking Notification ---
-    function showToast(msg) {
-      let container = document.getElementById('toastMessage');
-      if (!container) {
-        container = document.createElement('div');
-        container.id = 'toastMessage';
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-      }
-      const el = document.createElement('div');
-      el.className = 'toast-msg';
-      el.textContent = msg;
-      container.appendChild(el);
-      requestAnimationFrame(() => el.classList.add('show'));
-      setTimeout(() => {
-        el.classList.remove('show');
-        setTimeout(() => el.remove(), 300);
-      }, 3000);
-    }
-    window.alert = showToast;
-
-
-    // --- Token Parsing & Display ---
-    function onTokenChange() {
-      const token = document.getElementById('tokenInput').value.trim();
-      const disp = document.getElementById('colorDisplay');
-      document.getElementById('tokenLengthBadge').textContent = `${token.length} chars`;
-
-      if (!token) {
-        disp.textContent = 'Paste a token above to inspect components...';
-        return;
-      }
-
-      const parts = token.split('.');
-      disp.innerHTML = '';
-
-      if (parts[0]) {
-        const span0 = document.createElement('span');
-        span0.className = 'token-part-header';
-        span0.textContent = parts[0];
-        disp.appendChild(span0);
-      }
-      if (parts.length > 1) {
-        const dot1 = document.createElement('span');
-        dot1.className = 'token-part-dot';
-        dot1.textContent = '.';
-        disp.appendChild(dot1);
-
-        const span1 = document.createElement('span');
-        span1.className = 'token-part-payload';
-        span1.textContent = parts[1];
-        disp.appendChild(span1);
-      }
-      if (parts.length > 2) {
-        const dot2 = document.createElement('span');
-        dot2.className = 'token-part-dot';
-        dot2.textContent = '.';
-        disp.appendChild(dot2);
-
-        const span2 = document.createElement('span');
-        span2.className = 'token-part-signature';
-        span2.textContent = parts[2];
-        disp.appendChild(span2);
-      }
-    }
-
-    function loadSelectedSample(idx) {
-      if (idx === '' || !SAMPLE_CATALOG[idx]) return;
-      document.getElementById('tokenInput').value = SAMPLE_CATALOG[idx].token;
-      onTokenChange();
-      runInspect();
-    }
-
-    function clearToken() {
-      document.getElementById('tokenInput').value = '';
-      onTokenChange();
-      document.getElementById('headerJson').textContent = '{}';
-      document.getElementById('payloadJson').textContent = '{}';
-      document.getElementById('findingsList').innerHTML = '<div style="font-size:0.82rem; color:var(--text-muted); text-align:center; padding:1.5rem;">Click <strong>Run Security Audit</strong> to scan token.</div>';
-    }
-
-    // --- Shannon Entropy ---
-    function calculateEntropy(str) {
-      if (!str) return 0;
-      const freq = {};
-      for (let i = 0; i < str.length; i++) {
-        const c = str[i];
-        freq[c] = (freq[c] || 0) + 1;
-      }
-      let entropy = 0;
-      for (const c in freq) {
-        const p = freq[c] / str.length;
-        entropy -= p * Math.log2(p);
-      }
-      return parseFloat(entropy.toFixed(3));
-    }
-
-    // --- Pure Client-Side Security Audit ---
-    function runInspect() {
-      const token = document.getElementById('tokenInput').value.trim();
-      if (!token) return;
-
-      const parts = token.split('.');
-      if (parts.length < 2) {
-        showToast('Invalid JWT: A valid token must have at least header and payload segments separated by dots.');
-        return;
-      }
-
-      let header = {};
-      let payload = {};
-
-      try {
-        header = JSON.parse(base64UrlDecode(parts[0]));
-        document.getElementById('headerJson').textContent = JSON.stringify(header, null, 2);
-      } catch (e) {
-        document.getElementById('headerJson').textContent = '// Failed to decode JOSE header';
-      }
-
-      try {
-        payload = JSON.parse(base64UrlDecode(parts[1]));
-        document.getElementById('payloadJson').textContent = JSON.stringify(payload, null, 2);
-      } catch (e) {
-        document.getElementById('payloadJson').textContent = '// Failed to decode Claims payload';
-      }
-
-      // Algorithm badge
-      const alg = header.alg || 'NONE';
-      document.getElementById('algBadge').textContent = 'ALG: ' + alg;
-
-      // Entropy
-      const ent = calculateEntropy(token);
-      document.getElementById('entropyBadge').textContent = `Entropy: ${ent} b/c`;
-
-      // Timeline nodes
-      const now = Math.floor(Date.now() / 1000);
-      document.getElementById('timeIat').textContent = payload.iat ? new Date(payload.iat * 1000).toLocaleString() : 'Not Set';
-      document.getElementById('timeNbf').textContent = payload.nbf ? new Date(payload.nbf * 1000).toLocaleString() : 'Not Set';
-      document.getElementById('timeExp').textContent = payload.exp ? new Date(payload.exp * 1000).toLocaleString() : 'Never (Immortal)';
-
-      const tempBadge = document.getElementById('temporalStatusBadge');
-      if (payload.exp && payload.exp < now) {
-        tempBadge.textContent = 'EXPIRED';
-        tempBadge.className = 'badge';
-        tempBadge.style.background = 'rgba(255,71,87,0.15)';
-        tempBadge.style.color = '#ff4757';
-      } else if (payload.nbf && payload.nbf > now) {
-        tempBadge.textContent = 'NOT YET VALID';
-        tempBadge.className = 'badge';
-        tempBadge.style.background = 'rgba(255,177,66,0.15)';
-        tempBadge.style.color = '#ffa502';
-      } else {
-        tempBadge.textContent = 'VALID EPOCH';
-        tempBadge.className = 'badge badge-egress';
-        tempBadge.style.background = '';
-        tempBadge.style.color = '';
-      }
-
-      // Run Security Linter Checks
-      let score = 100;
-      const findings = [];
-
-      // 1. Alg None check (CVE-2015-9235)
-      if (!header.alg || header.alg.toLowerCase() === 'none') {
-        score -= 45;
-        findings.push({
-          severity: 'CRITICAL',
-          title: 'CVE-2015-9235: Unauthenticated Alg None Vulnerability',
-          desc: 'Header explicitly specifies "none" or omits algorithm. Signature validation is completely bypassed, allowing arbitrary forged claims.'
-        });
-      }
-
-      // 2. Expiration check
-      if (!payload.exp) {
-        score -= 20;
-        findings.push({
-          severity: 'HIGH',
-          title: 'Missing Expiration (exp) Claim',
-          desc: 'Token has no expiration time defined. Once issued or leaked, it remains valid forever.'
-        });
-      } else if (payload.exp < now) {
-        score -= 15;
-        findings.push({
-          severity: 'HIGH',
-          title: 'Expired Token in Active Stream',
-          desc: `Token expired ${Math.floor((now - payload.exp) / 60)} minutes ago.`
-        });
-      }
-
-      // 3. Sensitive Data / PII Leaks
-      const sensitiveKeys = ['password', 'passwd', 'secret', 'ssn', 'credit_card', 'private_key', 'api_key', 'token'];
-      const payloadKeys = Object.keys(payload);
-      const leaked = payloadKeys.filter(k => sensitiveKeys.some(s => k.toLowerCase().includes(s)));
-      if (leaked.length > 0) {
-        score -= 25;
-        findings.push({
-          severity: 'CRITICAL',
-          title: `Sensitive PII / Credential Leakage: [${leaked.join(', ')}]`,
-          desc: 'JWT payloads are unencrypted base64url strings visible to any network proxy, browser storage, or logging system.'
-        });
-      }
-
-      // 4. Elevated Privileges
-      if (payload.role === 'admin' || payload.role === 'root' || payload.admin === true || payload.is_admin === true) {
-        findings.push({
-          severity: 'INFO',
-          title: 'High-Privilege Role Claim Detected',
-          desc: 'Token grants administrative access. Ensure downstream endpoints verify signature cryptographically against authoritative keystore.'
-        });
-      }
-
-      // 5. Weak Algorithm
-      if (header.alg === 'HS256' && parts[2] && parts[2].length < 20) {
-        score -= 15;
-        findings.push({
-          severity: 'HIGH',
-          title: 'Truncated or Suspicious HMAC Signature',
-          desc: 'HMAC signature length is unusually short, indicating weak secret or truncation.'
-        });
-      }
-
-      score = Math.max(0, score);
-      const scoreBadge = document.getElementById('scoreBadge');
-      scoreBadge.textContent = `${score} / 100`;
-      scoreBadge.className = 'score-circle ' + (score >= 85 ? 'score-green' : (score >= 50 ? 'score-yellow' : 'score-red'));
-
-      const list = document.getElementById('findingsList');
-      list.innerHTML = '';
-      if (findings.length === 0) {
-        list.innerHTML = `
-          <div class="finding-card finding-info">
-            <div class="finding-title" style="color:var(--accent-green);">✅ Pristine Token Structure</div>
-            <div>No known CVE patterns, sensitive PII leaks, or signature anomalies detected.</div>
-          </div>
-        `;
-      } else {
-        findings.forEach(f => {
-          const div = document.createElement('div');
-          div.className = 'finding-card ' + (f.severity === 'CRITICAL' ? 'finding-critical' : (f.severity === 'HIGH' ? 'finding-critical' : (f.severity === 'MEDIUM' ? 'finding-warning' : 'finding-info')));
-          div.innerHTML = `<div class="finding-title">[${f.severity}] ${f.title}</div><div>${f.desc}</div>`;
-          list.appendChild(div);
-        });
-      }
-
-      updateHardeningPatch();
-    }
-
-    // --- Web Crypto HMAC Verification ---
-    async function runVerify() {
-      const token = document.getElementById('tokenInput').value.trim();
-      const secret = document.getElementById('verifySecret').value;
-      const badge = document.getElementById('sigStatusBadge');
-
-      if (!token) {
-        showToast('Please enter a token first.');
-        return;
-      }
-      if (!secret) {
-        showToast('Please enter a secret key to verify against.');
-        return;
-      }
-
-      badge.textContent = 'COMPUTING...';
-      const parts = token.split('.');
-      if (parts.length < 3) {
-        badge.textContent = '❌ NO SIGNATURE';
-        badge.style.color = 'var(--accent-red)';
-        return;
-      }
-
-      try {
-        const enc = new TextEncoder();
-        const keyData = enc.encode(secret);
-        const dataToSign = enc.encode(`${parts[0]}.${parts[1]}`);
-
-        let hashName = 'SHA-256';
-        let header = {};
-        try { header = JSON.parse(base64UrlDecode(parts[0])); } catch(e){}
-        if (header.alg === 'HS384') hashName = 'SHA-384';
-        if (header.alg === 'HS512') hashName = 'SHA-512';
-
-        const cryptoKey = await window.crypto.subtle.importKey(
-          'raw',
-          keyData,
-          { name: 'HMAC', hash: { name: hashName } },
-          false,
-          ['sign']
-        );
-
-        const signatureBuffer = await window.crypto.subtle.sign('HMAC', cryptoKey, dataToSign);
-        const computedSig = arrayBufferToBase64Url(signatureBuffer);
-
-        if (computedSig === parts[2]) {
-          badge.textContent = '✅ SIGNATURE VALID';
-          badge.style.color = 'var(--accent-green)';
-        } else {
-          badge.textContent = '❌ INVALID SIGNATURE';
-          badge.style.color = 'var(--accent-red)';
-        }
-      } catch (err) {
-        badge.textContent = 'ERROR';
-        console.error(err);
-      }
-    }
-
-    // --- Client-Side Dictionary Cracker ---
-    async function runCrack() {
-      const token = document.getElementById('tokenInput').value.trim();
-      if (!token) return;
-
-      const resLabel = document.getElementById('crackResult');
-      resLabel.textContent = 'Brute-forcing 20 common keys...';
-
-      const commonSecrets = [
-        'secret', 'password', '123456', 'admin', 'jwt', 'test', 'key',
-        'development', 'private', 'auth', 'secret123', 'root', 'qwerty',
-        'supersecret', 'token', 'default', '12345678', 'api_key', 'hunter2', 'letmein'
+      var OFFLINE_WEAK_SECRETS = [
+        'secret', 'password', 'password123', '123456', '12345678', 'admin', 'jwt', 'key', 'root',
+        'your-256-bit-secret', 'your-secret-key', 'my-secret-key', 'jwt_secret', 'supersecret',
+        'secret123', 'changeme', 'test', 'demo', 'development', 'sovereign-jwt-256bit-demo-key-2026',
+        'sovereign_jwt_secret_key_2026', 'qwerty', 'letmein', 'default', 'master', 'token'
       ];
 
-      const parts = token.split('.');
-      if (parts.length < 3 || !parts[2]) {
-        resLabel.textContent = 'No signature present to crack.';
-        return;
+      function b64uToBytes(str) {
+        var norm = String(str || '').replace(/-/g, '+').replace(/_/g, '/');
+        while (norm.length % 4) norm += '=';
+        var bin = atob(norm);
+        var out = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+        return out;
       }
 
-      const enc = new TextEncoder();
-      const dataToSign = enc.encode(`${parts[0]}.${parts[1]}`);
-      let foundSecret = null;
-
-      for (const secret of commonSecrets) {
-        try {
-          const keyData = enc.encode(secret);
-          const cryptoKey = await window.crypto.subtle.importKey(
-            'raw',
-            keyData,
-            { name: 'HMAC', hash: { name: 'SHA-256' } },
-            false,
-            ['sign']
-          );
-          const sigBuf = await window.crypto.subtle.sign('HMAC', cryptoKey, dataToSign);
-          if (arrayBufferToBase64Url(sigBuf) === parts[2]) {
-            foundSecret = secret;
-            break;
-          }
-        } catch(e) {}
+      function bytesToB64u(bytes) {
+        var arr = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+        var bin = '';
+        for (var i = 0; i < arr.length; i++) bin += String.fromCharCode(arr[i]);
+        return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
       }
 
-      if (foundSecret) {
-        resLabel.innerHTML = `★ CRACKED: <code>${foundSecret}</code>`;
-        resLabel.style.color = 'var(--accent-red)';
-        document.getElementById('verifySecret').value = foundSecret;
-        runVerify();
-      } else {
-        resLabel.textContent = `Shielded. Tested ${commonSecrets.length} weak secrets without match.`;
-        resLabel.style.color = 'var(--accent-green)';
-      }
-    }
-
-    // --- Tamper Lab ---
-    function runTamper(type) {
-      const token = document.getElementById('tokenInput').value.trim();
-      if (!token) return;
-      const parts = token.split('.');
-      if (parts.length < 2) return;
-
-      if (type === 'none') {
-        const header = { alg: "none", typ: "JWT" };
-        const newHeader = base64UrlEncode(JSON.stringify(header));
-        document.getElementById('tokenInput').value = `${newHeader}.${parts[1]}.`;
-      } else if (type === 'admin_escalate') {
-        let payload = {};
-        try { payload = JSON.parse(base64UrlDecode(parts[1])); } catch(e){}
-        payload.role = 'admin';
-        payload.is_admin = true;
-        payload.admin = true;
-        const newPayload = base64UrlEncode(JSON.stringify(payload));
-        document.getElementById('tokenInput').value = `${parts[0]}.${newPayload}.${parts[2] || ''}`;
-      } else if (type === 'strip_signature') {
-        document.getElementById('tokenInput').value = `${parts[0]}.${parts[1]}.`;
+      function decodeB64uJson(seg) {
+        var bytes = b64uToBytes(seg);
+        return JSON.parse(new TextDecoder().decode(bytes));
       }
 
-      onTokenChange();
-      runInspect();
-    }
+      function encodeB64uJson(obj) {
+        return bytesToB64u(new TextEncoder().encode(JSON.stringify(obj)));
+      }
 
-    // --- RFC 9449 DPoP Studio ---
-    async function runDPoPCreate() {
-      const method = document.getElementById('dpopMethod').value;
-      const url = document.getElementById('dpopUrl').value.trim();
-      const token = document.getElementById('tokenInput').value.trim();
-
-      const jti = 'jti_' + Math.random().toString(36).substring(2, 12);
-      const iat = Math.floor(Date.now() / 1000);
-
-      const dpopHeader = {
-        typ: "dpop+jwt",
-        alg: "HS256",
-        jwk: {
-          kty: "oct",
-          alg: "HS256",
-          use: "sig"
+      function calcEntropy(str) {
+        if (!str) return 0;
+        var counts = {};
+        for (var i = 0; i < str.length; i++) {
+          var ch = str[i];
+          counts[ch] = (counts[ch] || 0) + 1;
         }
-      };
-
-      const dpopPayload = {
-        jti: jti,
-        htm: method,
-        htu: url,
-        iat: iat
-      };
-
-      const hEnc = base64UrlEncode(JSON.stringify(dpopHeader));
-      const pEnc = base64UrlEncode(JSON.stringify(dpopPayload));
-      const proofJwt = `${hEnc}.${pEnc}.dpop_sig_${Math.random().toString(36).substring(2, 10)}`;
-
-      document.getElementById('dpopResultBox').style.display = 'block';
-      document.getElementById('dpopProofText').value = proofJwt;
-      document.getElementById('dpopVerifyDetails').innerHTML = `
-        <div><strong>Status:</strong> MINTED VALID</div>
-        <div><strong>Method (htm):</strong> ${method} | <strong>URI (htu):</strong> ${url}</div>
-        <div><strong>Proof ID (jti):</strong> ${jti}</div>
-      `;
-    }
-
-    function runDPoPVerify() {
-      const proof = document.getElementById('dpopProofText').value.trim();
-      if (!proof) {
-        showToast('Please mint a DPoP proof first.');
-        return;
-      }
-      showToast('✔ Strict RFC 9449 binding verified: HTTP method, URI target, and temporal window match.');
-    }
-
-    // --- Hardening Patch & Middleware Synthesizer ---
-    let currentPatchPlatform = 'nextjs';
-
-    function switchPatchTab(plat) {
-      currentPatchPlatform = plat;
-      updateHardeningPatch();
-    }
-
-    function updateHardeningPatch() {
-      const token = document.getElementById('tokenInput').value.trim();
-      const viewer = document.getElementById('hardeningPatchViewer');
-      let alg = 'HS256';
-      try {
-        const parts = token.split('.');
-        const h = JSON.parse(base64UrlDecode(parts[0]));
-        if (h.alg) alg = h.alg;
-      } catch(e){}
-
-      let code = '';
-      if (currentPatchPlatform === 'nextjs') {
-        code = `// Next.js Middleware Hardening Patch (Edge Runtime)
-// Enforces cryptographic verification & rejects CVE-2015-9235 alg:none
-import { NextResponse } from 'next/server';
-import { jwtVerify } from 'jose';
-
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'strong-secret');
-
-export async function middleware(req) {
-  const authHeader = req.headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    return NextResponse.json({ error: 'Unauthorized: Missing Bearer Token' }, { status: 401 });
-  }
-
-  const token = authHeader.split(' ')[1];
-  try {
-    const { payload, protectedHeader } = await jwtVerify(token, JWT_SECRET, {
-      algorithms: ['${alg === 'none' ? 'HS256' : alg}'],
-      clockTolerance: 15, // anti-clock-skew
-    });
-
-    // Pass validated claims downstream in request headers
-    const requestHeaders = new Headers(req.headers);
-    requestHeaders.set('x-user-id', payload.sub);
-    return NextResponse.next({ request: { headers: requestHeaders } });
-  } catch (err) {
-    return NextResponse.json({ error: 'Invalid or Expired Token', code: err.code }, { status: 403 });
-  }
-}`;
-      } else if (currentPatchPlatform === 'express') {
-        code = `// Express.js JWT Hardening Guard
-const jwt = require('jsonwebtoken');
-
-function jwtGuard(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Missing token' });
-
-  jwt.verify(token, process.env.JWT_SECRET, {
-    algorithms: ['${alg === 'none' ? 'HS256' : alg}'],
-    complete: true
-  }, (err, decoded) => {
-    if (err) return res.status(403).json({ error: 'Token verification failed: ' + err.message });
-    req.user = decoded.payload;
-    next();
-  });
-}`;
-      } else {
-        code = `# FastAPI Python JWT Hardening Enclave
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-import jwt
-
-security = HTTPBearer()
-
-def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    token = credentials.credentials
-    try:
-        payload = jwt.decode(
-            token,
-            key="YOUR_STRONG_SECRET_KEY",
-            algorithms=["${alg === 'none' ? 'HS256' : alg}"],
-            options={"require": ["exp", "iat"]}
-        )
-        return payload
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Cryptographic verification rejected: {str(e)}"
-        )`;
+        var h = 0;
+        var n = str.length;
+        Object.keys(counts).forEach(function (k) {
+          var p = counts[k] / n;
+          h -= p * Math.log2(p);
+        });
+        return Number(h.toFixed(3));
       }
 
-      viewer.textContent = code;
-    }
+      async function signHmacWebCrypto(hB64, pB64, secret, alg) {
+        var hash = alg === 'HS384' ? 'SHA-384' : alg === 'HS512' ? 'SHA-512' : 'SHA-256';
+        var blockSize = alg === 'HS256' ? 64 : 128;
+        var enc = new TextEncoder();
+        var rawKey = enc.encode(String(secret || ''));
+        var keyBytes = rawKey.length > 0 ? rawKey : new Uint8Array(blockSize);
+        var key = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: hash }, false, ['sign']);
+        var sig = await crypto.subtle.sign('HMAC', key, enc.encode(hB64 + '.' + pB64));
+        return bytesToB64u(sig);
+      }
 
-    function copyHardeningPatch() {
-      const code = document.getElementById('hardeningPatchViewer').textContent;
-      navigator.clipboard.writeText(code).then(() => {
-        showToast('Copied hardening patch to clipboard!');
-      });
-    }
+      async function verifyAsymmetricWebCrypto(hB64, pB64, sB64, jwk, alg) {
+        var enc = new TextEncoder();
+        var data = enc.encode(hB64 + '.' + pB64);
+        var sigBytes = b64uToBytes(sB64);
+        if (alg === 'ES256') {
+          var pub = Object.assign({}, jwk);
+          delete pub.d;
+          var ecKey = await crypto.subtle.importKey('jwk', pub, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+          return crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, ecKey, sigBytes, data);
+        }
+        if (alg === 'RS256' || alg === 'RS384' || alg === 'RS512') {
+          var hash = alg === 'RS384' ? 'SHA-384' : alg === 'RS512' ? 'SHA-512' : 'SHA-256';
+          var rpub = Object.assign({}, jwk);
+          ['d', 'p', 'q', 'dp', 'dq', 'qi'].forEach(function (k) { delete rpub[k]; });
+          var rsaKey = await crypto.subtle.importKey('jwk', rpub, { name: 'RSASSA-PKCS1-v1_5', hash: hash }, false, ['verify']);
+          return crypto.subtle.verify({ name: 'RSASSA-PKCS1-v1_5' }, rsaKey, sigBytes, data);
+        }
+        return false;
+      }
 
-    function exportDossierPrompt() {
-      const token = document.getElementById('tokenInput').value.trim();
-      const blob = new Blob([JSON.stringify({
-        tool: "jwt-inspector-guard",
-        version: "2.5.0",
-        timestamp: new Date().toISOString(),
-        token: token,
-        audit_score: document.getElementById('scoreBadge').textContent,
-        header: document.getElementById('headerJson').textContent,
-        payload: document.getElementById('payloadJson').textContent
-      }, null, 2)], { type: 'application/json' });
+      async function computeJwkThumbprint(jwk) {
+        var canonical = '';
+        if (jwk.kty === 'EC') {
+          canonical = JSON.stringify({ crv: jwk.crv, kty: jwk.kty, x: jwk.x, y: jwk.y });
+        } else if (jwk.kty === 'RSA') {
+          canonical = JSON.stringify({ e: jwk.e, kty: jwk.kty, n: jwk.n });
+        } else {
+          throw new Error('Unsupported or symmetric JWK kty for RFC 7638 thumbprint');
+        }
+        var digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonical));
+        return bytesToB64u(digest);
+      }
 
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `jwt-security-audit-${Date.now()}.json`;
-      a.click();
-    }
+      async function computeAth(accessToken) {
+        var digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(accessToken));
+        return bytesToB64u(digest);
+      }
 
-    // --- Initialization ---
-    window.addEventListener('DOMContentLoaded', () => {
-      // Populate Preset Selector
-      const sel = document.getElementById('sampleSelect');
-      SAMPLE_CATALOG.forEach((item, idx) => {
-        const opt = document.createElement('option');
-        opt.value = idx;
-        opt.textContent = `[${item.category}] ${item.name}`;
-        sel.appendChild(opt);
-      });
+      function normalizeHtu(rawUrl) {
+        var u = new URL(rawUrl);
+        var host = u.host.toLowerCase();
+        if (u.protocol === 'https:' && host.endsWith(':443')) host = host.slice(0, -4);
+        if (u.protocol === 'http:' && host.endsWith(':80')) host = host.slice(0, -3);
+        return u.protocol.toLowerCase() + '//' + host + (u.pathname || '/');
+      }
 
-      // Load first sample as default and immediately populate decoded claims & audit
-      document.getElementById('tokenInput').value = SAMPLE_CATALOG[0].token;
-      onTokenChange();
-      runInspect();
-      runInspect();
-    });
-  </script>
-  
+      function setBanner(el, cls, msg) {
+        el.className = 'status-banner' + (cls ? ' ' + cls : '');
+        el.textContent = msg;
+      }
 
-  <script src="/sovereign_tutorial.js"></script>
-  <script>
-    window.addEventListener("DOMContentLoaded", function() {
-      if (window.createSovereignTutorial) {
-        window.createSovereignTutorial({
-          toolId: "jwt-inspector-guard",
-          toolName: "JWT Inspector Guard",
-          tagline: "Inspect, decode, and verify JSON Web Tokens 100% locally in your browser!",
-          accentColor: "#38BDF8",
-          steps: [{"icon": "\ud83c\udfab", "title": "What is a JWT Token?", "desc": "When you log into a website, it gives your browser a digital pass called a JWT to prove who you are."}, {"icon": "\ud83d\udd0d", "title": "Decode Headers & Claims", "desc": "Look inside the token to see expiration dates, user permissions, and authentication signatures."}, {"icon": "\ud83d\udee1\ufe0f", "title": "Zero Cloud Leaks", "desc": "Never paste real tokens into public online decoders! This tool decodes everything locally in your browser."}]
+      function renderSegments(token) {
+        var el = document.getElementById('segmentPreview');
+        el.textContent = '';
+        var parts = token.trim().split('.');
+        var classes = ['seg-h', 'seg-p', 'seg-s'];
+        parts.slice(0, 3).forEach(function (part, idx) {
+          if (idx > 0) {
+            var dot = document.createElement('span');
+            dot.className = 'seg-dot';
+            dot.textContent = '.';
+            el.appendChild(dot);
+          }
+          var sp = document.createElement('span');
+          sp.className = classes[idx] || 'seg-s';
+          sp.textContent = part || (idx === 2 ? '(empty)' : '');
+          el.appendChild(sp);
         });
       }
-    });
-  </script>
 
+      function renderFindingsSafe(findings) {
+        var list = document.getElementById('findingsList');
+        list.textContent = '';
+        var countPill = document.getElementById('findingsCountPill');
+        countPill.textContent = findings.length + ' FINDING' + (findings.length === 1 ? '' : 'S');
+        countPill.className = 'pill ' + (findings.length === 0 ? 'pill-emerald' : findings.some(function (f) { return f.severity === 'CRITICAL'; }) ? 'pill-crimson' : 'pill-amber');
+
+        if (findings.length === 0) {
+          var clean = document.createElement('div');
+          clean.className = 'status-banner status-ok';
+          clean.textContent = 'No critical vulnerabilities identified. Signature structure, header parameters, and temporal claims passed audit.';
+          list.appendChild(clean);
+          return;
+        }
+
+        findings.forEach(function (f) {
+          var item = document.createElement('div');
+          item.className = 'finding-item sev-' + String(f.severity || 'INFO').toUpperCase();
+
+          var head = document.createElement('div');
+          head.className = 'finding-head';
+          head.textContent = '[' + String(f.severity || 'INFO') + '] ' + String(f.title || f.rule || 'Security Finding');
+
+          var desc = document.createElement('div');
+          desc.className = 'finding-desc';
+          desc.textContent = String(f.description || f.desc || '');
+
+          item.appendChild(head);
+          item.appendChild(desc);
+
+          if (f.remediation) {
+            var fix = document.createElement('div');
+            fix.className = 'finding-fix';
+            fix.textContent = 'Remediation: ' + String(f.remediation);
+            item.appendChild(fix);
+          }
+          list.appendChild(item);
+        });
+      }
+
+      function lintLocal(token, header, payload, sig) {
+        var findings = [];
+        var score = 100;
+        var alg = String((header && header.alg) || '').trim();
+        var algUpper = alg.toUpperCase();
+
+        if (!alg || algUpper === 'NONE') {
+          score -= 55;
+          findings.push({
+            severity: 'CRITICAL',
+            title: 'CVE-2015-9235: Unsigned alg:none Token',
+            description: 'Token declares alg="' + alg + '", allowing forged payloads if verifiers do not enforce an explicit algorithm allowlist.',
+            remediation: 'Reject alg:none unconditionally and pin accepted algorithms (HS256, ES256, RS256).'
+          });
+        }
+        if (!sig && algUpper !== 'NONE') {
+          score -= 45;
+          findings.push({
+            severity: 'CRITICAL',
+            title: 'Stripped / Empty JWS Signature',
+            description: 'Token specifies algorithm ' + alg + ' but carries an empty signature segment.',
+            remediation: 'Require a non-empty cryptographic signature on all tokens.'
+          });
+        }
+        if (header && header.kid !== undefined) {
+          var kidStr = String(header.kid);
+          if (/\.\.|\/dev\/null|\/etc\/|['";]|union\s+select/i.test(kidStr)) {
+            score -= 35;
+            findings.push({
+              severity: 'CRITICAL',
+              title: 'CVE-2018-1000531: Dangerous kid Injection Pattern',
+              description: 'Header kid "' + kidStr + '" contains path traversal or SQL injection tokens.',
+              remediation: 'Resolve kid strictly against an in-memory map of allowlisted keys.'
+            });
+          }
+        }
+        if (header && header.jku) {
+          score -= 30;
+          findings.push({
+            severity: 'HIGH',
+            title: 'CVE-2018-0114: Untrusted jku Header URL',
+            description: 'Header embeds external jku URL "' + String(header.jku) + '", enabling SSRF or attacker-controlled key spoofing.',
+            remediation: 'Ignore client-supplied jku headers and pin static trusted JWKS endpoints.'
+          });
+        }
+        if (header && header.x5u) {
+          score -= 30;
+          findings.push({
+            severity: 'HIGH',
+            title: 'Untrusted x5u Certificate URL',
+            description: 'Header specifies x5u URL "' + String(header.x5u) + '".',
+            remediation: 'Disable remote x5u certificate fetching and validate against local trust anchors.'
+          });
+        }
+        if (header && header.jwk && String(header.typ || '').toLowerCase() !== 'dpop+jwt') {
+          score -= 25;
+          findings.push({
+            severity: 'HIGH',
+            title: 'Embedded jwk Header Key',
+            description: 'Header embeds an inline public JWK outside a DPoP proof context.',
+            remediation: 'Do not verify bearer JWTs using untrusted keys embedded in the token header.'
+          });
+        }
+
+        if (payload && typeof payload === 'object') {
+          var now = Math.floor(Date.now() / 1000);
+          if (payload.exp === undefined) {
+            score -= 15;
+            findings.push({
+              severity: 'MEDIUM',
+              title: 'Missing exp Expiration Claim',
+              description: 'Token omits RFC 7519 exp claim and never expires automatically.',
+              remediation: 'Set short-lived exp timestamps (e.g., 15–60 minutes).'
+            });
+          } else if (typeof payload.exp === 'number' && payload.exp < now) {
+            score -= 20;
+            findings.push({
+              severity: 'HIGH',
+              title: 'Expired Token (exp in the past)',
+              description: 'Token expired ' + Math.round((now - payload.exp) / 60) + ' minutes ago.',
+              remediation: 'Reject expired tokens and re-authenticate.'
+            });
+          }
+          if (typeof payload.nbf === 'number' && payload.nbf > now + 30) {
+            score -= 10;
+            findings.push({
+              severity: 'MEDIUM',
+              title: 'Token Not Yet Active (nbf in future)',
+              description: 'Not-before timestamp is ' + (payload.nbf - now) + ' seconds in the future.',
+              remediation: 'Enforce nbf checks with bounded clock leeway.'
+            });
+          }
+
+          var sensitiveRe = /(password|passwd|secret|api[_-]?key|private[_-]?key|ssn|credit[_-]?card|seed|aws[_-]?key)/i;
+          var leakedKeys = Object.keys(payload).filter(function (k) { return sensitiveRe.test(k); });
+          if (leakedKeys.length > 0) {
+            score -= 35;
+            findings.push({
+              severity: 'CRITICAL',
+              title: 'Sensitive Credential Claims Exposed: ' + leakedKeys.join(', '),
+              description: 'JWT payloads are Base64URL-encoded cleartext, not encrypted. Exposed keys: ' + leakedKeys.join(', ') + '.',
+              remediation: 'Remove secrets and PII from JWT payloads or encrypt using JWE.'
+            });
+          }
+        }
+
+        score = Math.max(0, score);
+        var risk = score >= 85 ? 'LOW' : score >= 60 ? 'MEDIUM' : score >= 40 ? 'HIGH' : 'CRITICAL';
+        return { score: score, risk: risk, findings: findings };
+      }
+
+      async function apiPost(path, payload) {
+        var res = await fetch(path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+        return data;
+      }
+
+      async function inspectActiveToken() {
+        var token = document.getElementById('tokenInput').value.trim();
+        renderSegments(token);
+        var ent = calcEntropy(token);
+        document.getElementById('entropyPill').textContent = 'ENTROPY: ' + ent.toFixed(3) + ' b/c';
+
+        var parts = token.split('.');
+        if (parts.length < 2) {
+          document.getElementById('headerPre').textContent = '// Invalid JWT structure';
+          document.getElementById('payloadPre').textContent = '// Expected header.payload.signature';
+          document.getElementById('statAlg').textContent = 'INVALID';
+          document.getElementById('statExp').textContent = 'N/A';
+          document.getElementById('statRisk').textContent = 'CRITICAL (0/100)';
+          renderFindingsSafe([{ severity: 'CRITICAL', title: 'Malformed JWT Structure', description: 'Token must contain 3 dot-separated Base64URL segments.' }]);
+          return;
+        }
+
+        var header = null, payload = null;
+        try { header = decodeB64uJson(parts[0]); } catch (e) {}
+        try { payload = decodeB64uJson(parts[1]); } catch (e) {}
+
+        document.getElementById('headerPre').textContent = header ? JSON.stringify(header, null, 2) : '// Invalid Base64URL header JSON';
+        document.getElementById('payloadPre').textContent = payload ? JSON.stringify(payload, null, 2) : '// Invalid Base64URL payload JSON';
+        document.getElementById('statAlg').textContent = ((header && header.alg) || 'UNKNOWN') + ' / ' + ((header && header.typ) || 'JWT');
+
+        var now = Math.floor(Date.now() / 1000);
+        if (payload && typeof payload.exp === 'number') {
+          var delta = payload.exp - now;
+          document.getElementById('statExp').textContent = delta > 0
+            ? 'Valid (' + Math.floor(delta / 86400) + 'd left)'
+            : 'EXPIRED (' + Math.abs(Math.floor(delta / 60)) + 'm ago)';
+        } else {
+          document.getElementById('statExp').textContent = 'No exp claim';
+        }
+
+        var local = lintLocal(token, header, payload, parts[2] || '');
+        var mergedFindings = local.findings.slice();
+        var finalScore = local.score;
+        var finalRisk = local.risk;
+
+        if (API_ONLINE) {
+          try {
+            var srv = await apiPost('/api/inspect', { token: token });
+            if (srv && srv.audit && Array.isArray(srv.audit.findings)) {
+              var seen = new Set(mergedFindings.map(function (f) { return f.title.toLowerCase(); }));
+              srv.audit.findings.forEach(function (sf) {
+                var t = String(sf.title || sf.rule_id || 'Audit Finding');
+                if (!seen.has(t.toLowerCase())) {
+                  seen.add(t.toLowerCase());
+                  mergedFindings.push({
+                    severity: String(sf.severity || 'INFO').toUpperCase(),
+                    title: t,
+                    description: String(sf.description || ''),
+                    remediation: String(sf.remediation || '')
+                  });
+                }
+              });
+              if (typeof srv.audit.overall_risk_score === 'number') {
+                finalScore = Math.min(finalScore, Math.max(0, 100 - srv.audit.overall_risk_score));
+              }
+            }
+          } catch (e) {}
+        }
+
+        finalRisk = finalScore >= 85 ? 'LOW' : finalScore >= 60 ? 'MEDIUM' : finalScore >= 40 ? 'HIGH' : 'CRITICAL';
+        document.getElementById('statRisk').textContent = finalRisk + ' (' + finalScore + '/100)';
+        var sp = document.getElementById('scorePill');
+        sp.textContent = 'SCORE: ' + finalScore + '/100';
+        sp.className = 'pill ' + (finalScore >= 80 ? 'pill-emerald' : finalScore >= 50 ? 'pill-amber' : 'pill-crimson');
+
+        renderFindingsSafe(mergedFindings);
+
+        LAST_AUDIT = {
+          tool: 'jwt-inspector-guard',
+          version: APP_VERSION,
+          timestamp: new Date().toISOString(),
+          runtime: API_ONLINE ? 'loopback-8124' : 'browser-webcrypto',
+          algorithm: (header && header.alg) || 'UNKNOWN',
+          entropy_bits_per_char: ent,
+          security_score: finalScore,
+          risk_level: finalRisk,
+          header: header,
+          payload: payload,
+          findings: mergedFindings
+        };
+        document.getElementById('exportPreview').textContent = JSON.stringify(LAST_AUDIT, null, 2);
+      }
+
+      async function buildDefaultSampleToken() {
+        var now = Math.floor(Date.now() / 1000);
+        var header = { alg: 'HS256', typ: 'JWT', kid: 'zoth-hs256-2026' };
+        var payload = {
+          sub: 'operator_1nc0gn30',
+          iss: 'https://auth.nullai.tech',
+          aud: 'https://api.nullai.tech/v2',
+          role: 'auditor',
+          iat: now,
+          exp: now + 86400 * 365
+        };
+        var secret = 'sovereign-jwt-256bit-demo-key-2026';
+        var hB64 = encodeB64uJson(header);
+        var pB64 = encodeB64uJson(payload);
+        var sig = await signHmacWebCrypto(hB64, pB64, secret, 'HS256');
+        return hB64 + '.' + pB64 + '.' + sig;
+      }
+
+      async function loadBuiltInSample(key) {
+        var now = Math.floor(Date.now() / 1000);
+        if (key === 'default-valid') {
+          var tok = await buildDefaultSampleToken();
+          document.getElementById('tokenInput').value = tok;
+          document.getElementById('verifySecret').value = 'sovereign-jwt-256bit-demo-key-2026';
+        } else if (key === 'alg-none') {
+          document.getElementById('tokenInput').value = encodeB64uJson({ alg: 'none', typ: 'JWT' }) + '.' + encodeB64uJson({ sub: 'admin_bypass', role: 'superadmin', iat: now, exp: now + 3600 }) + '.';
+        } else if (key === 'weak-secret') {
+          var h = encodeB64uJson({ alg: 'HS256', typ: 'JWT' });
+          var p = encodeB64uJson({ sub: 'dev_service', role: 'operator', iat: now, exp: now + 3600 });
+          var s = await signHmacWebCrypto(h, p, 'secret', 'HS256');
+          document.getElementById('tokenInput').value = h + '.' + p + '.' + s;
+          document.getElementById('verifySecret').value = 'secret';
+        } else if (key === 'kid-traversal') {
+          var hk = encodeB64uJson({ alg: 'HS256', typ: 'JWT', kid: '../../../dev/null' });
+          var pk = encodeB64uJson({ sub: 'attacker', role: 'root', iat: now, exp: now + 3600 });
+          var sk = await signHmacWebCrypto(hk, pk, '', 'HS256');
+          document.getElementById('tokenInput').value = hk + '.' + pk + '.' + sk;
+        } else if (key === 'jku-ssrf') {
+          var hj = encodeB64uJson({ alg: 'RS256', typ: 'JWT', jku: 'https://attacker.example.invalid/jwks.json', kid: 'evil-1' });
+          var pj = encodeB64uJson({ sub: 'admin', role: 'admin', iat: now, exp: now + 3600 });
+          document.getElementById('tokenInput').value = hj + '.' + pj + '.ZmFrZS1yc2Etc2lnbmF0dXJl';
+        } else if (key === 'pii-leak') {
+          var hp = encodeB64uJson({ alg: 'HS256', typ: 'JWT' });
+          var pp = encodeB64uJson({ sub: 'user_42', email: 'dev@example.invalid', api_key: 'demo_placeholder_key', password_hash: 'demo_hash_value', iat: now, exp: now + 3600 });
+          var sp = await signHmacWebCrypto(hp, pp, 'secret', 'HS256');
+          document.getElementById('tokenInput').value = hp + '.' + pp + '.' + sp;
+        } else if (key.startsWith('srv:')) {
+          var idx = parseInt(key.slice(4), 10);
+          var item = SERVER_CATALOG[idx];
+          if (item) {
+            document.getElementById('tokenInput').value = item.raw_token || item.token || '';
+            if (item.secret_hint) document.getElementById('verifySecret').value = item.secret_hint;
+          }
+        }
+        await inspectActiveToken();
+      }
+
+      async function verifySignatureAction() {
+        var out = document.getElementById('verifyResult');
+        var token = document.getElementById('tokenInput').value.trim();
+        var parts = token.split('.');
+        if (parts.length !== 3) {
+          setBanner(out, 'status-err', 'INVALID: Token must have 3 compact JWS segments.');
+          return;
+        }
+        var header;
+        try { header = decodeB64uJson(parts[0]); } catch (e) {
+          setBanner(out, 'status-err', 'INVALID: Cannot decode JOSE header JSON.');
+          return;
+        }
+        var alg = String(header.alg || '').toUpperCase();
+        if (!alg || alg === 'NONE') {
+          setBanner(out, 'status-err', 'REJECTED (Fail-Closed): alg:none unsigned tokens are rejected per RFC 8725.');
+          return;
+        }
+
+        if (alg === 'HS256' || alg === 'HS384' || alg === 'HS512') {
+          var secret = document.getElementById('verifySecret').value;
+          try {
+            if (API_ONLINE) {
+              var srv = await apiPost('/api/verify', { token: token, secret: secret, algorithm: alg });
+              if (srv.verified) {
+                setBanner(out, 'status-ok', 'SIGNATURE VALID (' + alg + ' verified via loopback :8124 constant-time HMAC).');
+              } else {
+                setBanner(out, 'status-err', 'SIGNATURE INVALID (' + alg + ' mismatch on loopback :8124).');
+              }
+              return;
+            }
+          } catch (e) {}
+          var expected = await signHmacWebCrypto(parts[0], parts[1], secret, alg);
+          if (expected === parts[2]) {
+            setBanner(out, 'status-ok', 'SIGNATURE VALID (' + alg + ' verified via browser Web Crypto).');
+          } else {
+            setBanner(out, 'status-err', 'SIGNATURE INVALID (' + alg + ' does not match provided secret).');
+          }
+          return;
+        }
+
+        if (alg === 'ES256' || alg === 'RS256' || alg === 'RS384' || alg === 'RS512') {
+          var jwkText = document.getElementById('verifyJwk').value.trim();
+          var jwkObj = null;
+          if (jwkText) {
+            try { jwkObj = JSON.parse(jwkText); } catch (e) {
+              setBanner(out, 'status-err', 'INVALID JWK JSON: ' + e.message);
+              return;
+            }
+          } else if (header.jwk && typeof header.jwk === 'object') {
+            jwkObj = header.jwk;
+          } else {
+            setBanner(out, 'status-warn', 'Algorithm ' + alg + ' requires a public JWK in the JWK field above.');
+            return;
+          }
+          try {
+            var ok = await verifyAsymmetricWebCrypto(parts[0], parts[1], parts[2], jwkObj, alg);
+            if (ok) {
+              setBanner(out, 'status-ok', 'ASYMMETRIC SIGNATURE VALID (' + alg + ' verified mathematically via Web Crypto JWK).');
+            } else {
+              setBanner(out, 'status-err', 'ASYMMETRIC SIGNATURE INVALID (' + alg + ' verification failed against supplied JWK).');
+            }
+          } catch (e) {
+            setBanner(out, 'status-err', 'JWK verification error: ' + e.message);
+          }
+          return;
+        }
+
+        setBanner(out, 'status-warn', 'Unsupported signature algorithm: ' + alg);
+      }
+
+      async function generateEs256Demo() {
+        var out = document.getElementById('verifyResult');
+        try {
+          var kp = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+          var pubJwk = await crypto.subtle.exportKey('jwk', kp.publicKey);
+          delete pubJwk.key_ops;
+          delete pubJwk.ext;
+          var now = Math.floor(Date.now() / 1000);
+          var hB64 = encodeB64uJson({ alg: 'ES256', typ: 'JWT', kid: 'ephemeral-p256' });
+          var pB64 = encodeB64uJson({ sub: 'ecdsa_operator', iss: 'https://auth.nullai.tech', iat: now, exp: now + 3600 });
+          var sigBuf = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, kp.privateKey, new TextEncoder().encode(hB64 + '.' + pB64));
+          var tok = hB64 + '.' + pB64 + '.' + bytesToB64u(sigBuf);
+          document.getElementById('tokenInput').value = tok;
+          document.getElementById('verifyJwk').value = JSON.stringify(pubJwk, null, 2);
+          await inspectActiveToken();
+          await verifySignatureAction();
+        } catch (e) {
+          setBanner(out, 'status-err', 'ES256 key generation failed: ' + e.message);
+        }
+      }
+
+      async function mintHmacAction() {
+        var out = document.getElementById('mintResult');
+        var alg = document.getElementById('mintAlg').value;
+        var secret = document.getElementById('mintSecret').value;
+        var payloadObj;
+        try {
+          payloadObj = JSON.parse(document.getElementById('mintPayload').value);
+        } catch (e) {
+          setBanner(out, 'status-err', 'Invalid payload JSON: ' + e.message);
+          return;
+        }
+        var header = { alg: alg, typ: 'JWT' };
+        try {
+          var token = '';
+          if (API_ONLINE) {
+            var res = await apiPost('/api/mint', { header: header, payload: payloadObj, secret: secret, algorithm: alg });
+            token = res.token;
+          } else {
+            var h = encodeB64uJson(header);
+            var p = encodeB64uJson(payloadObj);
+            token = h + '.' + p + '.' + (await signHmacWebCrypto(h, p, secret, alg));
+          }
+          document.getElementById('tokenInput').value = token;
+          document.getElementById('verifySecret').value = secret;
+          await inspectActiveToken();
+          setBanner(out, 'status-ok', 'Minted ' + alg + ' JWT and loaded into inspector.');
+        } catch (e) {
+          setBanner(out, 'status-err', 'Mint failed: ' + e.message);
+        }
+      }
+
+      async function runTamperAction(attackType) {
+        var out = document.getElementById('tamperResult');
+        var token = document.getElementById('tokenInput').value.trim();
+        if (!token) {
+          setBanner(out, 'status-err', 'Paste or load a token first.');
+          return;
+        }
+        try {
+          if (API_ONLINE) {
+            var res = await apiPost('/api/tamper', { token: token, type: attackType });
+            document.getElementById('tokenInput').value = res.tampered_token;
+            await inspectActiveToken();
+            setBanner(out, 'status-warn', 'Applied ' + attackType + ' mutation via :8124/api/tamper.');
+            return;
+          }
+        } catch (e) {}
+
+        var parts = token.split('.');
+        if (parts.length < 2) return;
+        var header = decodeB64uJson(parts[0]);
+        var payload = decodeB64uJson(parts[1]);
+        var mutated = token;
+        if (attackType === 'none') {
+          header.alg = 'none';
+          mutated = encodeB64uJson(header) + '.' + encodeB64uJson(payload) + '.';
+        } else if (attackType === 'strip_signature') {
+          mutated = parts[0] + '.' + parts[1] + '.';
+        } else if (attackType === 'kid_traversal') {
+          header.kid = '../../../dev/null';
+          var h = encodeB64uJson(header), p = encodeB64uJson(payload);
+          mutated = h + '.' + p + '.' + (await signHmacWebCrypto(h, p, '', 'HS256'));
+        } else if (attackType === 'jku_ssrf') {
+          header.jku = 'https://attacker.example.invalid/jwks.json';
+          var hj = encodeB64uJson(header), pj = encodeB64uJson(payload);
+          mutated = hj + '.' + pj + '.' + (await signHmacWebCrypto(hj, pj, 'secret', 'HS256'));
+        } else if (attackType === 'admin_escalate') {
+          payload.role = 'admin';
+          payload.is_admin = true;
+          var ha = encodeB64uJson(header), pa = encodeB64uJson(payload);
+          mutated = ha + '.' + pa + '.' + (await signHmacWebCrypto(ha, pa, 'secret', 'HS256'));
+        }
+        document.getElementById('tokenInput').value = mutated;
+        await inspectActiveToken();
+        setBanner(out, 'status-warn', 'Applied ' + attackType + ' mutation locally.');
+      }
+
+      async function runCrackAction() {
+        var out = document.getElementById('crackResult');
+        var token = document.getElementById('tokenInput').value.trim();
+        var extraRaw = document.getElementById('customWordlist').value.trim();
+        var extras = extraRaw ? extraRaw.split(',').map(function (s) { return s.trim(); }).filter(Boolean) : [];
+        setBanner(out, 'status-info', 'Running weak-secret audit...');
+
+        if (API_ONLINE) {
+          try {
+            var payload = { token: token };
+            if (extras.length > 0) payload.wordlist = extras.concat(OFFLINE_WEAK_SECRETS);
+            var res = await apiPost('/api/crack', payload);
+            if (res.found) {
+              document.getElementById('verifySecret').value = res.secret;
+              setBanner(out, 'status-err', 'CRACKED (' + res.algorithm + '): Secret "' + res.secret + '" found across ' + res.tested_count + ' candidates via :8124/api/crack.');
+            } else {
+              setBanner(out, 'status-ok', 'RESISTANT: Not found across ' + res.tested_count + ' candidates (' + res.algorithm + ').');
+            }
+            return;
+          } catch (e) {}
+        }
+
+        var parts = token.split('.');
+        if (parts.length !== 3) {
+          setBanner(out, 'status-err', 'Invalid compact JWT format.');
+          return;
+        }
+        var header = decodeB64uJson(parts[0]);
+        var alg = String(header.alg || 'HS256').toUpperCase();
+        if (alg !== 'HS256' && alg !== 'HS384' && alg !== 'HS512') {
+          setBanner(out, 'status-warn', 'Dictionary cracking applies to HMAC (HS256/384/512), not ' + alg + '.');
+          return;
+        }
+        var list = extras.concat(OFFLINE_WEAK_SECRETS);
+        for (var i = 0; i < list.length; i++) {
+          var cand = list[i];
+          var sig = await signHmacWebCrypto(parts[0], parts[1], cand, alg);
+          if (sig === parts[2]) {
+            document.getElementById('verifySecret').value = cand;
+            setBanner(out, 'status-err', 'CRACKED (' + alg + '): Weak secret "' + cand + '" matched in ' + (i + 1) + ' checks (browser Web Crypto).');
+            return;
+          }
+        }
+        setBanner(out, 'status-ok', 'Not matched in ' + list.length + ' browser candidates.');
+      }
+
+      async function dpopCreateAction() {
+        var metaEl = document.getElementById('dpopMetaBox');
+        var method = document.getElementById('dpopMethod').value;
+        var rawUrl = document.getElementById('dpopUrl').value.trim();
+        var nonce = document.getElementById('dpopNonce').value.trim();
+        var accessToken = document.getElementById('tokenInput').value.trim();
+
+        try {
+          var normHtu = normalizeHtu(rawUrl);
+          var kp = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+          var pubJwk = await crypto.subtle.exportKey('jwk', kp.publicKey);
+          var cleanJwk = { kty: 'EC', crv: 'P-256', x: pubJwk.x, y: pubJwk.y, use: 'sig' };
+          var jkt = await computeJwkThumbprint(cleanJwk);
+          LAST_DPOP_JKT = jkt;
+
+          var header = { typ: 'dpop+jwt', alg: 'ES256', jwk: cleanJwk };
+          var rand = new Uint8Array(16);
+          crypto.getRandomValues(rand);
+          var claims = {
+            jti: 'dpop-' + bytesToB64u(rand),
+            htm: method.toUpperCase(),
+            htu: normHtu,
+            iat: Math.floor(Date.now() / 1000)
+          };
+          if (accessToken) claims.ath = await computeAth(accessToken);
+          if (nonce) claims.nonce = nonce;
+
+          var hB64 = encodeB64uJson(header);
+          var pB64 = encodeB64uJson(claims);
+          var sigBuf = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, kp.privateKey, new TextEncoder().encode(hB64 + '.' + pB64));
+          var proofJwt = hB64 + '.' + pB64 + '.' + bytesToB64u(sigBuf);
+
+          document.getElementById('dpopProofInput').value = proofJwt;
+          setBanner(metaEl, 'status-ok', 'Minted real ES256 DPoP proof (kty: EC P-256) | jkt: ' + jkt + ' | htu: ' + normHtu);
+        } catch (e) {
+          setBanner(metaEl, 'status-err', 'DPoP minting error: ' + e.message);
+        }
+      }
+
+      function dpopTamperAction() {
+        var inp = document.getElementById('dpopProofInput');
+        var parts = inp.value.trim().split('.');
+        if (parts.length !== 3) return;
+        inp.value = parts[0] + '.' + parts[1] + '.COMPLETELY_FORGED_GARBAGE_SIG';
+        setBanner(document.getElementById('dpopMetaBox'), 'status-warn', 'Corrupted DPoP signature to test fail-closed verification.');
+      }
+
+      async function dpopVerifyAction() {
+        var out = document.getElementById('dpopVerifyDetails');
+        var proof = document.getElementById('dpopProofInput').value.trim();
+        var method = document.getElementById('dpopMethod').value;
+        var rawUrl = document.getElementById('dpopUrl').value.trim();
+        var nonce = document.getElementById('dpopNonce').value.trim();
+        var accessToken = document.getElementById('tokenInput').value.trim();
+
+        var parts = proof.split('.');
+        if (parts.length !== 3) {
+          setBanner(out, 'status-err', 'REJECTED: DPoP proof must be a 3-part compact JWS.');
+          return;
+        }
+        try {
+          var header = decodeB64uJson(parts[0]);
+          var claims = decodeB64uJson(parts[1]);
+          var errs = [];
+          if (header.typ !== 'dpop+jwt') errs.push('Invalid typ (must be dpop+jwt)');
+          if (!header.alg || header.alg.toLowerCase() === 'none' || header.alg.toUpperCase().startsWith('HS')) {
+            errs.push('Forbidden DPoP alg: ' + header.alg);
+          }
+          if (!header.jwk || header.jwk.kty === 'oct') errs.push('RFC 9449 §4.2 requires asymmetric public jwk (kty != oct)');
+          if (header.jwk && header.jwk.d) errs.push('Private key parameter leaked in header.jwk');
+
+          var sigOk = false;
+          if (header.jwk && header.alg && header.jwk.kty !== 'oct') {
+            try {
+              sigOk = await verifyAsymmetricWebCrypto(parts[0], parts[1], parts[2], header.jwk, header.alg.toUpperCase());
+            } catch (sigErr) {
+              sigOk = false;
+            }
+          }
+          if (!sigOk) errs.push('Cryptographic ' + (header.alg || 'JWS') + ' signature verification FAILED');
+
+          var normExpected = normalizeHtu(rawUrl);
+          if (String(claims.htm || '').toUpperCase() !== method.toUpperCase()) errs.push('htm mismatch');
+          if (!claims.htu || normalizeHtu(claims.htu) !== normExpected) errs.push('htu mismatch (' + String(claims.htu) + ' != ' + normExpected + ')');
+          if (accessToken) {
+            var expectedAth = await computeAth(accessToken);
+            if (claims.ath !== expectedAth) errs.push('ath access-token hash mismatch');
+          }
+          if (nonce && claims.nonce !== nonce) errs.push('nonce challenge mismatch');
+
+          var jkt = header.jwk && header.jwk.kty !== 'oct' ? await computeJwkThumbprint(header.jwk) : '';
+
+          if (errs.length === 0) {
+            setBanner(out, 'status-ok', 'DPoP VALID (ES256 signature verified mathematically) | jkt=' + jkt + ' | htm=' + claims.htm + ' | htu=' + normExpected);
+          } else {
+            setBanner(out, 'status-err', 'DPoP REJECTED: ' + errs.join('; '));
+          }
+        } catch (e) {
+          setBanner(out, 'status-err', 'DPoP verification failed: ' + e.message);
+        }
+      }
+
+      async function runJwksAction(rotate) {
+        var out = document.getElementById('jwksOutput');
+        var raw = document.getElementById('jwksInput').value.trim();
+        var externalJwks = null;
+        if (raw) {
+          try { externalJwks = JSON.parse(raw); } catch (e) {
+            out.textContent = 'Invalid JWKS JSON: ' + e.message;
+            return;
+          }
+        }
+        if (API_ONLINE) {
+          try {
+            var res = await apiPost('/api/jwks', { rotate: !!rotate, jwks: externalJwks, token: document.getElementById('tokenInput').value.trim() });
+            out.textContent = JSON.stringify(res, null, 2);
+            return;
+          } catch (e) {
+            out.textContent = 'JWKS API error: ' + e.message;
+            return;
+          }
+        }
+        if (externalJwks && Array.isArray(externalJwks.keys)) {
+          var findings = [];
+          for (var i = 0; i < externalJwks.keys.length; i++) {
+            var k = externalJwks.keys[i];
+            if (k.d || k.p || k.q || k.k) findings.push('CRITICAL: Private key parameter exposed in key #' + i);
+            if (!k.kid) findings.push('MEDIUM: Key #' + i + ' missing kid');
+          }
+          out.textContent = JSON.stringify({ mode: 'offline-browser', key_count: externalJwks.keys.length, healthy: findings.length === 0, findings: findings }, null, 2);
+        } else {
+          out.textContent = 'Loopback :8124 offline — paste an external JWKS JSON above to audit offline, or start `python3 server.py` for full key rotation simulation.';
+        }
+      }
+
+      async function runTimingAction(testVulnerable) {
+        var out = document.getElementById('timingOutput');
+        var trials = Math.max(5, Math.min(5000, parseInt(document.getElementById('timingTrials').value || '40', 10)));
+        if (API_ONLINE) {
+          try {
+            var res = await apiPost('/api/timing', { test_vulnerable: !!testVulnerable, trials: trials });
+            out.textContent = JSON.stringify(res, null, 2);
+            return;
+          } catch (e) {
+            out.textContent = 'Timing API error: ' + e.message;
+            return;
+          }
+        }
+        out.textContent = 'Loopback :8124 offline — start `python3 server.py` to execute nanosecond Python timing side-channel benchmarks.';
+      }
+
+      function downloadText(filename, content, mime) {
+        var blob = new Blob([content], { type: mime });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      }
+
+      function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        try { localStorage.setItem('jwt-guard-theme', theme); } catch (e) {}
+        document.getElementById('themeToggleBtn').textContent = theme === 'dark' ? 'Theme: Dark' : 'Theme: Light';
+      }
+
+      async function probeBackend() {
+        var pill = document.getElementById('runtimeModePill');
+        try {
+          var res = await fetch('/health', { cache: 'no-store' });
+          if (res.ok) {
+            var h = await res.json();
+            if (h && h.service === 'jwt-inspector-guard') {
+              API_ONLINE = true;
+              pill.textContent = 'ENGINE: LOOPBACK :8124 v' + (h.version || APP_VERSION);
+              pill.className = 'pill pill-emerald';
+              try {
+                var catRes = await fetch('/api/catalog', { cache: 'no-store' });
+                if (catRes.ok) {
+                  var cat = await catRes.json();
+                  if (cat && Array.isArray(cat.tokens)) {
+                    SERVER_CATALOG = cat.tokens;
+                    var sel = document.getElementById('sampleSelect');
+                    var grp = document.createElement('optgroup');
+                    grp.label = 'Server Catalog (' + cat.tokens.length + ' Vectors)';
+                    cat.tokens.forEach(function (t, idx) {
+                      var opt = document.createElement('option');
+                      opt.value = 'srv:' + idx;
+                      opt.textContent = '[' + t.category + '] ' + t.name;
+                      grp.appendChild(opt);
+                    });
+                    sel.appendChild(grp);
+                  }
+                }
+              } catch (e) {}
+              return;
+            }
+          }
+        } catch (e) {}
+        API_ONLINE = false;
+        pill.textContent = 'ENGINE: BROWSER WEBCRYPTO';
+        pill.className = 'pill pill-sapphire';
+      }
+
+      function bindEvents() {
+        document.getElementById('themeToggleBtn').addEventListener('click', function () {
+          var cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+          applyTheme(cur === 'dark' ? 'light' : 'dark');
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            document.querySelectorAll('.tab-btn').forEach(function (b) { b.setAttribute('aria-selected', 'false'); });
+            document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+            btn.setAttribute('aria-selected', 'true');
+            document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+          });
+        });
+
+        document.getElementById('tokenInput').addEventListener('input', inspectActiveToken);
+        document.getElementById('sampleSelect').addEventListener('change', function (e) { loadBuiltInSample(e.target.value); });
+        document.getElementById('copyTokenBtn').addEventListener('click', function () { navigator.clipboard && navigator.clipboard.writeText(document.getElementById('tokenInput').value); });
+        document.getElementById('clearTokenBtn').addEventListener('click', function () { document.getElementById('tokenInput').value = ''; inspectActiveToken(); });
+        document.getElementById('copyHeaderBtn').addEventListener('click', function () { navigator.clipboard && navigator.clipboard.writeText(document.getElementById('headerPre').textContent); });
+        document.getElementById('copyPayloadBtn').addEventListener('click', function () { navigator.clipboard && navigator.clipboard.writeText(document.getElementById('payloadPre').textContent); });
+
+        document.getElementById('verifyBtn').addEventListener('click', verifySignatureAction);
+        document.getElementById('mintEs256DemoBtn').addEventListener('click', generateEs256Demo);
+        document.getElementById('mintBtn').addEventListener('click', mintHmacAction);
+
+        document.querySelectorAll('[data-tamper]').forEach(function (btn) {
+          btn.addEventListener('click', function () { runTamperAction(btn.getAttribute('data-tamper')); });
+        });
+        document.getElementById('crackBtn').addEventListener('click', runCrackAction);
+
+        document.getElementById('dpopCreateBtn').addEventListener('click', dpopCreateAction);
+        document.getElementById('dpopTamperBtn').addEventListener('click', dpopTamperAction);
+        document.getElementById('dpopVerifyBtn').addEventListener('click', dpopVerifyAction);
+
+        document.getElementById('jwksAuditBtn').addEventListener('click', function () { runJwksAction(false); });
+        document.getElementById('jwksRotateBtn').addEventListener('click', function () { runJwksAction(true); });
+        document.getElementById('timingSafeBtn').addEventListener('click', function () { runTimingAction(false); });
+        document.getElementById('timingVulnBtn').addEventListener('click', function () { runTimingAction(true); });
+
+        document.getElementById('exportJsonBtn').addEventListener('click', function () {
+          downloadText('jwt-audit-report.json', JSON.stringify(LAST_AUDIT, null, 2), 'application/json');
+        });
+        document.getElementById('exportMdBtn').addEventListener('click', function () {
+          var lines = [
+            '# JWT Inspector Guard Audit Report (v' + APP_VERSION + ')',
+            '',
+            '- **Algorithm**: `' + LAST_AUDIT.algorithm + '`',
+            '- **Security Score**: `' + LAST_AUDIT.security_score + '/100 (' + LAST_AUDIT.risk_level + ')`',
+            '- **Entropy**: `' + LAST_AUDIT.entropy_bits_per_char + ' bits/char`',
+            '',
+            '## Findings (' + LAST_AUDIT.findings.length + ')',
+            ''
+          ];
+          LAST_AUDIT.findings.forEach(function (f) {
+            lines.push('- **[' + f.severity + '] ' + f.title + '**: ' + f.description);
+          });
+          downloadText('jwt-audit-report.md', lines.join('\n'), 'text/markdown');
+        });
+        document.getElementById('copyReportBtn').addEventListener('click', function () {
+          navigator.clipboard && navigator.clipboard.writeText(JSON.stringify(LAST_AUDIT, null, 2));
+        });
+      }
+
+      async function boot() {
+        applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+        var now = Math.floor(Date.now() / 1000);
+        document.getElementById('mintPayload').value = JSON.stringify({
+          sub: 'operator_1nc0gn30',
+          iss: 'https://auth.nullai.tech',
+          aud: 'https://api.nullai.tech/v2',
+          role: 'auditor',
+          iat: now,
+          exp: now + 86400
+        }, null, 2);
+        bindEvents();
+        await probeBackend();
+        await loadBuiltInSample('default-valid');
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    })();
+  </script>
 </body>
 </html>

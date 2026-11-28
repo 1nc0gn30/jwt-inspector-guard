@@ -16,15 +16,14 @@ Offline JSON Web Token (JWT / JWS) decoder, HMAC signature verifier, claims vali
 ## What It Does
 
 - Decodes compact JWTs into JOSE header, claims payload, and signature, with Base64URL padding normalization.
-- Verifies and signs `HS256`, `HS384`, `HS512` (and `none`) using constant-time `hmac.compare_digest`.
+- Verifies and signs `HS256`, `HS384`, `HS512` using constant-time `hmac.compare_digest` (rejecting `alg: none` by default unless `--allow-none` is explicitly provided), plus pure-Python NIST P-256 ECDSA (`ES256`) and RSA PKCS#1 v1.5 (`RS256`/`RS384`/`RS512`) JWK signature verification.
 - Validates RFC 7519 claims (`exp`, `nbf`, `iat`, `iss`, `aud`) with configurable clock-skew leeway.
-- Lints tokens for known weaknesses: `alg: none` (CVE-2015-9235, including case variants such as `nOnE`), RSA/HMAC algorithm confusion, header injection (`jku`, `x5u`, `jwk`, `kid` path traversal), weak HMAC secrets, and sensitive data in the payload. Produces a score, grade, and recommendations.
-- Runs a dictionary attack against HMAC-signed tokens using a built-in or custom wordlist.
-- Creates and verifies RFC 9449 DPoP proofs (`htm`/`htu` binding, `ath` access-token hash, `cnf.jkt` RFC 7638 thumbprint, `jti` replay cache).
+- Lints tokens for known weaknesses: `alg: none` (CVE-2015-9235, including case variants such as `nOnE`), RSA/HMAC algorithm confusion, header injection (`jku`, `x5u`, `jwk`, `kid` path traversal), weak HMAC secrets (`1,954`-word dictionary), and sensitive data in the payload. Produces a score, grade, and recommendations.
+- Creates and cryptographically verifies RFC 9449 ECDSA P-256 (`ES256`) DPoP proofs (`htm`/`htu` binding, `ath` access-token hash, `cnf.jkt` RFC 7638 thumbprint, `jti` replay cache, fail-closed forged-signature rejection).
 - Simulates JWKS key lifecycles (`active -> retiring -> revoked`) and audits external JWKS files.
-- Benchmarks constant-time vs early-exit signature comparison to demonstrate timing side channels.
+- Empirically benchmarks constant-time vs early-exit signature comparison to measure timing side channels.
 
-All processing happens locally. The browser UI performs decoding, auditing, and HMAC verification with WebCrypto; no token leaves the machine.
+All processing happens locally with zero external CDN requests and zero cloud uploads. The dual-theme browser UI performs decoding, auditing, HS/RS/ES JWK verification, and ES256 DPoP signing with Web Crypto and integrates directly with the hardened `127.0.0.1:8124` REST API.
 
 ## How It Works
 
@@ -52,9 +51,9 @@ flowchart LR
 
 Additional launchers:
 
-- `bin/jwt-guard.js` — Node wrapper. `jwt-guard web` starts `server.py` on `127.0.0.1:8124`; no arguments (or `desktop` / `--gui`) opens the Electron shell in `electron/main.cjs`, falling back to the web server if Electron is not installed; any other arguments are forwarded to the Python CLI.
-- `bin/jwt-inspector-guard-tui` — Braille-sparkline terminal view (`--json`, `--benchmark`, `--frames N`).
-- `jwt-inspector.desktop` — Linux desktop entry calling `jwt-guard desktop` / `jwt-guard web`.
+- `bin/jwt-inspector-guard` — Portable ZothOS Python CLI wrapper resolving `~/NullAITech/jwt-inspector-guard` or `/opt/jwt-inspector-guard` without overriding caller `cwd`, delegating `--status` to `:8124/health`, and redacting home paths in `--json`.
+- `bin/jwt-inspector-guard-tui` — Live Unicode `U+2800` Braille telemetry TUI displaying real `:8124` status, 25-sample Shannon entropy spectrum, 1,954-secret wordlist size, and live ECDSA P-256 DPoP self-check (`--status`, `--json`).
+- `jwt-inspector-guard.desktop` — Linux desktop entry launching `/usr/local/bin/jwt-inspector-guard serve --open` and the Braille TUI via `zoth-konsole`.
 
 ## Install
 

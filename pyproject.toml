@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jwt-inspector-guard"
-version = "0.1.0"
+version = "2.6.0"
 description = "Pure Python JWT decoder, signature verifier, claims validator & security auditor — zero external dependencies"
 readme = "README.md"
 license = { text = "MIT" }

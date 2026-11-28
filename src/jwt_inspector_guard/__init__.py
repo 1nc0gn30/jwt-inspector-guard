@@ -56,8 +56,8 @@ from .dpop_guard import (
     verify_dpop_proof,
 )
 
-__version__ = "0.1.0"
-__author__ = "jwt-inspector-guard contributors"
+__version__ = "2.6.0"
+__author__ = "Neal Frazier Tech (@1nc0gn30) • NullAI Platform"
 __license__ = "MIT"
 __description__ = "Multi-OS Model Context Protocol (MCP) server & CLI security inspector for JSON Web Tokens"
 

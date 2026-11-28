@@ -317,4 +317,47 @@ def test_ui_server_dpop_endpoints():
     }
     verify_res = _api_dpop_verify(verify_payload)
     assert verify_res["is_valid"] is True
+    assert verify_res["signature_valid"] is True
     assert verify_res["token_binding_matched"] is True
+
+
+def test_dpop_rejects_forged_signature_and_tampered_claims():
+    """Verify cryptographic signature check rejects forged signatures and tampered payloads."""
+    proof_jwt, meta = create_dpop_proof(
+        http_method="POST",
+        http_url="https://api.example.com/v1/transfer",
+        access_token="real_token_999",
+    )
+    h_b64, p_b64, _ = proof_jwt.split(".")
+
+    # 1. Completely forged garbage signature must fail closed
+    forged_proof = f"{h_b64}.{p_b64}.COMPLETELY_FORGED_GARBAGE_SIG"
+    res_forged = verify_dpop_proof(
+        proof_token=forged_proof,
+        http_method="POST",
+        http_url="https://api.example.com/v1/transfer",
+        access_token="real_token_999",
+        bound_jkt=meta["thumbprint"],
+        replay_store=DPoPReplayStore(),
+    )
+    assert res_forged.is_valid is False
+    assert res_forged.signature_valid is False
+    assert any(i.code == "INVALID_DPOP_SIGNATURE" for i in res_forged.issues)
+
+    # 2. Tampering claims while keeping original signature must fail closed
+    from jwt_inspector_guard.base64_url import base64url_decode_json, base64url_encode_json
+    claims = base64url_decode_json(p_b64)
+    claims["jti"] = "tampered-jti-001"
+    tampered_p_b64 = base64url_encode_json(claims)
+    tampered_proof = f"{h_b64}.{tampered_p_b64}.{proof_jwt.split('.')[2]}"
+    res_tampered = verify_dpop_proof(
+        proof_token=tampered_proof,
+        http_method="POST",
+        http_url="https://api.example.com/v1/transfer",
+        access_token="real_token_999",
+        replay_store=DPoPReplayStore(),
+    )
+    assert res_tampered.is_valid is False
+    assert res_tampered.signature_valid is False
+    assert any(i.code == "INVALID_DPOP_SIGNATURE" for i in res_tampered.issues)
+

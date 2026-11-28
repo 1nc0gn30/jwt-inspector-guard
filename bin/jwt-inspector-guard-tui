@@ -1,60 +1,174 @@
 #!/usr/bin/env python3
-"""⚡ Jwt Inspector Guard — Sovereign Unicode U+2800 Braille TUI & Benchmark Harness
-Engineered by 1nc0gn30 (@1nc0gn30) • NullAI Platform
-Paired Uncommon-Web Library: Canvas UI (canvasui-html-effects)
+"""JWT Inspector Guard v2.6.0 — Live Cryptographic & Loopback Telemetry Braille TUI.
+
+Renders genuine Unicode U+2800 2x4 sub-pixel Braille telemetry derived from real
+catalog JWT Shannon entropy distributions, live 127.0.0.1:8124 health state,
+and real NIST P-256 ECDSA DPoP verification checks. Zero synthetic sine waves.
 """
-import argparse, json, math, os, sys, time
 
-BRAILLE_BASE = 0x2800
-METRICS = ["AST/Engine Latency (ms)", "Throughput (ops/s)", "Memory Footprint (MB)", "Zero-Trust Audit Status"]
-SUMMARY = "Sovereign Jwt Inspector Guard engine with deterministic local execution and real-time telemetry."
-UW_SLUG = "canvasui-html-effects"
-UW_INSTALL = "npx shadcn@latest add https://canvasui.dev/r/liquid-react.json https://canvasui.dev/r/shatter-react.json https://canvasui.dev/r/peel-react.json https://canvasui.dev/r/ripple-react.json https://canvasui.dev/r/cloth-react.json https://canvasui.dev/r/vhs-react.json"
+from __future__ import annotations
 
-def braille_sparkline(vals):
-    out = []
-    for i in range(0, len(vals) - 1, 2):
-        v1 = max(0, min(3, int(vals[i] * 3.99)))
-        v2 = max(0, min(3, int(vals[i+1] * 3.99)))
-        dots1 = (0x40, 0x04, 0x02, 0x01)[v1]
-        dots2 = (0x80, 0x20, 0x10, 0x08)[v2]
-        out.append(chr(BRAILLE_BASE | dots1 | dots2))
-    return "".join(out)
+import argparse
+import json
+import os
+import sys
+import urllib.request
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-def main():
-    ap = argparse.ArgumentParser(description="Jwt Inspector Guard Sovereign TUI & Benchmark")
-    ap.add_argument("--json", action="store_true", help="Output JSON telemetry and exit")
-    ap.add_argument("--benchmark", action="store_true", help="Run deterministic latency benchmark")
-    ap.add_argument("--frames", type=int, default=18, help="TUI frames to render")
-    args = ap.parse_args()
+VERSION = "2.6.0"
+DEFAULT_PORT = int(os.environ.get("JWT_GUARD_PORT", os.environ.get("PORT", "8124")))
 
-    t0 = time.perf_counter()
-    samples = [0.5 + 0.45 * math.sin(i * 0.35) for i in range(48)]
-    elapsed_ms = round((time.perf_counter() - t0) * 1000.0 + 0.42, 3)
+
+def _redact_home(path_str: str) -> str:
+    home = os.path.expanduser("~")
+    if home and path_str.startswith(home):
+        return "~" + path_str[len(home):]
+    return path_str
+
+
+def _resolve_root() -> Optional[Path]:
+    for cand in (
+        Path(os.path.expanduser("~")) / "NullAITech" / "jwt-inspector-guard",
+        Path("/opt/jwt-inspector-guard"),
+        Path(__file__).resolve().parent.parent,
+    ):
+        if (cand / "src" / "jwt_inspector_guard").is_dir():
+            return cand
+    return None
+
+
+def _render_braille_bars(values: List[float], width: int = 24, height: int = 4) -> List[str]:
+    """Render real normalized [0..1] telemetry samples onto a Unicode U+2800 2x4 Braille grid."""
+    if not values:
+        values = [0.0]
+    px_w = width * 2
+    px_h = height * 4
+    grid = [[False] * px_w for _ in range(px_h)]
+    for x in range(px_w):
+        idx = min(len(values) - 1, int((x / max(1, px_w - 1)) * (len(values) - 1)))
+        val = max(0.0, min(1.0, float(values[idx])))
+        bar_h = int(round(val * (px_h - 1)))
+        for y in range(px_h - 1 - bar_h, px_h):
+            grid[y][x] = True
+
+    dot_bits = (
+        (0, 0, 0x01), (0, 1, 0x02), (0, 2, 0x04), (0, 3, 0x40),
+        (1, 0, 0x08), (1, 1, 0x10), (1, 2, 0x20), (1, 3, 0x80),
+    )
+    rows: List[str] = []
+    for cy in range(height):
+        line_chars: List[str] = []
+        for cx in range(width):
+            mask = 0
+            for dx, dy, bit in dot_bits:
+                if grid[cy * 4 + dy][cx * 2 + dx]:
+                    mask |= bit
+            line_chars.append(chr(0x2800 | mask))
+        rows.append("".join(line_chars))
+    return rows
+
+
+def collect_telemetry(port: int = DEFAULT_PORT) -> Dict[str, Any]:
+    root = _resolve_root()
+    health_url = f"http://127.0.0.1:{port}/health"
+    daemon_online = False
+    daemon_health: Dict[str, Any] = {}
+    try:
+        with urllib.request.urlopen(health_url, timeout=1.2) as resp:  # noqa: S310
+            daemon_online = resp.status == 200
+            daemon_health = json.loads(resp.read().decode("utf-8") or "{}")
+    except Exception:
+        daemon_online = False
+
+    entropies: List[float] = []
+    sample_count = 0
+    weak_secret_count = 0
+    dpop_self_check = False
+
+    if root is not None:
+        src_dir = str(root / "src")
+        if src_dir not in sys.path:
+            sys.path.insert(0, src_dir)
+        from jwt_inspector_guard.catalog import list_sample_tokens
+        from jwt_inspector_guard.crypto_engine import calculate_token_entropy
+        from jwt_inspector_guard.dpop_guard import DPoPReplayStore, create_dpop_proof, verify_dpop_proof
+        from jwt_inspector_guard.security_linter import COMMON_WEAK_SECRETS
+
+        samples = list_sample_tokens()
+        sample_count = len(samples)
+        weak_secret_count = len(COMMON_WEAK_SECRETS)
+        entropies = [calculate_token_entropy(s.raw_token) for s in samples]
+
+        proof, meta = create_dpop_proof("POST", "https://api.example.com/v1/health")
+        v_res = verify_dpop_proof(
+            proof, "POST", "https://api.example.com/v1/health",
+            bound_jkt=meta["thumbprint"], replay_store=DPoPReplayStore()
+        )
+        dpop_self_check = bool(v_res.is_valid and v_res.signature_valid)
+
+    normalized = [min(1.0, e / 6.0) for e in entropies]
+    return {
+        "tool": "jwt-inspector-guard-tui",
+        "version": VERSION,
+        "install_root": _redact_home(str(root)) if root else None,
+        "daemon_url": health_url,
+        "daemon_online": daemon_online,
+        "daemon_health": daemon_health,
+        "catalog_samples": sample_count,
+        "weak_secret_dictionary": weak_secret_count,
+        "mcp_tools": 11,
+        "dpop_es256_self_check": dpop_self_check,
+        "entropy_min_bpc": round(min(entropies), 4) if entropies else 0.0,
+        "entropy_max_bpc": round(max(entropies), 4) if entropies else 0.0,
+        "braille_entropy_spectrum": _render_braille_bars(normalized, width=25, height=4),
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        prog="jwt-inspector-guard-tui",
+        description="JWT Inspector Guard v2.6.0 live cryptographic & loopback Braille telemetry TUI.",
+    )
+    parser.add_argument("--status", action="store_true", help="Print concise daemon & cryptographic status summary")
+    parser.add_argument("--json", action="store_true", help="Output structured JSON telemetry report")
+    parser.add_argument("--port", type=int, default=DEFAULT_PORT, help="Loopback server port to probe (default: 8124)")
+    args = parser.parse_args(argv)
+
+    data = collect_telemetry(port=args.port)
 
     if args.json:
-        print(json.dumps({
-            "tool": "jwt-inspector-guard",
-            "title": "Jwt Inspector Guard",
-            "architect": "1nc0gn30 (@1nc0gn30) • NullAI Platform",
-            "summary": SUMMARY,
-            "uncommon_web": {"slug": UW_SLUG, "install": UW_INSTALL},
-            "audio_lufs": -14.0,
-            "benchmark_ms": elapsed_ms,
-            "metrics": METRICS,
-            "braille_signature": braille_sparkline(samples),
-        }, indent=2))
-        return
+        print(json.dumps(data, indent=2))
+        return 0
 
-    print("\033[1;33m╭──────────────────────────────────────────────────────────────────────────╮\033[0m")
-    print(f"\033[1;33m│\033[0m ⚡ \033[1;37mJwt Inspector Guard             \033[0m │ \033[36m1nc0gn30 • NullAI Platform\033[0m         \033[1;33m│\033[0m")
-    print("\033[1;33m├──────────────────────────────────────────────────────────────────────────┤\033[0m")
-    print(f"\033[1;33m│\033[0m {SUMMARY[:72]:<72} \033[1;33m│\033[0m")
-    print(f"\033[1;33m│\033[0m Uncommon-Web: \033[32m{UW_SLUG:<24}\033[0m Audio: \033[35m-14.0 LUFS Mastered\033[0m   \033[1;33m│\033[0m")
-    for idx, m in enumerate(METRICS[:4]):
-        wave = braille_sparkline([0.5 + 0.45 * math.sin((i + idx * 3) * 0.4) for i in range(40)])
-        print(f"\033[1;33m│\033[0m  • {m[:24]:<24} \033[33m{wave}\033[0m  PASS   \033[1;33m│\033[0m")
-    print("\033[1;33m╰──────────────────────────────────────────────────────────────────────────╯\033[0m")
+    state = "ONLINE" if data["daemon_online"] else "IDLE (On-Demand)"
+    dpop_str = "PASS (P-256 ES256)" if data["dpop_es256_self_check"] else "UNAVAILABLE"
+
+    if args.status:
+        print(
+            f"jwt-inspector-guard v{VERSION} | daemon={state} ({data['daemon_url']}) | "
+            f"samples={data['catalog_samples']} | wordlist={data['weak_secret_dictionary']} | "
+            f"mcp_tools={data['mcp_tools']} | dpop={dpop_str}"
+        )
+        return 0
+
+    print("┌────────────────────────────────────────────────────────────────┐")
+    print(f"│  JWT INSPECTOR GUARD v{VERSION}  •  CRYPTOGRAPHIC TELEMETRY TUI     │")
+    print("├────────────────────────────────────────────────────────────────┤")
+    print(f"│  Loopback :8124   : {state:<42} │")
+    print(f"│  Catalog Vectors  : {str(data['catalog_samples']) + ' real JWT/CVE presets':<42} │")
+    print(f"│  HMAC Wordlist    : {str(data['weak_secret_dictionary']) + ' weak-secret candidates':<42} │")
+    print(f"│  MCP Stdio Tools  : {str(data['mcp_tools']) + ' JSON-RPC 2.0 endpoints':<42} │")
+    print(f"│  DPoP Self-Check  : {dpop_str:<42} │")
+    entropy_range = f"{data['entropy_min_bpc']:.3f} .. {data['entropy_max_bpc']:.3f} bits/char"
+    print(f"│  Entropy Range    : {entropy_range:<42} │")
+    print("├────────────────────────────────────────────────────────────────┤")
+    print("│  Catalog Shannon Entropy Spectrum (Unicode U+2800 Braille):    │")
+    for row in data["braille_entropy_spectrum"]:
+        print(f"│    {row:<58} │")
+    print("└────────────────────────────────────────────────────────────────┘")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

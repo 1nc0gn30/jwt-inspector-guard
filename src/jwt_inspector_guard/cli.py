@@ -60,22 +60,7 @@ from .mcp_server import (
 USE_COLOR = True
 
 
-def _is_local_origin(origin) -> bool:
-    """True for no Origin (CLI/curl/same-origin GET) or a localhost origin."""
-    if not origin:
-        return True
-    from urllib.parse import urlparse
-    try:
-        u = urlparse(origin)
-    except Exception:
-        return False
-    return u.scheme in ("http", "https") and (u.hostname or "") in ("localhost", "127.0.0.1", "::1")
-
-
-def _cors_origin(handler) -> str:
-    """Echo the Origin only when it is local; never '*'."""
-    origin = handler.headers.get("Origin", "")
-    return origin if origin and _is_local_origin(origin) else "http://127.0.0.1"
+from .ui_server import _cors_origin, _is_local_origin, run_server as _run_ui_server
 
 
 def configure_color(force_no_color: bool = False) -> None:
@@ -253,11 +238,14 @@ def cmd_verify(args: argparse.Namespace) -> int:
     alg = (args.alg or header.get("alg", "HS256")).upper()
     secret = args.secret or ""
     leeway = float(args.leeway or 0.0)
+    allow_none = bool(getattr(args, "allow_none", False))
 
-    # Signature verification
+    # Signature verification (rejects alg: none by default unless --allow-none is explicitly set)
     sig_valid: Optional[bool] = None
-    if secret or alg == "NONE":
-        sig_valid = verify_hmac(token, secret, alg)
+    if alg == "NONE":
+        sig_valid = verify_hmac(token, secret, alg, allow_none=allow_none)
+    elif secret:
+        sig_valid = verify_hmac(token, secret, alg, allow_none=allow_none)
 
     # Claims validation
     claims_res = validate_claims(
@@ -267,7 +255,10 @@ def cmd_verify(args: argparse.Namespace) -> int:
         leeway=leeway
     )
 
-    is_overall_valid = (sig_valid is True or (sig_valid is None and not secret)) and claims_res["claims_valid"]
+    is_overall_valid = (
+        (sig_valid is True or (sig_valid is None and not secret and alg != "NONE"))
+        and claims_res["claims_valid"]
+    )
 
     if args.json:
         out = {
@@ -738,633 +729,8 @@ def cmd_dpop_verify(args: argparse.Namespace) -> int:
 
 
 # ---------------------------------------------------------------------------
-# Material 3 JWT Studio Web UI & REST Server
+# Unified Loopback Web Server Entrypoint (Delegates directly to ui_server.py)
 # ---------------------------------------------------------------------------
-
-MATERIAL_3_HTML = """<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JWT Inspector Guard Studio</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-base: #0f111a;
-      --bg-surface: #181a27;
-      --bg-surface-elevated: #212435;
-      --bg-surface-container: #2b2f44;
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-focus: #82aaff;
-      --text-primary: #e6edf3;
-      --text-secondary: #90a4ae;
-      --text-muted: #607d8b;
-      --clr-header: #ff5370;
-      --clr-payload: #c792ea;
-      --clr-signature: #89ddff;
-      --clr-success: #c3e88d;
-      --clr-warning: #ffcb6b;
-      --clr-critical: #f07178;
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-      --shadow-elevation: 0 10px 30px -10px rgba(0,0,0,0.5);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background-color: var(--bg-base);
-      color: var(--text-primary);
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    header {
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-    .logo span.badge {
-      font-size: 0.7rem;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--bg-surface-container);
-      color: var(--clr-signature);
-      border: 1px solid var(--border-subtle);
-    }
-    .main-container {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      padding: 1.5rem 2rem;
-      max-width: 1800px;
-      margin: 0 auto;
-      width: 100%;
-    }
-    @media (max-width: 1024px) {
-      .main-container { grid-template-columns: 1fr; }
-    }
-    .card {
-      background: var(--bg-surface);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-elevation);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .card-header {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg-surface-elevated);
-    }
-    .card-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; gap: 1rem; }
-    textarea, input, select {
-      width: 100%;
-      background: var(--bg-base);
-      color: var(--text-primary);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 0.75rem;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.88rem;
-      transition: all 0.2s ease;
-    }
-    textarea:focus, input:focus, select:focus {
-      outline: none;
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 2px rgba(130, 170, 255, 0.2);
-    }
-    #tokenInput { height: 220px; line-height: 1.4; resize: vertical; word-break: break-all; }
-    .segmented-preview {
-      padding: 0.75rem;
-      background: var(--bg-base);
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-subtle);
-      font-family: 'Fira Code', monospace;
-      font-size: 0.82rem;
-      word-break: break-all;
-      max-height: 140px;
-      overflow-y: auto;
-    }
-    .seg-header { color: var(--clr-header); }
-    .seg-payload { color: var(--clr-payload); }
-    .seg-sig { color: var(--clr-signature); }
-    .tabs-nav {
-      display: flex;
-      border-bottom: 1px solid var(--border-subtle);
-      background: var(--bg-surface-elevated);
-    }
-    .tab-btn {
-      padding: 0.75rem 1.25rem;
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 0.85rem;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-    }
-    .tab-btn.active { color: var(--text-primary); border-bottom-color: var(--border-focus); background: var(--bg-surface); }
-    .tab-content { display: none; padding: 1.25rem; flex: 1; flex-direction: column; gap: 1rem; }
-    .tab-content.active { display: flex; }
-    .scorecard-banner {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      padding: 1.25rem;
-      border-radius: var(--radius-sm);
-      background: var(--bg-surface-elevated);
-      border: 1px solid var(--border-subtle);
-    }
-    .grade-circle {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      font-weight: 800;
-      background: var(--bg-surface-container);
-      border: 3px solid var(--border-focus);
-    }
-    .finding-item {
-      padding: 0.85rem;
-      border-radius: var(--radius-sm);
-      background: var(--bg-surface-elevated);
-      border-left: 4px solid var(--clr-critical);
-      margin-bottom: 0.75rem;
-    }
-    .btn {
-      background: var(--border-focus);
-      color: var(--bg-base);
-      font-weight: 600;
-      padding: 0.6rem 1.2rem;
-      border-radius: var(--radius-sm);
-      border: none;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: opacity 0.2s;
-    }
-    .btn:hover { opacity: 0.9; }
-    .btn-outline {
-      background: transparent;
-      color: var(--text-primary);
-      border: 1px solid var(--border-subtle);
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="logo">
-      <span>🛡️ JWT Inspector Guard</span>
-      <span class="badge">Material 3 Studio</span>
-    </div>
-    <div style="display:flex; gap:0.75rem;">
-      <select id="sampleSelect" style="width: 260px;" onchange="loadSample()">
-        <option value="">-- Load Sample Token / CVE Vector --</option>
-      </select>
-    </div>
-  </header>
-
-  <div class="main-container">
-    <!-- Left Column: Encoded Input -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Encoded Token</span>
-        <button class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="clearToken()">Clear</button>
-      </div>
-      <div class="card-body">
-        <textarea id="tokenInput" placeholder="Paste JWT token here..." oninput="handleTokenChange()"></textarea>
-        
-        <div style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase;">Segment Breakdown</div>
-        <div class="segmented-preview" id="segmentedView">
-          <span class="seg-header">header</span>.<span class="seg-payload">payload</span>.<span class="seg-sig">signature</span>
-        </div>
-
-        <div style="margin-top:0.5rem; display:flex; flex-direction:column; gap:0.5rem;">
-          <label style="font-size:0.8rem; font-weight:600; color:var(--text-secondary);">HMAC Verify Secret Key:</label>
-          <div style="display:flex; gap:0.5rem;">
-            <input type="text" id="secretInput" placeholder="Enter secret (e.g. your-256-bit-secret)" value="your-256-bit-secret" oninput="runVerify()">
-            <button class="btn btn-outline" onclick="runCrack()">⚡ Crack</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Column: Decoded & Audited Panels -->
-    <div class="card">
-      <div class="tabs-nav">
-        <button class="tab-btn active" onclick="switchTab('decodedTab', this)">Decoded & Claims</button>
-        <button class="tab-btn" onclick="switchTab('auditTab', this)">Security Audit</button>
-        <button class="tab-btn" onclick="switchTab('mintTab', this)">Mint / Encode</button>
-      </div>
-
-      <!-- Decoded Tab -->
-      <div id="decodedTab" class="tab-content active">
-        <div>
-          <div style="font-size:0.8rem; font-weight:700; color:var(--clr-header); margin-bottom:0.4rem;">HEADER: Algorithm & Token Type</div>
-          <textarea id="headerJson" style="height:120px; color:var(--clr-header);" readonly></textarea>
-        </div>
-        <div>
-          <div style="font-size:0.8rem; font-weight:700; color:var(--clr-payload); margin-bottom:0.4rem;">PAYLOAD: Data & Claims</div>
-          <textarea id="payloadJson" style="height:180px; color:var(--clr-payload);" readonly></textarea>
-        </div>
-        <div id="verifyStatusBadge" style="padding:0.75rem; border-radius:var(--radius-sm); font-weight:600; font-size:0.85rem; background:var(--bg-surface-elevated);">
-          Signature Status: Checking...
-        </div>
-      </div>
-
-      <!-- Security Audit Tab -->
-      <div id="auditTab" class="tab-content">
-        <div class="scorecard-banner">
-          <div class="grade-circle" id="auditGrade">A</div>
-          <div>
-            <div style="font-size:1.1rem; font-weight:700;" id="auditRisk">SECURE</div>
-            <div style="color:var(--text-secondary); font-size:0.85rem;" id="auditScore">Score: 100/100</div>
-          </div>
-        </div>
-        <div style="font-weight:600; font-size:0.85rem; text-transform:uppercase; color:var(--text-muted);">Audit Findings</div>
-        <div id="auditFindingsList" style="max-height: 280px; overflow-y:auto;"></div>
-      </div>
-
-      <!-- Mint Tab -->
-      <div id="mintTab" class="tab-content">
-        <div>
-          <label style="font-size:0.8rem; font-weight:600; color:var(--text-secondary);">Algorithm</label>
-          <select id="mintAlg" style="margin-top:0.25rem;">
-            <option value="HS256">HS256 (HMAC SHA-256)</option>
-            <option value="HS384">HS384 (HMAC SHA-384)</option>
-            <option value="HS512">HS512 (HMAC SHA-512)</option>
-            <option value="none">none (Unsecured)</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:0.8rem; font-weight:600; color:var(--text-secondary);">Payload JSON</label>
-          <textarea id="mintPayload" style="height:140px; margin-top:0.25rem;">{\n  "sub": "user_42",\n  "role": "admin",\n  "iss": "jwt-inspector-guard"\n}</textarea>
-        </div>
-        <div>
-          <label style="font-size:0.8rem; font-weight:600; color:var(--text-secondary);">Signing Secret</label>
-          <input type="text" id="mintSecret" value="super-secure-production-secret-key-32b">
-        </div>
-        <button class="btn" onclick="mintNewToken()">Generate & Sign Token</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    let samplesList = [];
-
-    async function init() {
-      try {
-        const resp = await fetch('/api/samples');
-        samplesList = await resp.json();
-        const sel = document.getElementById('sampleSelect');
-        samplesList.forEach((s, idx) => {
-          const opt = document.createElement('option');
-          opt.value = idx;
-          opt.textContent = `[${s.category}] ${s.name}`;
-          sel.appendChild(opt);
-        });
-        // Load default sample
-        if (samplesList.length > 0) {
-          sel.value = 0;
-          loadSample();
-        }
-      } catch (e) {
-        console.error("Failed to load samples:", e);
-      }
-    }
-
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
-    }
-
-    function loadSample() {
-      const sel = document.getElementById('sampleSelect');
-      if (sel.value === "") return;
-      const sample = samplesList[parseInt(sel.value)];
-      if (sample) {
-        document.getElementById('tokenInput').value = sample.token;
-        handleTokenChange();
-      }
-    }
-
-    function clearToken() {
-      document.getElementById('tokenInput').value = '';
-      handleTokenChange();
-    }
-
-    async function handleTokenChange() {
-      const token = document.getElementById('tokenInput').value.trim();
-      const segView = document.getElementById('segmentedView');
-
-      if (!token) {
-        segView.innerHTML = '<span class="seg-header">header</span>.<span class="seg-payload">payload</span>.<span class="seg-sig">signature</span>';
-        document.getElementById('headerJson').value = '';
-        document.getElementById('payloadJson').value = '';
-        return;
-      }
-
-      const parts = token.split('.');
-      segView.innerHTML = `<span class="seg-header">${parts[0]||''}</span>.<span class="seg-payload">${parts[1]||''}</span>.<span class="seg-sig">${parts[2]||''}</span>`;
-
-      // API Call to decode
-      try {
-        const res = await fetch('/api/decode', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({token})
-        });
-        const data = await res.json();
-        if (data.valid_format) {
-          document.getElementById('headerJson').value = JSON.stringify(data.header, null, 2);
-          document.getElementById('payloadJson').value = JSON.stringify(data.payload, null, 2);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-
-      runVerify();
-      runAudit();
-    }
-
-    async function runVerify() {
-      const token = document.getElementById('tokenInput').value.trim();
-      const secret = document.getElementById('secretInput').value;
-      const badge = document.getElementById('verifyStatusBadge');
-
-      if (!token) return;
-
-      try {
-        const res = await fetch('/api/verify', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({token, secret})
-        });
-        const data = await res.json();
-        if (data.signature_valid === true) {
-          badge.style.borderLeft = '4px solid var(--clr-success)';
-          badge.textContent = `✔ Signature VALID (${data.algorithm}) | Claims: ${data.claims_valid ? 'Valid' : 'Invalid'}`;
-        } else if (data.signature_valid === false) {
-          badge.style.borderLeft = '4px solid var(--clr-critical)';
-          badge.textContent = `✖ Signature INVALID (${data.algorithm}) | ${data.errors.join(', ')}`;
-        } else {
-          badge.style.borderLeft = '4px solid var(--clr-warning)';
-          badge.textContent = `⚡ Signature Unverified (No secret)`;
-        }
-      } catch (e) {
-        badge.textContent = 'Verification error';
-      }
-    }
-
-    async function runAudit() {
-      const token = document.getElementById('tokenInput').value.trim();
-      if (!token) return;
-
-      try {
-        const res = await fetch('/api/audit', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({token})
-        });
-        const data = await res.json();
-        const gradeEl = document.getElementById('auditGrade');
-        gradeEl.textContent = data.grade;
-        document.getElementById('auditRisk').textContent = data.risk_level;
-        document.getElementById('auditScore').textContent = `Security Score: ${data.score}/100`;
-
-        if (data.grade === 'A' || data.grade === 'B') gradeEl.style.borderColor = 'var(--clr-success)';
-        else if (data.grade === 'C') gradeEl.style.borderColor = 'var(--clr-warning)';
-        else gradeEl.style.borderColor = 'var(--clr-critical)';
-
-        const list = document.getElementById('auditFindingsList');
-        list.innerHTML = '';
-        if (data.findings.length === 0) {
-          list.innerHTML = '<div style="color:var(--clr-success); font-weight:600;">✔ No vulnerabilities identified.</div>';
-        } else {
-          data.findings.forEach(f => {
-            const item = document.createElement('div');
-            item.className = 'finding-item';
-            if (f.severity === 'CRITICAL' || f.severity === 'HIGH') item.style.borderLeftColor = 'var(--clr-critical)';
-            else if (f.severity === 'MEDIUM') item.style.borderLeftColor = 'var(--clr-warning)';
-            else item.style.borderLeftColor = 'var(--clr-signature)';
-
-            item.innerHTML = `
-              <div style="font-weight:700; font-size:0.85rem;">[${f.severity}] ${f.title}</div>
-              <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">${f.description}</div>
-              ${f.remediation ? `<div style="font-size:0.78rem; color:var(--clr-success); margin-top:4px;"><b>Fix:</b> ${f.remediation}</div>` : ''}
-            `;
-            list.appendChild(item);
-          });
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    async function runCrack() {
-      const token = document.getElementById('tokenInput').value.trim();
-      if (!token) return;
-      try {
-        const res = await fetch('/api/crack', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({token})
-        });
-        const data = await res.json();
-        if (data.cracked) {
-          alert(`💥 VULNERABILITY: Secret cracked! Found key: "${data.secret}" (${data.attempts} attempts, ${data.time_seconds}s)`);
-          document.getElementById('secretInput').value = data.secret;
-          runVerify();
-        } else {
-          alert(`Key not found in built-in dictionary (${data.attempts} attempts).`);
-        }
-      } catch (e) {
-        alert('Error during dictionary crack: ' + e);
-      }
-    }
-
-    async function mintNewToken() {
-      const alg = document.getElementById('mintAlg').value;
-      const payloadStr = document.getElementById('mintPayload').value;
-      const secret = document.getElementById('mintSecret').value;
-
-      try {
-        const payload = JSON.parse(payloadStr);
-        const res = await fetch('/api/encode', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({payload, secret, algorithm: alg, exp_seconds: 3600})
-        });
-        const data = await res.json();
-        document.getElementById('tokenInput').value = data.token;
-        document.getElementById('secretInput').value = secret;
-        handleTokenChange();
-        switchTab('decodedTab', document.querySelectorAll('.tab-btn')[0]);
-      } catch (e) {
-        alert('Failed to mint token: ' + e);
-      }
-    }
-
-    window.onload = init;
-  </script>
-</body>
-</html>"""
-
-
-class JWTStudioHTTPHandler(http.server.BaseHTTPRequestHandler):
-    """HTTP Request Handler serving Material 3 UI and REST endpoints."""
-
-    def log_message(self, format: str, *args: Any) -> None:
-        """Suppress standard HTTP server access logs to keep terminal quiet."""
-        pass
-
-    def do_GET(self) -> None:
-        """Handle GET requests."""
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
-
-        if path in ["/", "/index.html"]:
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", _cors_origin(self))
-            self.end_headers()
-            self.wfile.write(MATERIAL_3_HTML.encode("utf-8"))
-        elif path == "/api/samples":
-            samples = list_sample_tokens("all")
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", _cors_origin(self))
-            self.end_headers()
-            self.wfile.write(json.dumps(samples).encode("utf-8"))
-        elif path == "/api/diagnostics":
-            diag = get_diagnostics()
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", _cors_origin(self))
-            self.end_headers()
-            self.wfile.write(json.dumps(diag).encode("utf-8"))
-        else:
-            self.send_response(404)
-            self.end_headers()
-
-    def do_POST(self) -> None:
-        """Handle POST requests for REST API."""
-
-        if not _is_local_origin(self.headers.get("Origin")):
-
-            self.send_error(403, "Cross-origin request blocked")
-
-            return
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
-        length = int(self.headers.get("Content-Length", 0))
-        body = self.rfile.read(length).decode("utf-8") if length > 0 else "{}"
-
-        try:
-            req_data = json.loads(body)
-        except Exception:
-            req_data = {}
-
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin", _cors_origin(self))
-        self.end_headers()
-
-        resp_data: Dict[str, Any] = {}
-
-        if path == "/api/decode":
-            token = req_data.get("token", "")
-            try:
-                header, payload, sig_b64, header_b64, payload_b64, _ = decode_jwt_parts(token)
-                resp_data = {
-                    "valid_format": True,
-                    "header": header,
-                    "payload": payload,
-                    "signature_b64": sig_b64,
-                }
-            except Exception as e:
-                resp_data = {"valid_format": False, "error": str(e)}
-
-        elif path == "/api/verify":
-            token = req_data.get("token", "")
-            secret = req_data.get("secret", "")
-            algorithm = req_data.get("algorithm")
-            try:
-                header, payload, _, _, _, _ = decode_jwt_parts(token)
-                alg = (algorithm or header.get("alg", "HS256")).upper()
-                sig_valid = verify_hmac(token, secret, alg) if secret else None
-                claims_res = validate_claims(payload)
-                resp_data = {
-                    "signature_valid": sig_valid,
-                    "claims_valid": claims_res["claims_valid"],
-                    "algorithm": alg,
-                    "errors": claims_res["errors"],
-                    "warnings": claims_res["warnings"],
-                }
-            except Exception as e:
-                resp_data = {"error": str(e)}
-
-        elif path == "/api/encode":
-            payload = req_data.get("payload", {})
-            secret = req_data.get("secret", "")
-            alg = req_data.get("algorithm", "HS256")
-            exp_seconds = req_data.get("exp_seconds")
-            p_copy = dict(payload)
-            now = int(time.time())
-            if exp_seconds:
-                p_copy["iat"] = now
-                p_copy["exp"] = now + int(exp_seconds)
-            header = {"alg": alg, "typ": "JWT"}
-            token = sign_hmac(header, p_copy, secret, alg)
-            resp_data = {"token": token, "header": header, "payload": p_copy}
-
-        elif path == "/api/audit":
-            token = req_data.get("token", "")
-            resp_data = audit_jwt_security(token)
-
-        elif path == "/api/crack":
-            token = req_data.get("token", "")
-            resp_data = crack_jwt_secret(token)
-
-        elif path == "/api/mcp":
-            resp = handle_jsonrpc_request(req_data)
-            resp_data = resp if isinstance(resp, dict) else {"result": resp}
-
-        self.wfile.write(json.dumps(resp_data).encode("utf-8"))
-
 
 DEFAULT_PORT = int(os.environ.get("JWT_GUARD_PORT", "8124"))
 
@@ -1390,38 +756,15 @@ def cmd_status(as_json: bool = True, host: str = "127.0.0.1", port: Optional[int
 
 
 def cmd_serve(args: argparse.Namespace) -> int:
-    """Handle 'serve' subcommand: Launch JWT Studio web server."""
+    """Handle 'serve' subcommand: Launch the hardened unified ui_server.py."""
     host = args.host or "127.0.0.1"
     port = int(args.port if args.port is not None else DEFAULT_PORT)
-
-    server_address = (host, port)
+    open_browser = bool(getattr(args, "open", False) and not getattr(args, "no_browser", False))
     try:
-        httpd = http.server.HTTPServer(server_address, JWTStudioHTTPHandler)
+        _run_ui_server(host=host, port=port, open_browser=open_browser)
     except OSError as e:
         print(c_str(f"Error binding to {host}:{port}: {e}", RED), file=sys.stderr)
         return 1
-
-    url = f"http://{host}:{port}/"
-    print_banner(args.quiet)
-    print()
-    print(f"  {c_str('🚀 JWT Inspector Studio Web UI started!', GREEN + BOLD)}")
-    print(f"  • Local URL:      {c_str(url, BOLD + CYAN)}")
-    print(f"  • REST Endpoints: {c_str(f'http://{host}:{port}/api/decode', DIM)}, {c_str('/api/audit', DIM)}, {c_str('/api/crack', DIM)}")
-    print(f"  • Press {c_str('Ctrl+C', BOLD)} to stop server.")
-    print()
-
-    if args.open and not args.no_browser:
-        try:
-            webbrowser.open(url)
-        except Exception:
-            pass
-
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print(f"\n{c_str('Stopping server...', DIM)}")
-    finally:
-        httpd.server_close()
     return 0
 
 
@@ -1462,10 +805,11 @@ def cmd_test(args: argparse.Namespace) -> int:
     assert_true(verify_hmac(token_hs384, secret, "HS384"), "HMAC HS384 sign & verify")
     assert_true(verify_hmac(token_hs512, secret, "HS512"), "HMAC HS512 sign & verify")
 
-    # Test 4: alg none
+    # Test 4: alg none (rejected by default per RFC 8725; explicit opt-in only)
     token_none = sign_hmac({"alg": "none"}, {"sub": "unsecured"}, "", "none")
     assert_true(token_none.endswith("."), "alg none ends with trailing dot")
-    assert_true(verify_hmac(token_none, "", "none"), "alg none verification")
+    assert_true(not verify_hmac(token_none, "", "none"), "alg none rejected by default")
+    assert_true(verify_hmac(token_none, "", "none", allow_none=True), "alg none accepted only with explicit allow_none=True")
 
     # Test 5: Claims validation
     now = time.time()
@@ -1546,6 +890,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_verify.add_argument("--iss", "--issuer", dest="iss", help="Expected issuer claim")
     p_verify.add_argument("--aud", "--audience", dest="aud", help="Expected audience claim")
     p_verify.add_argument("--leeway", type=float, default=0.0, help="Clock skew leeway in seconds")
+    p_verify.add_argument("--allow-none", action="store_true", help="Explicitly opt-in to accepting unsigned alg:none tokens (unsafe)")
     p_verify.add_argument("--json", action="store_true", help="Output JSON verification report")
     p_verify.set_defaults(func=cmd_verify)
 
