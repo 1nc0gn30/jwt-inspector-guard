@@ -206,7 +206,10 @@ def test_ui_server_lifecycle_security_and_endpoints():
         # 12. Oversized > 1 MiB body -> 413 Payload Too Large
         conn = http.client.HTTPConnection(host, port)
         big_body = b"x" * (MAX_JSON_BODY_BYTES + 128)
-        conn.request("POST", "/api/decode", body=big_body, headers={"Content-Type": "application/json"})
+        try:
+            conn.request("POST", "/api/decode", body=big_body, headers={"Content-Type": "application/json"})
+        except (BrokenPipeError, ConnectionResetError):
+            pass
         res = conn.getresponse()
         res.read()
         assert res.status == 413
